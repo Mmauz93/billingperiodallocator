@@ -1,0 +1,34 @@
+stages:
+  - upload
+
+## Network specific configurations for upload paths
+upload-test:
+  variables:
+    DEPLOY_PATH: 'web/billsplitter'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+  extends: .upload
+
+upload-main:
+  variables:
+    DEPLOY_PATH: 'web/billsplitter'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  extends: .upload
+
+## /Site location specific configurations
+
+## Pipeline Stage - Upload Only
+.upload:
+  stage: upload
+  image: alpine
+  tags:
+    - linux
+  script:
+    - lftp --version
+    - echo "Uploading ./out to ${DEPLOY_PATH}"
+    - lftp -c "set ftp:ssl-force true; set ssl:verify-certificate false; open -u $CMP_FTP_USER,$CMP_FTP_SECRET $FTP_HOST_LIBERTY1; mirror -Renv ./out ./$DEPLOY_PATH"
+  artifacts:
+    paths:
+      - out/
+    expire_in: 1 week
