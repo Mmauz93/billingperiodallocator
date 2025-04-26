@@ -219,10 +219,12 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
         }
     }
 
+    // Update handler for react-day-picker's onSelect (passes Date | undefined)
     const onSelectStartDate = (date: Date | undefined) => {
         if (date) {
-            form.setValue('startDate', startOfDay(date), { shouldValidate: true });
-            setStartDateString(format(date, displayDateFormat)); // Use display format after selection
+            const day = startOfDay(date)
+            form.setValue('startDate', day, { shouldValidate: true });
+            setStartDateString(format(day, displayDateFormat)); // Use display format after selection
         } else {
             form.setValue('startDate', undefined, { shouldValidate: true });
             setStartDateString("");
@@ -230,10 +232,12 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
         setIsStartDatePopoverOpen(false);
     };
 
+    // Update handler for react-day-picker's onSelect (passes Date | undefined)
     const onSelectEndDate = (date: Date | undefined) => {
         if (date) {
-            form.setValue('endDate', startOfDay(date), { shouldValidate: true });
-            setEndDateString(format(date, displayDateFormat)); // Use display format after selection
+             const day = startOfDay(date)
+            form.setValue('endDate', day, { shouldValidate: true });
+            setEndDateString(format(day, displayDateFormat)); // Use display format after selection
         } else {
             form.setValue('endDate', undefined, { shouldValidate: true });
             setEndDateString("");
@@ -252,9 +256,9 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
         <TooltipProvider>
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    {/* Date Fields (using Input + Popover) */}
+                    {/* Date Fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       {/* Start Date Field */} 
+                       {/* Start Date Field */}
                         <FormField
                             control={form.control}
                             name="startDate"
@@ -282,8 +286,9 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={onSelectStartDate}
+                                                locale={currentLocale}
                                                 initialFocus
-                                                locale={currentLocale} // Pass locale object
+                                                disabled={field.disabled}
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -291,7 +296,7 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                 </FormItem>
                             )}
                         />
-                        {/* End Date Field */} 
+                        {/* End Date Field */}
                         <FormField
                              control={form.control}
                              name="endDate"
@@ -315,17 +320,14 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                             </div>
                                         </FormControl>
                                         <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
+                                             <Calendar
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={onSelectEndDate}
-                                                disabled={(date) => {
-                                                    const startDate = form.getValues("startDate");
-                                                    return startDate ? date < startOfDay(startDate) : false;
-                                                }}
+                                                locale={currentLocale}
                                                 initialFocus
-                                                locale={currentLocale} // Pass locale object
-                                            />
+                                                disabled={field.disabled}
+                                             />
                                         </PopoverContent>
                                     </Popover>
                                     <FormMessage />

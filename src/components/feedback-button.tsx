@@ -18,7 +18,7 @@ import { useState } from "react";
 import { useTranslation } from 'react-i18next'; // Import hook
 
 // Replace with your actual email address
-const FEEDBACK_EMAIL = "your-email@example.com"; 
+const FEEDBACK_EMAIL = "siempi@siempi.ch"; 
 
 export function FeedbackButton() {
     const { t } = useTranslation(); // Initialize hook
