@@ -184,24 +184,12 @@ export function calculateInvoiceSplit(input: CalculationInput): CalculationResul
             if(step) step.roundedSplit = rs.roundedSplit;
         });
 
-        // Calculate discrepancy for this amount
+        // Calculate discrepancy for this amount (no further adjustment)
         const currentTotal = round(roundedSplits.reduce((sum, s) => sum + s.roundedSplit, 0), 2);
         const discrepancy = round(amount - currentTotal, 2);
         amountCalcStep.discrepancy = discrepancy;
 
-        // Adjust discrepancy for this amount
-        if (discrepancy !== 0 && roundedSplits.length > 0) {
-            // Sort by year to adjust the first year consistently
-            roundedSplits.sort((a, b) => a.year - b.year);
-            const targetIndex = 0;
-            roundedSplits[targetIndex].roundedSplit = round(roundedSplits[targetIndex].roundedSplit + discrepancy, 2);
-
-            // Update steps with adjustment
-             const step = amountCalcStep.yearSplits.find(s => s.year === roundedSplits[targetIndex].year);
-             if(step) step.adjustment = discrepancy;
-             amountCalcStep.adjustmentAppliedToYear = roundedSplits[targetIndex].year;
-        }
-
+        // No adjustment: keep each split rounded to the nearest
         // Store final splits for this amount
         const finalAmountSplits: { [year: number]: SingleAmountYearSplit } = {};
         roundedSplits.forEach(s => {
