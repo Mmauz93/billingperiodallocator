@@ -2,9 +2,10 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CalculationInput, CalculationResult } from "@/lib/calculations";
-import { Fragment, useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import Cookies from 'js-cookie';
 import { FeedbackButton } from "@/components/feedback-button";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Hash } from "lucide-react";
@@ -16,7 +17,6 @@ import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTranslation } from 'react-i18next';
-import Cookies from 'js-cookie';
 
 // Define props interface
 interface InvoiceCalculatorClientProps {
@@ -190,34 +190,39 @@ export function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientPr
     if (!visible) return null;
 
     return (
-      <div className="fixed z-[2000] bottom-6 right-6 max-w-sm w-full">
-        <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="bg-muted text-foreground rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-4 outline-none border">
-          <h2 className="text-lg font-semibold text-center mb-1">{t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}</h2>
-          <p className="text-sm text-center mb-1">{t('ConsentBanner.message')}</p>
-          <button
-            type="button"
-            onClick={onOpenPrivacy}
-            className="text-sm underline text-foreground hover:text-primary mb-2 cursor-pointer bg-transparent border-0 p-0 focus:outline-none"
-            tabIndex={0}
-          >
-            {t('ConsentBanner.learnMoreButton')}
-          </button>
-          <div className="flex flex-row gap-3 w-full justify-center">
+      <div className="fixed left-0 bottom-6 w-screen flex justify-center z-[2000] pointer-events-none md:left-auto md:right-6 md:w-auto md:justify-end">
+        <div className="pointer-events-auto bg-muted text-foreground rounded-2xl shadow-2xl p-6 flex flex-col items-center space-y-6 outline-none border max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
+          <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-6">
+            <h2 className="text-lg font-semibold text-center">
+              {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
+            </h2>
+            <p className="text-sm text-center">
+              {t('ConsentBanner.message')}
+            </p>
             <button
               type="button"
-              className="bg-black text-white border border-border rounded-md px-5 py-2 text-base font-medium cursor-pointer hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-              onClick={handleAccept}
-              autoFocus
+              onClick={onOpenPrivacy}
+              className="text-sm underline text-foreground hover:text-primary cursor-pointer bg-transparent border-0 p-0 focus:outline-none"
             >
-              {t('ConsentBanner.acceptButton')}
+              {t('ConsentBanner.learnMoreButton')}
             </button>
-            <button
-              type="button"
-              className="bg-transparent text-secondary-foreground text-base font-medium px-5 py-2 rounded-md cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-              onClick={handleDecline}
-            >
-              {t('ConsentBanner.declineButton')}
-            </button>
+            <div className="flex space-x-4 justify-center w-full mt-4">
+              <button
+                type="button"
+                onClick={handleAccept}
+                autoFocus
+                className="bg-black text-white border border-border rounded-md px-5 py-2 text-base font-medium cursor-pointer hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+              >
+                {t('ConsentBanner.acceptButton')}
+              </button>
+              <button
+                type="button"
+                onClick={handleDecline}
+                className="bg-transparent text-secondary-foreground text-base font-medium px-5 py-2 rounded-md cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+              >
+                {t('ConsentBanner.declineButton')}
+              </button>
+            </div>
           </div>
         </div>
       </div>

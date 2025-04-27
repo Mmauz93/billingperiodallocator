@@ -116,8 +116,8 @@
     "de": "Deutsch"
   },
   "ConsentBanner": {
-    "message": "Diese Webseite verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern und den Traffic zu analysieren. Indem Sie auf \"Aktzeptieren\" klicken, stimmen Sie der Verwendung von Analyse-Cookies zu.",
-    "acceptButton": "Aktzeptieren",
+    "message": "Diese Webseite verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern und den Traffic zu analysieren. Indem Sie auf \"Akzeptieren\" klicken, stimmen Sie der Verwendung von Analyse-Cookies zu.",
+    "acceptButton": "Akzeptieren",
     "declineButton": "Ablehnen",
     "learnMoreButton": "Datenschutzerklärung"
   }
