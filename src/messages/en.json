@@ -1,12 +1,14 @@
 {
   "InvoiceForm": {
-    "title": "Multi-Year Invoice Allocator",
-    "startDateLabel": "Start Date *",
-    "endDateLabel": "End Date *",
+    "title": "Invoice Split Calculator",
+    "description_p1": "Easily allocate multi-year invoice totals across individual fiscal years or specific accounting periods. This tool provides accurate, proportional calculations based on start and end dates, simplifying compliance with accrual principles.",
+    "description_p2": "Ideal for accountants preparing income statements and balance sheets, financial professionals managing budgets, or anyone needing a clear financial breakdown for reporting.",
+    "startDateLabel": "Start Date",
+    "endDateLabel": "End Date",
     "includeEndDateLabel": "Include End Date",
     "includeEndDateDescription": "Specifies if the end date counts as part of the period.",
     "includeEndDateTooltip": "If checked, the end date is included in the allocation period (+1 day). Example: Jan 1 to Jan 3 (inclusive) = 3 days.",
-    "amountsLabel": "Amounts *",
+    "amountsLabel": "Amounts",
     "amountsDescription": "Enter one or more amounts to allocate.",
     "amountPlaceholder": "Enter amount",
     "addAmountButton": "Add Amount",
@@ -36,10 +38,10 @@
     "calculationStepsTitle": "Show Calculation Details",
     "yearHeader": "Year",
     "daysHeader": "Days",
-    "proportionHeader": "Proportion %",
-    "totalSplitAmountHeader": "Allocated Amount",
+    "proportionHeader": "Proportion",
+    "totalSplitAmountHeader": "Amount",
     "totalHeader": "Total",
-    "amountSplitHeader": "Amount {{index}} Allocation",
+    "amountSplitHeader": "Amount {{index}}",
     "yearTotalHeader": "Year Total",
     "exportExcelButton": "Export Excel",
     "exportPdfButton": "Export PDF",
@@ -57,8 +59,8 @@
     "discrepancyLabel": "Difference from Rounding",
     "adjustedInYearLabel": "Applied in Year",
     "finalSumLabel": "Final Allocated Amount",
-    "summaryPeriod": "Period: {{start}} to {{end}} ({{type}}, {{days}} {{daysLabel}})",
-    "summaryTotal": "Total Input Amount: {{total}} ({{count}} {{amountLabel}} entered)",
+    "summaryPeriod": "{{start}} to {{end}} ({{type}}, {{days}} {{daysLabel}})",
+    "summaryTotal": "{{total}} ({{count}} {{amountLabel}} {{enteredLabel}})",
     "inputSummary": "Input Summary",
     "yesLabel": "Yes",
     "totalDurationLabel": "Total Duration (days)",
@@ -66,7 +68,8 @@
     "inputSummarySheetName": "Input Summary",
     "aggregatedSheetName": "Aggregated Results",
     "detailedSheetName": "Detailed Breakdown",
-    "pdfTitle": "Invoice Split Calculation"
+    "pdfTitle": "Invoice Split Calculation",
+    "amountHeader": "Amount"
   },
   "SettingsModal": {
     "title": "Number Formatting",
@@ -107,5 +110,15 @@
     "settingsDescription": "Adjust number formatting preferences.",
     "legalDescription": "Please review the document content below.",
     "feedbackDescription": "Share your thoughts, suggestions, or report issues. This will open your default email client."
+  },
+  "Languages": {
+    "en": "English",
+    "de": "German"
+  },
+  "ConsentBanner": {
+    "message": "This website uses cookies to enhance the user experience and analyze traffic. By clicking \"Accept\", you consent to the use of analytics cookies.",
+    "acceptButton": "Accept",
+    "declineButton": "Decline",
+    "learnMoreButton": "Privacy Policy"
   }
 } 

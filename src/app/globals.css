@@ -133,3 +133,35 @@
     -moz-appearance: textfield;
   }
 }
+
+/* Overrides for react-cookie-consent buttons */
+#rcc-confirm-button {
+  background-color: black !important; /* Force black background */
+  color: white !important; /* Force white text */
+  border: 1px solid hsl(var(--border)) !important; /* Add border consistent with theme */
+  padding: 0.5rem 0.75rem !important; /* Standard padding */
+  border-radius: var(--radius) !important; /* Standard border radius */
+  font-size: 13px !important; /* Match previous attempts */
+  margin: 0 !important; /* Reset potential library margins */
+  cursor: pointer !important; /* Explicitly set pointer cursor */
+  transition: none !important; /* Disable transitions */
+}
+
+#rcc-confirm-button:hover {
+  background-color: #333 !important; /* Darken black slightly on hover */
+}
+
+#rcc-decline-button {
+  background-color: transparent !important; /* Force transparent background */
+  color: hsl(var(--secondary-foreground)) !important; /* Use theme color for text */
+  border: none !important; /* Force no border */
+  padding: 0 !important; /* Force no padding */
+  margin: 0 0 0 0.5rem !important; /* Reset margin, add some left spacing */
+  font-size: 13px !important;
+  text-decoration: none !important; /* Remove default underline if any */
+  cursor: pointer !important; /* Explicitly set pointer cursor */
+}
+
+#rcc-decline-button:hover {
+  text-decoration: underline !important; /* Underline on hover */
+}

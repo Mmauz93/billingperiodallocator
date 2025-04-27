@@ -13,7 +13,7 @@ import {
     CalculationResult,
     CalculationStepDetails
 } from "@/lib/calculations";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
     Table,
     TableBody,
@@ -127,71 +127,80 @@ const CalculationStepsDisplay = ({ steps, settings }: { steps: CalculationStepDe
 
     return (
         <div className="text-sm space-y-6">
-            {/* 1. Duration - Using grid for alignment */}
-            <div className="space-y-1">
-                <h4 className="font-semibold mb-2">1. {t('ResultsDisplay.totalDuration')}</h4>
+            {/* Total Duration Section */}
+            <section className="bg-muted/40 rounded-lg p-4">
+                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.totalDuration')}</h4>
                 <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-muted-foreground">
                     <span className="font-medium text-foreground">{t('ResultsDisplay.periodLabel')}</span>
-                    <span>{fmtDate(totalDuration.start)} to {fmtDate(totalDuration.end)} ({totalDuration.included ? t('ResultsDisplay.inclusiveLabel') : t('ResultsDisplay.exclusiveLabel')})</span>
+                    <span>{fmtDate(totalDuration.start)} to {fmtDate(totalDuration.end)}</span>
+                    <span className="block text-xs text-muted-foreground ml-2">
+                        {totalDuration.included ? t('ResultsDisplay.inclusiveLastDayLabel', { defaultValue: 'Inclusive of last day' }) : t('ResultsDisplay.exclusiveLastDayLabel', { defaultValue: 'Exclusive of last day' })}
+                    </span>
                     <span className="font-medium text-foreground">{t('ResultsDisplay.totalDays')}:</span>
                     <span>{totalDuration.days}</span>
                 </div>
-            </div>
+            </section>
 
-             {/* 2. Proportion per Year */}
-            <div className="space-y-1">
-                <h4 className="font-semibold mb-2">2. {t('ResultsDisplay.proportionCalculation')}</h4>
-                {yearSegments.map((seg) => (
-                    <p key={seg.year} className="text-muted-foreground">
-                         <span className="font-medium text-foreground">{seg.year}:</span> {seg.days} {t('ResultsDisplay.daysLabel')} / {totalDuration.days} {t('ResultsDisplay.totalDays')} = <span className="font-medium text-foreground">{seg.proportion.toFixed(6)}</span> ({t('ResultsDisplay.proportionLabel')})
-                    </p>
-                ))}
-             </div>
+            {/* Yearly Proportion Calculation Section */}
+            <section className="bg-muted/40 rounded-lg p-4">
+                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.proportionCalculation')}</h4>
+                <div className="space-y-1">
+                    {yearSegments.map((seg) => (
+                        <div key={seg.year} className="flex flex-wrap items-baseline gap-x-2 text-muted-foreground">
+                            <span className="font-medium text-foreground shrink-0">{seg.year}:</span>
+                            <span>{seg.days} {t('ResultsDisplay.daysLabel')} / {totalDuration.days} {t('ResultsDisplay.totalDays')}</span>
+                            <span className="block sm:inline">=</span>
+                            <span className="block sm:inline font-medium text-foreground">{seg.proportion.toFixed(6)}</span>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-             {/* 3. Split per Amount - Added structure and styling */}
-             <div className="space-y-4">
-                <h4 className="font-semibold mb-2">3. {t('ResultsDisplay.splitCalculation')}</h4>
-                {amountCalculations.map((amtCalc, index) => (
-                    <div key={index} className="border rounded-md p-3 space-y-2 bg-muted/30">
-                        <p className="font-medium">{t('ResultsDisplay.inputAmountLabel')} #{index + 1}: {fmtNum(amtCalc.originalAmount)}</p>
-                        <div className="space-y-1">
-                            {amtCalc.yearSplits.map((ys) => (
-                                <div key={ys.year} className="pl-2 text-xs flex flex-wrap gap-x-2">
-                                    <span className="font-medium shrink-0">{ys.year}:</span>
-                                    {/* Muted calculation part */}
-                                    <span className="text-muted-foreground">
-                                        {fmtNum(amtCalc.originalAmount)} * {yearSegments.find((s) => s.year === ys.year)?.proportion.toFixed(6)} =
-                                        {t('ResultsDisplay.rawLabel')}: {ys.rawSplit.toFixed(6)}
-                                    </span>
-                                    <span>→</span>
-                                    <span className="font-medium"> 
-                                        {t('ResultsDisplay.roundedLabel')}: {fmtNum(ys.roundedSplit)}
-                                    </span>
-                                     {/* Adjustment part */}
-                                    {ys.adjustment !== 0 && 
+            {/* Split Calculation per Input Amount Section */}
+            <section className="bg-muted/40 rounded-lg p-4">
+                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.splitCalculation')}</h4>
+                <div className="space-y-6">
+                    {amountCalculations.map((amtCalc, index) => (
+                        <div key={index} className="rounded-md border bg-background p-4 space-y-2">
+                            <div className="font-medium text-foreground mb-1">{t('ResultsDisplay.inputAmountLabel')} #{index + 1}: {fmtNum(amtCalc.originalAmount)}</div>
+                            <div className="space-y-2">
+                                {amtCalc.yearSplits.map((ys) => (
+                                    <div key={ys.year} className="pl-2 text-xs space-y-0.5">
+                                        <div className="font-medium shrink-0 text-foreground">{ys.year}:</div>
+                                        <div className="text-muted-foreground ml-2">
+                                            <span>{fmtNum(amtCalc.originalAmount)} * {yearSegments.find((s) => s.year === ys.year)?.proportion.toFixed(6)}</span>
+                                            <span className="block sm:inline"> = {ys.rawSplit.toFixed(6)}</span>
+                                        </div>
+                                        <div className="ml-2 flex items-center gap-x-2">
+                                            <span>→</span>
+                                            <span className="font-medium text-foreground">
+                                                {t('ResultsDisplay.roundedLabel')}: {fmtNum(ys.roundedSplit)}
+                                            </span>
+                                            {ys.adjustment !== 0 &&
+                                                <span className="text-muted-foreground text-xs">
+                                                    ({t('ResultsDisplay.adjustmentLabel')}: {fmtNum(ys.adjustment)})
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="border-t pt-2 mt-2 space-y-1 text-xs">
+                                <p>
+                                    <span className="font-medium text-foreground">{t('ResultsDisplay.discrepancyLabel')}:</span>
+                                    <span className={Math.abs(amtCalc.discrepancy) > 0.001 ? "text-amber-600 dark:text-amber-500" : ""}> {fmtNum(amtCalc.discrepancy)}</span>
+                                    {amtCalc.adjustmentAppliedToYear &&
                                         <span className="text-muted-foreground">
-                                            ({t('ResultsDisplay.adjustmentLabel')}: {fmtNum(ys.adjustment)})
+                                            ({t('ResultsDisplay.adjustedInYearLabel')} {amtCalc.adjustmentAppliedToYear})
                                         </span>
                                     }
-                                </div>
-                            ))}
-                         </div>
-                         {/* Discrepancy and Final Sum */}
-                        <div className="border-t pt-2 mt-2 space-y-1 text-xs">
-                             <p>
-                                <span className="font-medium">{t('ResultsDisplay.discrepancyLabel')}:</span> 
-                                <span className={Math.abs(amtCalc.discrepancy) > 0.001 ? "text-amber-600 dark:text-amber-500" : ""}> {fmtNum(amtCalc.discrepancy)}</span>
-                                {amtCalc.adjustmentAppliedToYear && 
-                                    <span className="text-muted-foreground">
-                                        ({t('ResultsDisplay.adjustedInYearLabel')} {amtCalc.adjustmentAppliedToYear})
-                                    </span>
-                                }
-                            </p>
-                            <p className="font-medium">{t('ResultsDisplay.finalSumLabel')}: {fmtNum(amtCalc.finalSum)}</p>
+                                </p>
+                                <p className="font-medium text-foreground">{t('ResultsDisplay.finalSumLabel')}: {fmtNum(amtCalc.finalSum)}</p>
+                            </div>
                         </div>
-                    </div>
-                ))}
-             </div>
+                    ))}
+                </div>
+            </section>
         </div>
     );
 };
@@ -222,7 +231,12 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
     const discrepancyExists = Math.abs(originalTotalAmount - adjustedTotalAmount) > discrepancyThreshold;
 
     // --- Aggregated Table --- 
-    const aggregatedHeaders = [t('ResultsDisplay.yearHeader'), t('ResultsDisplay.daysHeader'), t('ResultsDisplay.proportionHeader'), t('ResultsDisplay.totalSplitAmountHeader')];
+    const aggregatedHeaders = [
+        t('ResultsDisplay.yearHeader'),
+        t('ResultsDisplay.daysHeader'),
+        t('ResultsDisplay.proportionHeader'),
+        t('ResultsDisplay.amountHeader')
+    ];
     const aggregatedTableData = aggregatedSplits.map(split => [
         split.year,
         split.daysInYear,
@@ -241,7 +255,7 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
      const detailedYears = aggregatedSplits.map(s => s.year);
      const detailedHeaders = [t('ResultsDisplay.yearHeader')];
      inputData.amounts.forEach((_, index) => {
-         detailedHeaders.push(t('ResultsDisplay.amountSplitHeader', { index: index + 1 }));
+         detailedHeaders.push(`${t('ResultsDisplay.amountHeader')} #${index + 1}`);
      });
      detailedHeaders.push(t('ResultsDisplay.yearTotalHeader'));
 
@@ -361,107 +375,181 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
     };
 
     return (
-        <Card className="mt-8 w-full max-w-4xl">
-            <CardHeader>
-                <CardTitle>{t('ResultsDisplay.resultsTitle')}</CardTitle>
-            </CardHeader>
+        <Card className="w-full max-w-3xl">
+            {/* No CardHeader: start directly with content for a cleaner look */}
             <CardContent className="space-y-6">
-                 {/* Improved Summary Section */}
-                 <div className="text-sm space-y-1"> {/* Wrap in a div for spacing */}
-                     <p> {/* Line 1: Period Info */}
-                         {t('ResultsDisplay.periodLabel')} {formatDateForDisplay(inputData.startDate)} bis {formatDateForDisplay(inputData.endDate)}
-                         <span className="ml-1 text-muted-foreground">
-                             ({inputData.includeEndDate ? t('ResultsDisplay.inclusiveLabel') : t('ResultsDisplay.exclusiveLabel')}, {totalDays} {t('ResultsDisplay.daysLabel')})
-                         </span>
-                     </p>
-                     <p> {/* Line 2: Total Info */}
-                         {t('ResultsDisplay.originalTotalLabel')} {formatNum(originalTotalAmount)}
-                         <span className="ml-1 text-muted-foreground">
-                             ({inputData.amounts.length} {inputData.amounts.length === 1 ? t('ResultsDisplay.amountLabel') : t('ResultsDisplay.amountsLabel')} {t('ResultsDisplay.enteredLabel')})
-                         </span>
-                     </p>
-                 </div>
-
-                 {/* Aggregated Results Table */}
-                 <div>
-                    <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.aggregatedTitle')}</h3>
-                     <Table>
-                         <TableHeader>
-                             <TableRow>{aggregatedHeaders.map(h => <TableHead key={h} className={h !== t('ResultsDisplay.yearHeader') ? 'text-right' : ''}>{h}</TableHead>)}</TableRow>
-                         </TableHeader>
-                         <TableBody>
-                             {aggregatedSplits.map((split) => (
-                                 <TableRow key={split.year}>
-                                     <TableCell className="font-medium">{split.year}</TableCell>
-                                     <TableCell className="text-right">{split.daysInYear}</TableCell>
-                                     <TableCell className="text-right">{formatPct(split.proportion)}</TableCell>
-                                     <TableCell className="text-right">{formatNum(split.totalSplitAmount)}</TableCell>
-                                 </TableRow>
-                             ))}
-                         </TableBody>
-                         <TableFooter>
-                              <TableRow className={discrepancyExists ? "bg-warning/10" : ""}>
-                                  <TableCell colSpan={2} className="font-bold">{t('ResultsDisplay.totalHeader')}</TableCell>
-                                  <TableCell className="text-right font-bold">{formatPct(1)}</TableCell>
-                                  <TableCell className="text-right font-bold">{formatNum(adjustedTotalAmount)}</TableCell>
-                              </TableRow>
-                         </TableFooter>
-                     </Table>
-                      {discrepancyExists && (
-                          <p className="text-xs text-muted-foreground mt-2 text-amber-700 dark:text-amber-500">
-                              {t('ResultsDisplay.roundingNote')}
-                          </p>
-                      )}
-                 </div>
-
-                 {/* Detailed Breakdown Table */}
+                {/* Aggregated Results Section */} 
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.detailedTitle')}</h3>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                {detailedHeaders.map((header, index) => (
-                                    <TableHead key={`${header}-${index}`} className={index > 0 ? 'text-right' : ''}>{header}</TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                         <TableBody>
-                             {detailedTableData.map((row, rowIndex) => (
-                                 <TableRow key={rowIndex}>
-                                     {row.map((cell, cellIndex) => (
-                                         <TableCell key={cellIndex} className={cellIndex > 0 ? 'text-right' : 'font-medium'}>{cell}</TableCell>
-                                     ))}
-                                 </TableRow>
-                             ))}
-                         </TableBody>
-                         <TableFooter>
-                            <TableRow className={discrepancyExists ? "bg-warning/10" : ""}>
-                                <TableCell className="font-bold">{t('ResultsDisplay.totalHeader')}</TableCell>
-                                {resultsPerAmount.map((amtResult, index) => (
-                                     <TableCell key={index} className="text-right font-bold">{formatNum(amtResult.adjustedTotalAmount)}</TableCell>
-                                ))}
-                                <TableCell className="text-right font-bold">{formatNum(adjustedTotalAmount)}</TableCell>
-                            </TableRow>
-                         </TableFooter>
-                    </Table>
-                 </div>
+                    <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.aggregatedTitle')}</h3>
+                    
+                    {/* Stacked View for Mobile (Visible below md breakpoint) */}
+                    <div className="block md:hidden space-y-3">
+                        {aggregatedSplits.map((split) => (
+                            <div key={split.year} className="border rounded-md p-3 text-sm bg-muted/20">
+                                <div className="font-semibold text-base mb-1">{split.year}</div>
+                                <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5">
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.daysHeader')}:</span>
+                                    <span className="text-right">{split.daysInYear}</span>
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.proportionHeader')}:</span>
+                                    <span className="text-right">{formatPct(split.proportion)}</span>
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.amountHeader')}:</span>
+                                    <span className="text-right font-medium">{formatNum(split.totalSplitAmount)}</span>
+                                </div>
+                            </div>
+                        ))}
+                        {/* Mobile Totals: align as a single card like desktop */}
+                        <div className="border-t pt-3 mt-3 text-sm">
+                            <div className="border rounded-md p-3 bg-muted/20 font-semibold">
+                                <div className="font-semibold text-base mb-1">{t('ResultsDisplay.totalHeader')}</div>
+                                <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5">
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.daysHeader')}:</span>
+                                    <span className="text-right">{totalDays}</span>
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.proportionHeader')}:</span>
+                                    <span className="text-right">{formatPct(1)}</span>
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.amountHeader')}:</span>
+                                    <span className="text-right">{formatNum(adjustedTotalAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <Accordion type="single" collapsible className="w-full mt-6">
-                     <AccordionItem value="item-1">
-                        <AccordionTrigger>{t('ResultsDisplay.calculationStepsTitle')}</AccordionTrigger>
-                        <AccordionContent>
-                            <CalculationStepsDisplay steps={calculationSteps} settings={settings} />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                    {/* Table View for Desktop (Hidden below md breakpoint) */}
+                    {/* Apply md:block or md:table visibility */}
+                    <div className="hidden md:block overflow-x-auto relative border rounded-md">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    {aggregatedHeaders.map((header, idx) => (
+                                        <TableHead key={header} className={idx > 0 ? "text-right" : "text-left"}>{header}</TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {aggregatedTableData.map((row, rowIndex) => (
+                                    <TableRow key={rowIndex}>
+                                        {row.map((cell, cellIndex) => (
+                                            <TableCell key={cellIndex} className={cellIndex > 0 ? "text-right" : "text-left"}>{cell}</TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    {aggregatedTotalsRow.map((cell, cellIndex) => (
+                                         <TableCell key={cellIndex} className={`font-semibold ${cellIndex > 0 ? "text-right" : ""}`}>{cell}</TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </div>
+                    {discrepancyExists && (
+                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">{t('ResultsDisplay.roundingNote')}</p>
+                    )}
+                </div>
+
+                {/* Detailed Breakdown Section */}
+                {resultsPerAmount && resultsPerAmount.length > 0 && (
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.detailedTitle')}</h3>
+                        
+                        {/* Stacked View for Mobile (Visible below md breakpoint) */}
+                        <div className="block md:hidden space-y-3">
+                            {detailedYears.map((year) => {
+                                // Calculate year total specifically for mobile view
+                                let mobileYearTotal = 0;
+                                resultsPerAmount.forEach(amtResult => {
+                                    mobileYearTotal += amtResult.splits[year]?.splitAmount || 0;
+                                });
+
+                                return (
+                                    <div key={year} className="border rounded-md p-3 text-sm bg-muted/20">
+                                        <div className="font-semibold text-base mb-1">{year}</div>
+                                        <div className="space-y-0.5">
+                                            {resultsPerAmount.map((amtResult, index) => {
+                                                const splitAmount = amtResult.splits[year]?.splitAmount || 0;
+                                                return (
+                                                    <div key={index} className="grid grid-cols-[auto_1fr] gap-x-2">
+                                                        <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
+                                                        <span className="text-right">{formatNum(splitAmount)}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                            {/* Year Total for Mobile - Use calculated total */}
+                                            <div className="grid grid-cols-[auto_1fr] gap-x-2 border-t mt-1 pt-1 font-medium">
+                                                <span className="text-muted-foreground">{t('ResultsDisplay.yearTotalHeader')}:</span>
+                                                {/* Use the calculated mobileYearTotal */}
+                                                <span className="text-right">{formatNum(mobileYearTotal)}</span> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {/* Mobile Totals Row */}
+                            <div className="border-t pt-3 mt-3 text-sm font-semibold">
+                                <div className="mb-1">{t('ResultsDisplay.totalHeader')}</div>
+                                <div className="space-y-0.5">
+                                     {resultsPerAmount.map((amtResult, index) => (
+                                        <div key={index} className="grid grid-cols-[auto_1fr] gap-x-2">
+                                            <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
+                                            <span className="text-right">{formatNum(amtResult.adjustedTotalAmount)}</span>
+                                        </div>
+                                     ))}
+                                     <div className="grid grid-cols-[auto_1fr] gap-x-2 border-t mt-1 pt-1">
+                                        <span className="text-muted-foreground">Grand Total:</span>
+                                        <span className="text-right">{formatNum(adjustedTotalAmount)}</span>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Table View for Desktop (Hidden below md breakpoint) */}
+                        <div className="hidden md:block overflow-x-auto relative border rounded-md">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        {detailedHeaders.map((header, idx) => (
+                                            <TableHead key={header} className={idx > 0 ? "text-right" : "text-left"}>{header}</TableHead>
+                                        ))}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {detailedTableData.map((row, rowIndex) => (
+                                        <TableRow key={rowIndex}>
+                                            {row.map((cell, cellIndex) => (
+                                                <TableCell key={cellIndex} className={cellIndex > 0 ? "text-right" : "text-left"}>{cell}</TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                                <TableFooter>
+                                     <TableRow>
+                                         {detailedTotalsRow.map((cell, cellIndex) => (
+                                             <TableCell key={cellIndex} className={`font-semibold ${cellIndex > 0 ? "text-right" : ""}`}>{cell}</TableCell>
+                                         ))}
+                                     </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Calculation Steps Accordion */}
+                {calculationSteps && (
+                    <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>{t('ResultsDisplay.calculationStepsTitle')}</AccordionTrigger>
+                            <AccordionContent>
+                                <CalculationStepsDisplay steps={calculationSteps} settings={settings} />
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                )}
             </CardContent>
-            <CardFooter className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" size="sm" onClick={handleExportExcel}>
-                    <Download className="mr-2 h-4 w-4" /> {t('ResultsDisplay.exportExcelButton')}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleExportPdf}>
-                     <Download className="mr-2 h-4 w-4" /> {t('ResultsDisplay.exportPdfButton')}
-                </Button>
+            {/* Apply responsive flex classes to footer */}
+            <CardFooter className="flex flex-col sm:flex-row justify-end gap-2">
+                 {/* Optionally make buttons full width when stacked */}
+                 <Button variant="outline" onClick={handleExportExcel} className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportExcelButton')}</Button>
+                 <Button variant="outline" onClick={handleExportPdf} className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportPdfButton')}</Button>
             </CardFooter>
         </Card>
     );

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/form";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form"; // Import useFieldArray
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { de, enUS } from 'date-fns/locale'; // Import locales
 import { format, isValid, parse, startOfDay } from "date-fns";
 
@@ -253,164 +252,181 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
 
     // Render full form after mount
     return (
-        <TooltipProvider>
-            <FormProvider {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    {/* Date Fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       {/* Start Date Field */}
-                        <FormField
-                            control={form.control}
-                            name="startDate"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>{t('InvoiceForm.startDateLabel')}</FormLabel>
-                                    <Popover open={isStartDatePopoverOpen} onOpenChange={setIsStartDatePopoverOpen}>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Input
-                                                    placeholder={displayDateFormat}
-                                                    value={startDateString}
-                                                    onChange={(e) => handleDateInputChange(e, 'startDate')}
-                                                    className="pr-10"
-                                                />
-                                                <PopoverTrigger asChild>
-                                                     <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open start date calendar">
-                                                        <CalendarIcon className="h-4 w-4" />
-                                                    </Button>
-                                                </PopoverTrigger>
-                                            </div>
-                                        </FormControl>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={onSelectStartDate}
-                                                locale={currentLocale}
-                                                initialFocus
-                                                disabled={field.disabled}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        {/* End Date Field */}
-                        <FormField
-                             control={form.control}
-                             name="endDate"
-                             render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>{t('InvoiceForm.endDateLabel')}</FormLabel>
-                                    <Popover open={isEndDatePopoverOpen} onOpenChange={setIsEndDatePopoverOpen}>
-                                        <FormControl>
-                                             <div className="relative">
-                                                <Input
-                                                    placeholder={displayDateFormat}
-                                                    value={endDateString}
-                                                    onChange={(e) => handleDateInputChange(e, 'endDate')}
-                                                    className="pr-10"
-                                                />
-                                                <PopoverTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open end date calendar">
-                                                        <CalendarIcon className="h-4 w-4" />
-                                                    </Button>
-                                                </PopoverTrigger>
-                                            </div>
-                                        </FormControl>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                             <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={onSelectEndDate}
-                                                locale={currentLocale}
-                                                initialFocus
-                                                disabled={field.disabled}
-                                             />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                             )}
-                         />
-                    </div>
-
-                    {/* Include End Date Switch */}
-                     <FormField
+        <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                {/* Date Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {/* Start Date Field */}
+                    <FormField
                         control={form.control}
-                        name="includeEndDate"
+                        name="startDate"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <FormLabel className="text-base flex items-center">
-                                        {t('InvoiceForm.includeEndDateLabel')}
-                                        <Tooltip delayDuration={300}>
-                                            <TooltipTrigger asChild><Info className="h-4 w-4 ml-2 cursor-help" /></TooltipTrigger>
-                                            <TooltipContent><p>{t('InvoiceForm.includeEndDateTooltip')}</p></TooltipContent>
-                                        </Tooltip>
-                                    </FormLabel>
-                                    <FormDescription>{t('InvoiceForm.includeEndDateDescription')}</FormDescription>
-                                </div>
-                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormItem className="flex flex-col">
+                                <FormLabel>{t('InvoiceForm.startDateLabel')}</FormLabel>
+                                <Popover open={isStartDatePopoverOpen} onOpenChange={setIsStartDatePopoverOpen}>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Input
+                                                placeholder={displayDateFormat}
+                                                value={startDateString}
+                                                onChange={(e) => handleDateInputChange(e, 'startDate')}
+                                                className="pr-10"
+                                            />
+                                            <PopoverTrigger asChild>
+                                                 <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open start date calendar">
+                                                    <CalendarIcon className="h-4 w-4" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                        </div>
+                                    </FormControl>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={onSelectStartDate}
+                                            locale={currentLocale}
+                                            initialFocus
+                                            disabled={field.disabled}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
+                    {/* End Date Field */}
+                    <FormField
+                         control={form.control}
+                         name="endDate"
+                         render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>{t('InvoiceForm.endDateLabel')}</FormLabel>
+                                <Popover open={isEndDatePopoverOpen} onOpenChange={setIsEndDatePopoverOpen}>
+                                    <FormControl>
+                                         <div className="relative">
+                                            <Input
+                                                placeholder={displayDateFormat}
+                                                value={endDateString}
+                                                onChange={(e) => handleDateInputChange(e, 'endDate')}
+                                                className="pr-10"
+                                            />
+                                            <PopoverTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open end date calendar">
+                                                    <CalendarIcon className="h-4 w-4" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                        </div>
+                                    </FormControl>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                         <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={onSelectEndDate}
+                                            locale={currentLocale}
+                                            initialFocus
+                                            disabled={field.disabled}
+                                         />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                         )}
+                     />
+                </div>
 
-                     {/* Dynamic Amount Fields Section */}
-                     <div className="space-y-4 rounded-lg border p-4">
-                          <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
-                          <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
-                         {fields.map((item, index) => (
-                             <FormField
-                                 control={form.control}
-                                 key={item.id}
-                                 name={`amounts.${index}.value`}
-                                 render={({ field }) => (
-                                     <FormItem>
-                                          <div className="flex items-center gap-2">
+                {/* Include End Date Field */}
+                <FormField
+                    control={form.control}
+                    name="includeEndDate"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base flex items-center">
+                                    {t('InvoiceForm.includeEndDateLabel')}
+                                    <Popover>
+                                        <PopoverTrigger asChild className="ml-2">
+                                            <Button variant="ghost" size="icon" className="h-5 w-5 cursor-pointer hover:text-primary focus:text-primary transition-colors">
+                                                 <Info className="h-4 w-4" />
+                                                 <span className="sr-only">More info</span>
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="text-sm w-auto max-w-xs sm:max-w-sm">
+                                             {t('InvoiceForm.includeEndDateTooltip')}
+                                        </PopoverContent>
+                                    </Popover>
+                                </FormLabel>
+                                <FormDescription>
+                                    {t('InvoiceForm.includeEndDateDescription')}
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+
+                 {/* Dynamic Amount Fields Section */}
+                 <div className="space-y-4 rounded-lg border p-4">
+                      <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
+                      <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
+                     {fields.map((item, index) => (
+                         <FormField
+                             control={form.control}
+                             key={item.id}
+                             name={`amounts.${index}.value`}
+                             render={({ field }) => (
+                                 <FormItem>
+                                     <div className="flex flex-col gap-1">
+                                         <FormLabel className="text-sm font-medium">
+                                             #{index + 1}
+                                         </FormLabel>
+                                         <div className="flex items-center gap-2">
                                              <FormControl>
                                                  <Input
                                                      type="number"
                                                      step="any"
                                                      placeholder={t('InvoiceForm.amountPlaceholder', { index: index + 1 })}
                                                      {...field}
-                                                  />
-                                              </FormControl>
-                                              {fields.length > 1 && (
-                                                  <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} className="text-destructive hover:text-destructive shrink-0" aria-label="Remove amount">
-                                                      <XCircle className="h-4 w-4" />
+                                                 />
+                                             </FormControl>
+                                             {fields.length > 1 && (
+                                                 <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} className="text-destructive hover:text-destructive shrink-0" aria-label="Remove amount">
+                                                     <XCircle className="h-4 w-4" />
                                                  </Button>
-                                              )}
+                                             )}
                                          </div>
-                                          <FormMessage />
-                                     </FormItem>
-                                 )}
-                             />
-                         ))}
-                          <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })} className="mt-2">
-                              <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
-                          </Button>
-                          {/* Display top-level error message for the amounts array */}
-                          {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
-                            <p className="text-sm font-medium text-destructive">
-                                {form.formState.errors.amounts.message}
-                            </p>
-                            )}
-                            {/* Display root error if exists (e.g., min length) */}
-                            {form.formState.errors.amounts?.root?.message && (
-                             <p className="text-sm font-medium text-destructive">
-                                {form.formState.errors.amounts.root.message}
-                             </p>
-                         )}
-                      </div>
+                                     </div>
+                                     <FormMessage />
+                                 </FormItem>
+                             )}
+                         />
+                     ))}
+                      <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })} className="mt-2">
+                          <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
+                      </Button>
+                      {/* Display top-level error message for the amounts array */}
+                      {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
+                        <p className="text-sm font-medium text-destructive">
+                            {form.formState.errors.amounts.message}
+                        </p>
+                        )}
+                        {/* Display root error if exists (e.g., min length) */}
+                        {form.formState.errors.amounts?.root?.message && (
+                         <p className="text-sm font-medium text-destructive">
+                            {form.formState.errors.amounts.root.message}
+                         </p>
+                     )}
+                  </div>
 
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? t('InvoiceForm.calculatingButton') : t('InvoiceForm.calculateButton')}
-                    </Button>
-                </form>
-            </FormProvider>
-        </TooltipProvider>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? t('InvoiceForm.calculatingButton') : t('InvoiceForm.calculateButton')}
+                </Button>
+            </form>
+        </FormProvider>
     );
 }
 

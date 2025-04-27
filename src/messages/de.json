@@ -1,12 +1,14 @@
 {
   "InvoiceForm": {
-    "title": "Mehrjährige Rechnungszuteilung",
-    "startDateLabel": "Startdatum *",
-    "endDateLabel": "Enddatum *",
+    "title": "Rechnungsperioden-Rechner",
+    "description_p1": "Weisen Sie mehrjährige Rechnungsbeträge einfach einzelnen Geschäftsjahren oder bestimmten Abrechnungsperioden zu. Dieses Tool liefert präzise, anteilige Berechnungen basierend auf Start- und Enddaten und vereinfacht die Einhaltung der Periodenabgrenzungsgrundsätze.",
+    "description_p2": "Ideal für Buchhalter bei der Erstellung von Gewinn- und Verlustrechnungen und Bilanzen, für Finanzfachleute bei der Budgetverwaltung oder für alle, die eine klare finanzielle Aufschlüsselung für das Reporting benötigen.",
+    "startDateLabel": "Startdatum",
+    "endDateLabel": "Enddatum",
     "includeEndDateLabel": "Enddatum einschließen",
     "includeEndDateDescription": "Gibt an, ob das Enddatum zum Zeitraum zählt.",
     "includeEndDateTooltip": "Wenn aktiviert, wird das Enddatum in den Zuteilungszeitraum einbezogen (+1 Tag). Beispiel: 1. Jan bis 3. Jan (inklusive) = 3 Tage.",
-    "amountsLabel": "Beträge *",
+    "amountsLabel": "Beträge",
     "amountsDescription": "Geben Sie einen oder mehrere Beträge zur Zuteilung ein.",
     "amountPlaceholder": "Betrag eingeben",
     "addAmountButton": "Betrag hinzufügen",
@@ -37,9 +39,9 @@
     "yearHeader": "Jahr",
     "daysHeader": "Tage",
     "proportionHeader": "Anteil %",
-    "totalSplitAmountHeader": "Zugeteilter Betrag",
+    "totalSplitAmountHeader": "Betrag",
     "totalHeader": "Gesamt",
-    "amountSplitHeader": "Betrag {{index}} Zuteilung",
+    "amountSplitHeader": "Betrag {{index}}",
     "yearTotalHeader": "Jahressumme",
     "exportExcelButton": "Excel exportieren",
     "exportPdfButton": "PDF exportieren",
@@ -57,8 +59,8 @@
     "discrepancyLabel": "Differenz durch Rundung",
     "adjustedInYearLabel": "Angewendet im Jahr",
     "finalSumLabel": "Final zugeteilter Betrag",
-    "summaryPeriod": "{{periodLabel}} {{start}} bis {{end}} ({{type}}, {{days}} {{daysLabel}})",
-    "summaryTotal": "{{originalTotalLabel}} {{total}} ({{count}} {{amountLabel}} {{enteredLabel}})",
+    "summaryPeriod": "{{start}} bis {{end}} ({{type}}, {{days}} {{daysLabel}})",
+    "summaryTotal": "{{total}} ({{count}} {{amountLabel}} {{enteredLabel}})",
     "inputSummary": "Eingabeübersicht",
     "yesLabel": "Ja",
     "totalDurationLabel": "Gesamtdauer (Tage)",
@@ -66,7 +68,8 @@
     "inputSummarySheetName": "Eingabeübersicht",
     "aggregatedSheetName": "Zusammengefasste Ergebnisse",
     "detailedSheetName": "Detaillierte Aufschlüsselung",
-    "pdfTitle": "Rechnungsaufteilungsberechnung"
+    "pdfTitle": "Rechnungsaufteilungsberechnung",
+    "amountHeader": "Betrag"
   },
   "SettingsModal": {
     "title": "Zahlenformatierung",
@@ -107,5 +110,15 @@
     "settingsDescription": "Passen Sie Zahlenformatierungspräferenzen an.",
     "legalDescription": "Bitte überprüfen Sie den untenstehenden Dokumentinhalt.",
     "feedbackDescription": "Teilen Sie Ihre Gedanken, Vorschläge oder melden Sie Probleme. Dies öffnet Ihren Standard-E-Mail-Client."
+  },
+  "Languages": {
+    "en": "Englisch",
+    "de": "Deutsch"
+  },
+  "ConsentBanner": {
+    "message": "Diese Webseite verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern und den Traffic zu analysieren. Indem Sie auf \"Aktzeptieren\" klicken, stimmen Sie der Verwendung von Analyse-Cookies zu.",
+    "acceptButton": "Aktzeptieren",
+    "declineButton": "Ablehnen",
+    "learnMoreButton": "Datenschutzerklärung"
   }
 }
