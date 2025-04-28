@@ -21,7 +21,6 @@ upload-main:
 ## Pipeline Stage - Upload Only
 .upload:
   stage: upload
-  image: alpine
   tags:
     - linux
   script:
