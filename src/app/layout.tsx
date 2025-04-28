@@ -8,7 +8,6 @@ import I18nProvider from "@/components/i18n-provider";
 import { Roboto } from "next/font/google";
 import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const roboto = Roboto({ 
@@ -99,7 +98,6 @@ export default function RootLayout({
                   {/* Wrap children with the i18n initializer */}
                   <I18nProvider>
                      {children}
-                     <Toaster richColors /> {/* Use Sonner Toaster */}
                   </I18nProvider>
                 </TooltipProvider>
            </ThemeProvider>
@@ -109,4 +107,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+} 
