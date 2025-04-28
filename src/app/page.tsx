@@ -1,5 +1,5 @@
+import { InvoiceCalculatorClient } from '@/components/invoice-calculator-client';
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 
 // No longer a client component at the page level
 
@@ -12,5 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  redirect('/app');
+  return (
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12">
+      <InvoiceCalculatorClient />
+    </main>
+  );
 }
