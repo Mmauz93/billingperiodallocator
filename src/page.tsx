@@ -40,7 +40,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24">
+    <main className="flex flex-col items-center grow w-full p-4 md:p-12 lg:p-24">
       {/* Add Header for Theme Toggle */}
       <header className="w-full max-w-4xl flex justify-end mb-4 px-4">
         <ThemeToggle />
@@ -49,7 +49,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8 max-w-4xl grow"> {/* Increased max-width */}
         <h1 className="text-3xl font-bold text-center mb-8">Invoice Split Calculator</h1>
         <div className="w-full"> {/* Form takes full width */} 
-          <InvoiceForm onCalculate={handleCalculation} /> {/* Pass handler */} 
+          <InvoiceForm onCalculateAction={handleCalculation} /> {/* Pass handler with correct prop name */} 
         </div>
 
         {/* Results/Error Display Section */}
@@ -70,12 +70,31 @@ export default function Home() {
         </div>
       </div>
        {/* Footer */}
-       <footer className="w-full max-w-4xl mt-auto px-4 py-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-center sm:text-left text-sm text-muted-foreground">
-             {/* TODO: Add actual legal info link/modal */}
-             &copy; {new Date().getFullYear()} Invoice Splitter. All rights reserved. | <a href="#" className="underline">Privacy Policy</a> | <a href="#" className="underline">Terms of Service</a>
-          </p>
-         <FeedbackButton />
+       <footer className="w-full max-w-5xl mx-auto mt-auto px-4 sm:px-6 lg:px-8 py-6 border-t text-muted-foreground">
+         <div className="flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-8">
+            {/* Left Block: Brand */}
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              {/* TODO: Replace span with actual Logo/Icon component */}
+              <span className="text-lg font-semibold mb-1 text-foreground">BillSplitter</span>
+              <span className="text-sm">by Siempi AG</span>
+            </div>
+
+            {/* Center Block: Legal Links */}
+            <nav className="flex flex-col sm:flex-row gap-3 sm:gap-4 text-sm">
+              {/* TODO: Ensure these paths match your actual legal page routes */}
+              <a href="/legal/privacy-policy" className="hover:text-foreground hover:underline transition-colors">Privacy Policy</a>
+              <a href="/legal/terms-of-use" className="hover:text-foreground hover:underline transition-colors">Terms of Use</a>
+              <a href="/legal/imprint" className="hover:text-foreground hover:underline transition-colors">Imprint</a>
+            </nav>
+
+            {/* Right Block: Feedback & Copyright */}
+            <div className="flex flex-col items-center sm:items-end gap-3 text-center sm:text-right">
+              <FeedbackButton />
+              <p className="text-xs">
+                &copy; {new Date().getFullYear()} Siempi AG — All rights reserved.
+              </p>
+            </div>
+         </div>
        </footer>
     </main>
   );

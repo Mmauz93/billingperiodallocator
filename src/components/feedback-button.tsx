@@ -20,7 +20,8 @@ import { useTranslation } from 'react-i18next'; // Import hook
 // Replace with your actual email address
 const FEEDBACK_EMAIL = "billsplitter@siempi.ch"; 
 
-export function FeedbackButton() {
+// Use React.ComponentProps to get the Button component props type
+export function FeedbackButton({ variant = "outline", size = "sm", className, ...props }: React.ComponentProps<typeof Button>) {
     const { t } = useTranslation(); // Initialize hook
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState("");
@@ -35,7 +36,13 @@ export function FeedbackButton() {
 
     return (
         <>
-            <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+            <Button 
+                variant={variant} 
+                size={size} 
+                className={className} 
+                onClick={() => setIsOpen(true)} 
+                {...props} // Pass remaining props
+            >
                  <MessageSquare className="mr-2 h-4 w-4" /> {t('FeedbackDialog.sendFeedbackButton')} {/* Translate button text */}
             </Button>
 

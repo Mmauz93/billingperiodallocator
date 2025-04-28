@@ -7,7 +7,7 @@ export type Locale = 'en' | 'de';
 export type AppSettings = {
     decimalPlaces: number;       // 0-6
     roundingPrecision: number; // e.g., 0.01, 0.05, 1
-    thousandsSeparator: 'comma-period' | 'apostrophe'; // Added setting
+    thousandsSeparator: string; // Values: ',', '.', "'", ' '
 };
 
 interface SettingsContextProps {
@@ -18,7 +18,7 @@ interface SettingsContextProps {
 const defaultSettings: Omit<AppSettings, 'locale'> = {
     decimalPlaces: 2, // Default decimal places
     roundingPrecision: 0.01, // Default rounding
-    thousandsSeparator: 'comma-period', // Default separator (comma for en, period for de)
+    thousandsSeparator: ",", // Default separator is comma
 };
 
 const SettingsContext = createContext<SettingsContextProps | undefined>(undefined);
@@ -51,7 +51,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
                         typeof parsed.decimalPlaces === 'number' &&
                         typeof parsed.roundingPrecision === 'number' && 
                         parsed.roundingPrecision > 0 &&
-                        (parsed.thousandsSeparator === 'comma-period' || parsed.thousandsSeparator === 'apostrophe') // Validate separator
+                        (typeof parsed.thousandsSeparator === 'string' &&
+                         [',', '.', "'", ' '].includes(parsed.thousandsSeparator)) // Accept all valid separators
                     ) {
                          setSettings(prev => ({ ...defaultSettings, ...prev, ...parsed })); // Ensure defaults are applied
                     } else {

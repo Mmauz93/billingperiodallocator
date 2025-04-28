@@ -14,6 +14,8 @@ import {
     CalculationStepDetails
 } from "@/lib/calculations";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { FileSpreadsheet, FileText } from "lucide-react";
+import React, { useEffect, useState } from 'react';
 import {
     Table,
     TableBody,
@@ -26,17 +28,11 @@ import {
 
 import { AppSettings } from "@/context/settings-context";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import { useSettings } from "@/context/settings-context";
 import { useTranslation } from 'react-i18next';
-
-// Define a local interface extending jsPDF to include the property added by jspdf-autotable
-interface jsPDFWithAutoTable extends jsPDF {
-    lastAutoTable?: { finalY?: number };
-}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- Interface inherits members via Pick
 interface InputDataForDisplay extends Pick<
@@ -67,16 +63,15 @@ function formatNumber(value: number | undefined | null, locale: string, settings
     useGrouping: true,
   }).format(value);
 
-  // Apply custom thousands separator if selected
-  if (settings.thousandsSeparator === 'apostrophe') {
-    const simpleLocale = locale.startsWith('de') ? 'de' : 'en';
-    if (simpleLocale === 'de') {
-        const parts = formattedString.split(',');
-        parts[0] = parts[0].replace(/\./g, "'");
-        formattedString = parts.join(',');
-    } else {
-        formattedString = formattedString.replace(/,/g, "'");
-    }
+  // Apply custom thousands separator if needed
+  const defaultSeparator = locale.startsWith('de') ? '.' : ',';
+  
+  if (settings.thousandsSeparator && settings.thousandsSeparator !== defaultSeparator) {
+    // Replace the default separator with the custom one
+    formattedString = formattedString.replace(
+      new RegExp(`\\${defaultSeparator}`, 'g'), 
+      settings.thousandsSeparator
+    );
   }
 
   return formattedString;
@@ -120,52 +115,21 @@ const CalculationStepsDisplay = ({ steps, settings }: { steps: CalculationStepDe
         return <p className="text-destructive">{steps.error}</p>;
     }
 
-    const { totalDuration, yearSegments, amountCalculations } = steps;
+    const { yearSegments, amountCalculations } = steps;
 
-    const fmtDate = (dateStr: string) => formatDateLocale(dateStr, currentLocale);
     const fmtNum = (num: number) => formatNumber(num, currentLocale, settings);
 
     return (
         <div className="text-sm space-y-6">
-            {/* Total Duration Section */}
-            <section className="bg-muted/40 rounded-lg p-4">
-                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.totalDuration')}</h4>
-                <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-muted-foreground">
-                    <span className="font-medium text-foreground">{t('ResultsDisplay.periodLabel')}</span>
-                    <span>{fmtDate(totalDuration.start)} to {fmtDate(totalDuration.end)}</span>
-                    <span className="block text-xs text-muted-foreground ml-2">
-                        {totalDuration.included ? t('ResultsDisplay.inclusiveLastDayLabel', { defaultValue: 'Inclusive of last day' }) : t('ResultsDisplay.exclusiveLastDayLabel', { defaultValue: 'Exclusive of last day' })}
-                    </span>
-                    <span className="font-medium text-foreground">{t('ResultsDisplay.totalDays')}:</span>
-                    <span>{totalDuration.days}</span>
-                </div>
-            </section>
-
-            {/* Yearly Proportion Calculation Section */}
-            <section className="bg-muted/40 rounded-lg p-4">
-                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.proportionCalculation')}</h4>
-                <div className="space-y-1">
-                    {yearSegments.map((seg) => (
-                        <div key={seg.year} className="flex flex-wrap items-baseline gap-x-2 text-muted-foreground">
-                            <span className="font-medium text-foreground shrink-0">{seg.year}:</span>
-                            <span>{seg.days} {t('ResultsDisplay.daysLabel')} / {totalDuration.days} {t('ResultsDisplay.totalDays')}</span>
-                            <span className="block sm:inline">=</span>
-                            <span className="block sm:inline font-medium text-foreground">{seg.proportion.toFixed(6)}</span>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
             {/* Split Calculation per Input Amount Section */}
             <section className="bg-muted/40 rounded-lg p-4">
-                <h4 className="font-semibold text-base text-foreground mb-3">{t('ResultsDisplay.splitCalculation')}</h4>
                 <div className="space-y-6">
                     {amountCalculations.map((amtCalc, index) => (
-                        <div key={index} className="rounded-md border bg-background p-4 space-y-2">
-                            <div className="font-medium text-foreground mb-1">{t('ResultsDisplay.inputAmountLabel')} #{index + 1}: {fmtNum(amtCalc.originalAmount)}</div>
-                            <div className="space-y-2">
-                                {amtCalc.yearSplits.map((ys) => (
-                                    <div key={ys.year} className="pl-2 text-xs space-y-0.5">
+                        <div key={index} className="rounded-md border bg-background p-4 space-y-2 transition-shadow hover:shadow-md">
+                            <div className="font-bold text-[15px] text-primary mb-3 pb-1 border-b border-primary/20 bg-primary/[0.08] -mx-4 px-4 py-2 rounded-t-md">{t('ResultsDisplay.inputAmountLabel')} #{index + 1}: {fmtNum(amtCalc.originalAmount)}</div>
+                            <div className="space-y-3">
+                                {amtCalc.yearSplits.map((ys, yearIndex) => (
+                                    <div key={ys.year} className={`pl-2 text-xs space-y-0.5 ${yearIndex < amtCalc.yearSplits.length - 1 ? "border-b border-muted/30 pb-2" : ""}`}>
                                         <div className="font-medium shrink-0 text-foreground">{ys.year}:</div>
                                         <div className="text-muted-foreground ml-2">
                                             <span>{fmtNum(amtCalc.originalAmount)} * {yearSegments.find((s) => s.year === ys.year)?.proportion.toFixed(6)}</span>
@@ -188,14 +152,14 @@ const CalculationStepsDisplay = ({ steps, settings }: { steps: CalculationStepDe
                             <div className="border-t pt-2 mt-2 space-y-1 text-xs">
                                 <p>
                                     <span className="font-medium text-foreground">{t('ResultsDisplay.discrepancyLabel')}:</span>
-                                    <span className={Math.abs(amtCalc.discrepancy) > 0.001 ? "text-amber-600 dark:text-amber-500" : ""}> {fmtNum(amtCalc.discrepancy)}</span>
+                                    <span className={`${Math.abs(amtCalc.discrepancy) > 0.001 ? "text-amber-600 dark:text-amber-500" : "text-muted-foreground/70"}`}> {fmtNum(amtCalc.discrepancy)}</span>
                                     {amtCalc.adjustmentAppliedToYear &&
                                         <span className="text-muted-foreground">
                                             ({t('ResultsDisplay.adjustedInYearLabel')} {amtCalc.adjustmentAppliedToYear})
                                         </span>
                                     }
                                 </p>
-                                <p className="font-medium text-foreground">{t('ResultsDisplay.finalSumLabel')}: {fmtNum(amtCalc.finalSum)}</p>
+                                <p className="font-semibold text-sm text-foreground pt-1">{t('ResultsDisplay.finalSumLabel')}: <span className="text-primary">{fmtNum(amtCalc.finalSum)}</span></p>
                             </div>
                         </div>
                     ))}
@@ -219,6 +183,23 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
         aggregatedSplits,
         calculationSteps
     } = results;
+    
+    // State to force re-render when settings change
+    const [, setForceUpdate] = useState(0);
+
+    // Listen for settings changes and trigger re-render
+    useEffect(() => {
+        const handleSettingsChange = () => {
+            // Force re-render by updating state
+            setForceUpdate(prev => prev + 1);
+        };
+        
+        window.addEventListener('settingsChanged', handleSettingsChange);
+        
+        return () => {
+            window.removeEventListener('settingsChanged', handleSettingsChange);
+        };
+    }, []);
 
     // Use the correctly defined helper functions
     const formatNum = (value: number) => formatNumber(roundValue(value, settings.roundingPrecision), currentLocale, settings);
@@ -230,54 +211,63 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
     const discrepancyThreshold = settings.roundingPrecision / 2 + 0.00001; // Add small epsilon
     const discrepancyExists = Math.abs(originalTotalAmount - adjustedTotalAmount) > discrepancyThreshold;
 
-    // --- Aggregated Table --- 
-    const aggregatedHeaders = [
+    // Add success message component at the top
+    const SuccessMessage = () => (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-md p-3 mb-6 flex items-center text-green-700 dark:text-green-400 animate-fadeIn">
+            <span className="mr-2 text-lg">✅</span>
+            <span>{t('ResultsDisplay.successMessage', { defaultValue: 'Split completed successfully! Your detailed allocation is ready.' })}</span>
+        </div>
+    );
+
+    // --- Merged Table Headers --- 
+    const mergedHeaders = [
         t('ResultsDisplay.yearHeader'),
         t('ResultsDisplay.daysHeader'),
-        t('ResultsDisplay.proportionHeader'),
-        t('ResultsDisplay.amountHeader')
+        t('ResultsDisplay.proportionHeader')
     ];
-    const aggregatedTableData = aggregatedSplits.map(split => [
-        split.year,
-        split.daysInYear,
-        formatPct(split.proportion),
-        formatNum(split.totalSplitAmount)
-    ]);
-    const aggregatedTotalsRow = [
+    
+    // Add Amount columns for each input amount
+    inputData.amounts.forEach((_, index) => {
+        mergedHeaders.push(`${t('ResultsDisplay.amountHeader')} #${index + 1}`);
+    });
+    
+    // Add Year Total column
+    mergedHeaders.push(t('ResultsDisplay.yearTotalHeader'));
+    
+    // --- Merged Table Data ---
+    const mergedTableData = aggregatedSplits.map(split => {
+        const row: (string | number)[] = [
+            split.year,
+            split.daysInYear,
+            formatPct(split.proportion)
+        ];
+        
+        // Add amount columns
+        resultsPerAmount.forEach(amtResult => {
+            const splitAmount = amtResult.splits[split.year]?.splitAmount || 0;
+            row.push(formatNum(splitAmount));
+        });
+        
+        // Add Year Total column
+        row.push(formatNum(split.totalSplitAmount));
+        
+        return row;
+    });
+    
+    // --- Merged Table Totals Row ---
+    const mergedTotalsRow: (string | number)[] = [
         t('ResultsDisplay.totalHeader'),
         totalDays,
-        formatPct(1),
-        formatNum(adjustedTotalAmount)
+        formatPct(1)
     ];
-    // --- End Aggregated Table --- 
-
-     // --- Detailed Breakdown Table --- 
-     const detailedYears = aggregatedSplits.map(s => s.year);
-     const detailedHeaders = [t('ResultsDisplay.yearHeader')];
-     inputData.amounts.forEach((_, index) => {
-         detailedHeaders.push(`${t('ResultsDisplay.amountHeader')} #${index + 1}`);
-     });
-     detailedHeaders.push(t('ResultsDisplay.yearTotalHeader'));
-
-     const detailedTableData = detailedYears.map(year => {
-         const row: (string | number)[] = [year];
-         let yearTotal = 0;
-         resultsPerAmount.forEach(amtResult => {
-             const splitAmount = amtResult.splits[year]?.splitAmount || 0;
-             row.push(formatNum(splitAmount));
-             yearTotal += splitAmount;
-         });
-         row.push(formatNum(yearTotal));
-         return row;
-     });
-
-     const detailedTotalsRow: (string | number)[] = [t('ResultsDisplay.totalHeader')];
-     resultsPerAmount.forEach(amtResult => {
-         detailedTotalsRow.push(formatNum(amtResult.adjustedTotalAmount));
-     });
-     detailedTotalsRow.push(formatNum(adjustedTotalAmount));
-    // --- End Detailed Breakdown Table --- 
-
+    
+    // Add amount totals
+    resultsPerAmount.forEach(amtResult => {
+        mergedTotalsRow.push(formatNum(amtResult.adjustedTotalAmount));
+    });
+    
+    // Add grand total
+    mergedTotalsRow.push(formatNum(adjustedTotalAmount));
 
     const handleExportExcel = () => {
         const wb = XLSX.utils.book_new();
@@ -296,30 +286,24 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
         inputWs['!cols'] = [{ wch: 25 }, { wch: 20 }];
         XLSX.utils.book_append_sheet(wb, inputWs, t('ResultsDisplay.inputSummarySheetName', {defaultValue: "Input Summary"}));
 
-        const aggWsData = [
+        const mergedWsData = [
             [t('ResultsDisplay.aggregatedTitle')],
             [],
-            aggregatedHeaders,
-            ...aggregatedTableData,
+            mergedHeaders,
+            ...mergedTableData,
             [],
-            aggregatedTotalsRow
+            mergedTotalsRow
         ];
-        const aggWs = XLSX.utils.aoa_to_sheet(aggWsData);
-        aggWs['!cols'] = [{ wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 20 }];
-        XLSX.utils.book_append_sheet(wb, aggWs, t('ResultsDisplay.aggregatedSheetName', {defaultValue: "Aggregated Results"}));
-
-        const detailWsData = [
-            [t('ResultsDisplay.detailedTitle')],
-            [],
-            detailedHeaders,
-            ...detailedTableData,
-            [],
-            detailedTotalsRow
+        const mergedWs = XLSX.utils.aoa_to_sheet(mergedWsData);
+        const colWidths = [
+            { wch: 10 }, // Year
+            { wch: 10 }, // Days
+            { wch: 15 }, // Proportion
+            ...inputData.amounts.map(() => ({ wch: 15 })), // Amount columns
+            { wch: 15 } // Year Total
         ];
-        const detailWs = XLSX.utils.aoa_to_sheet(detailWsData);
-        const detailColWidths = [{ wch: 10 }, ...inputData.amounts.map(() => ({ wch: 15 })), { wch: 15 }];
-        detailWs['!cols'] = detailColWidths;
-        XLSX.utils.book_append_sheet(wb, detailWs, t('ResultsDisplay.detailedSheetName', {defaultValue: "Detailed Breakdown"}));
+        mergedWs['!cols'] = colWidths;
+        XLSX.utils.book_append_sheet(wb, mergedWs, t('ResultsDisplay.aggregatedSheetName', {defaultValue: "Allocation Results"}));
 
         XLSX.writeFile(wb, `invoice_split_${formatDateStr(new Date())}.xlsx`);
     };
@@ -340,45 +324,56 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
         doc.text(t('ResultsDisplay.aggregatedTitle'), 14, 40);
         autoTable(doc, {
             startY: 42,
-            head: [aggregatedHeaders],
-            body: aggregatedTableData,
-            foot: [aggregatedTotalsRow],
+            head: [mergedHeaders],
+            body: mergedTableData,
+            foot: [mergedTotalsRow],
             theme: 'grid',
             headStyles: { fillColor: [41, 128, 185], textColor: 255 },
             footStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: 'bold' },
             styles: { fontSize: 9, cellPadding: 1.5 },
-            columnStyles: { 3: { halign: 'right' } },
-        });
-
-        const lastTable = doc as jsPDFWithAutoTable;
-        const startYDetailed = (lastTable.lastAutoTable?.finalY ?? 40) + 10;
-        doc.setFontSize(12);
-        doc.text(t('ResultsDisplay.detailedTitle'), 14, startYDetailed);
-        autoTable(doc, {
-            startY: startYDetailed + 2,
-            head: [detailedHeaders],
-            body: detailedTableData,
-            foot: [detailedTotalsRow],
-            theme: 'grid',
-            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-            footStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: 'bold' },
-            styles: { fontSize: 8, cellPadding: 1.5 },
-            columnStyles: {
-                 ...detailedHeaders.reduce((styles: Record<number, { halign: 'right' }>, _, index) => {
-                     if (index > 0) styles[index] = { halign: 'right' };
-                     return styles;
-                 }, {})
-            }
+            columnStyles: { 
+                2: { halign: 'right' },
+                ...mergedHeaders.reduce((styles: Record<number, { halign: 'right' }>, _, index) => {
+                    if (index > 2) styles[index] = { halign: 'right' };
+                    return styles;
+                }, {})
+            },
         });
 
         doc.save(`invoice_split_${formatDateStr(new Date())}.pdf`);
     };
 
     return (
-        <Card className="w-full max-w-3xl">
+        <Card className="w-full">
             {/* No CardHeader: start directly with content for a cleaner look */}
-            <CardContent className="space-y-6">
-                {/* Aggregated Results Section */} 
+            <CardContent className="space-y-6 pt-6 px-6">
+                {/* Success Message */}
+                <SuccessMessage />
+                
+                {/* New Summary Card */}
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <h3 className="font-medium text-lg mb-2">{t('ResultsDisplay.summaryTitle', {defaultValue: 'Summary'})}</h3>
+                    <div className="grid gap-2 text-sm">
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">{t('ResultsDisplay.periodLabel')}</span>
+                            <span className="font-medium">{formatDateForDisplay(inputData.startDate)} – {formatDateForDisplay(inputData.endDate)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">{t('ResultsDisplay.totalDays')}:</span>
+                            <span className="font-medium">{totalDays} {t('ResultsDisplay.daysLabel')}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">{t('InvoiceForm.includeEndDateLabel')}</span>
+                            <span className="font-medium">{inputData.includeEndDate ? t('ResultsDisplay.yesLabel', {defaultValue: 'Yes'}) : t('ResultsDisplay.noLabel', {defaultValue: 'No'})}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-primary/10 pt-2 mt-1">
+                            <span className="text-muted-foreground">{t('ResultsDisplay.originalTotalLabel')}</span>
+                            <span className="font-semibold text-primary">{formatNum(adjustedTotalAmount)}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Merged Allocation Table */}
                 <div>
                     <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.aggregatedTitle')}</h3>
                     
@@ -391,8 +386,31 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                                     <span className="text-muted-foreground">{t('ResultsDisplay.daysHeader')}:</span>
                                     <span className="text-right">{split.daysInYear}</span>
                                     <span className="text-muted-foreground">{t('ResultsDisplay.proportionHeader')}:</span>
-                                    <span className="text-right">{formatPct(split.proportion)}</span>
-                                    <span className="text-muted-foreground">{t('ResultsDisplay.amountHeader')}:</span>
+                                    <span className="text-right">
+                                        <div className="relative inline-block min-w-[100px] px-2 py-0.5">
+                                            <div 
+                                                className="absolute left-0 top-0 bottom-0 bg-primary/20 rounded-sm" 
+                                                style={{ 
+                                                    width: `${split.proportion * 100}%`,
+                                                    maxWidth: '100%' 
+                                                }}
+                                            />
+                                            <span className="relative z-10">{formatPct(split.proportion)}</span>
+                                        </div>
+                                    </span>
+                                    
+                                    {/* Add all amount columns */}
+                                    {resultsPerAmount.map((amtResult, index) => {
+                                        const splitAmount = amtResult.splits[split.year]?.splitAmount || 0;
+                                        return (
+                                            <React.Fragment key={index}>
+                                                <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
+                                                <span className="text-right">{formatNum(splitAmount)}</span>
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                    
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.yearTotalHeader')}:</span>
                                     <span className="text-right font-medium">{formatNum(split.totalSplitAmount)}</span>
                                 </div>
                             </div>
@@ -405,8 +423,28 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                                     <span className="text-muted-foreground">{t('ResultsDisplay.daysHeader')}:</span>
                                     <span className="text-right">{totalDays}</span>
                                     <span className="text-muted-foreground">{t('ResultsDisplay.proportionHeader')}:</span>
-                                    <span className="text-right">{formatPct(1)}</span>
-                                    <span className="text-muted-foreground">{t('ResultsDisplay.amountHeader')}:</span>
+                                    <span className="text-right">
+                                        <div className="relative inline-block min-w-[100px] px-2 py-0.5">
+                                            <div 
+                                                className="absolute left-0 top-0 bottom-0 bg-primary/20 rounded-sm" 
+                                                style={{ 
+                                                    width: '100%',
+                                                    maxWidth: '100%' 
+                                                }}
+                                            />
+                                            <span className="relative z-10">{formatPct(1)}</span>
+                                        </div>
+                                    </span>
+                                    
+                                    {/* Add all amount totals */}
+                                    {resultsPerAmount.map((amtResult, index) => (
+                                        <React.Fragment key={index}>
+                                            <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
+                                            <span className="text-right">{formatNum(amtResult.adjustedTotalAmount)}</span>
+                                        </React.Fragment>
+                                    ))}
+                                    
+                                    <span className="text-muted-foreground">{t('ResultsDisplay.yearTotalHeader')}:</span>
                                     <span className="text-right">{formatNum(adjustedTotalAmount)}</span>
                                 </div>
                             </div>
@@ -414,29 +452,60 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                     </div>
 
                     {/* Table View for Desktop (Hidden below md breakpoint) */}
-                    {/* Apply md:block or md:table visibility */}
                     <div className="hidden md:block overflow-x-auto relative border rounded-md">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    {aggregatedHeaders.map((header, idx) => (
+                                    {mergedHeaders.map((header, idx) => (
                                         <TableHead key={header} className={idx > 0 ? "text-right" : "text-left"}>{header}</TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {aggregatedTableData.map((row, rowIndex) => (
+                                {mergedTableData.map((row, rowIndex) => (
                                     <TableRow key={rowIndex}>
                                         {row.map((cell, cellIndex) => (
-                                            <TableCell key={cellIndex} className={cellIndex > 0 ? "text-right" : "text-left"}>{cell}</TableCell>
+                                            <TableCell 
+                                                key={cellIndex} 
+                                                className={`${cellIndex > 0 ? "text-right" : "text-left"}`}
+                                            >
+                                                {cellIndex === 2 ? (
+                                                    <div className="relative px-3 py-1 h-8 flex items-center justify-end">
+                                                        <div 
+                                                            className="absolute left-0 top-0 bottom-0 bg-primary/20 rounded-sm" 
+                                                            style={{ 
+                                                                width: `${typeof cell === 'string' ? parseFloat(cell.replace(/[^0-9.]/g, '')) : 0}%`,
+                                                                maxWidth: '100%' 
+                                                            }}
+                                                        />
+                                                        <span className="relative z-10">{cell}</span>
+                                                    </div>
+                                                ) : cell}
+                                            </TableCell>
                                         ))}
                                     </TableRow>
                                 ))}
                             </TableBody>
                             <TableFooter>
-                                <TableRow>
-                                    {aggregatedTotalsRow.map((cell, cellIndex) => (
-                                         <TableCell key={cellIndex} className={`font-semibold ${cellIndex > 0 ? "text-right" : ""}`}>{cell}</TableCell>
+                                <TableRow className="bg-gray-50 dark:bg-gray-800/50">
+                                    {mergedTotalsRow.map((cell, cellIndex) => (
+                                        <TableCell 
+                                            key={cellIndex} 
+                                            className={`font-bold ${cellIndex > 0 ? "text-right" : ""}`}
+                                        >
+                                            {cellIndex === 2 ? (
+                                                <div className="relative px-3 py-1 h-8 flex items-center justify-end">
+                                                    <div 
+                                                        className="absolute left-0 top-0 bottom-0 bg-primary/20 rounded-sm" 
+                                                        style={{ 
+                                                            width: '100%',
+                                                            maxWidth: '100%' 
+                                                        }}
+                                                    />
+                                                    <span className="relative z-10">{cell}</span>
+                                                </div>
+                                            ) : cell}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             </TableFooter>
@@ -446,92 +515,6 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                         <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">{t('ResultsDisplay.roundingNote')}</p>
                     )}
                 </div>
-
-                {/* Detailed Breakdown Section */}
-                {resultsPerAmount && resultsPerAmount.length > 0 && (
-                    <div>
-                        <h3 className="text-lg font-semibold mb-2">{t('ResultsDisplay.detailedTitle')}</h3>
-                        
-                        {/* Stacked View for Mobile (Visible below md breakpoint) */}
-                        <div className="block md:hidden space-y-3">
-                            {detailedYears.map((year) => {
-                                // Calculate year total specifically for mobile view
-                                let mobileYearTotal = 0;
-                                resultsPerAmount.forEach(amtResult => {
-                                    mobileYearTotal += amtResult.splits[year]?.splitAmount || 0;
-                                });
-
-                                return (
-                                    <div key={year} className="border rounded-md p-3 text-sm bg-muted/20">
-                                        <div className="font-semibold text-base mb-1">{year}</div>
-                                        <div className="space-y-0.5">
-                                            {resultsPerAmount.map((amtResult, index) => {
-                                                const splitAmount = amtResult.splits[year]?.splitAmount || 0;
-                                                return (
-                                                    <div key={index} className="grid grid-cols-[auto_1fr] gap-x-2">
-                                                        <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
-                                                        <span className="text-right">{formatNum(splitAmount)}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                            {/* Year Total for Mobile - Use calculated total */}
-                                            <div className="grid grid-cols-[auto_1fr] gap-x-2 border-t mt-1 pt-1 font-medium">
-                                                <span className="text-muted-foreground">{t('ResultsDisplay.yearTotalHeader')}:</span>
-                                                {/* Use the calculated mobileYearTotal */}
-                                                <span className="text-right">{formatNum(mobileYearTotal)}</span> 
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            {/* Mobile Totals Row */}
-                            <div className="border-t pt-3 mt-3 text-sm font-semibold">
-                                <div className="mb-1">{t('ResultsDisplay.totalHeader')}</div>
-                                <div className="space-y-0.5">
-                                     {resultsPerAmount.map((amtResult, index) => (
-                                        <div key={index} className="grid grid-cols-[auto_1fr] gap-x-2">
-                                            <span className="text-muted-foreground">{`${t('ResultsDisplay.amountHeader')} #${index + 1}`}:</span>
-                                            <span className="text-right">{formatNum(amtResult.adjustedTotalAmount)}</span>
-                                        </div>
-                                     ))}
-                                     <div className="grid grid-cols-[auto_1fr] gap-x-2 border-t mt-1 pt-1">
-                                        <span className="text-muted-foreground">Grand Total:</span>
-                                        <span className="text-right">{formatNum(adjustedTotalAmount)}</span>
-                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Table View for Desktop (Hidden below md breakpoint) */}
-                        <div className="hidden md:block overflow-x-auto relative border rounded-md">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        {detailedHeaders.map((header, idx) => (
-                                            <TableHead key={header} className={idx > 0 ? "text-right" : "text-left"}>{header}</TableHead>
-                                        ))}
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {detailedTableData.map((row, rowIndex) => (
-                                        <TableRow key={rowIndex}>
-                                            {row.map((cell, cellIndex) => (
-                                                <TableCell key={cellIndex} className={cellIndex > 0 ? "text-right" : "text-left"}>{cell}</TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                     <TableRow>
-                                         {detailedTotalsRow.map((cell, cellIndex) => (
-                                             <TableCell key={cellIndex} className={`font-semibold ${cellIndex > 0 ? "text-right" : ""}`}>{cell}</TableCell>
-                                         ))}
-                                     </TableRow>
-                                </TableFooter>
-                            </Table>
-                        </div>
-                    </div>
-                )}
 
                 {/* Calculation Steps Accordion */}
                 {calculationSteps && (
@@ -545,11 +528,15 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                     </Accordion>
                 )}
             </CardContent>
-            {/* Apply responsive flex classes to footer */}
-            <CardFooter className="flex flex-col sm:flex-row justify-end gap-2">
+            {/* Apply responsive flex classes to footer with consistent padding */}
+            <CardFooter className="flex flex-col sm:flex-row justify-start gap-4 px-6 py-6">
                  {/* Optionally make buttons full width when stacked */}
-                 <Button variant="outline" onClick={handleExportExcel} className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportExcelButton')}</Button>
-                 <Button variant="outline" onClick={handleExportPdf} className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportPdfButton')}</Button>
+                 <Button variant="outline" onClick={handleExportExcel} className="w-full sm:w-auto h-11 px-4">
+                   <FileSpreadsheet className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportExcelButton')}
+                 </Button>
+                 <Button variant="outline" onClick={handleExportPdf} className="w-full sm:w-auto h-11 px-4">
+                   <FileText className="mr-2 h-4 w-4" />{t('ResultsDisplay.exportPdfButton')}
+                 </Button>
             </CardFooter>
         </Card>
     );

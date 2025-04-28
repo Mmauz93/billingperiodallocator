@@ -1,19 +1,19 @@
 {
   "InvoiceForm": {
     "title": "Invoice Split Calculator",
-    "description_p1": "Easily allocate multi-year invoice totals across individual fiscal years or specific accounting periods. This tool provides accurate, proportional calculations based on start and end dates, simplifying compliance with accrual principles.",
+    "description_p1": "Split invoices across fiscal years. Stay compliant with IFRS, HGB, and OR — no login, no data storage. Simple, fast, precise.",
     "description_p2": "Ideal for accountants preparing income statements and balance sheets, financial professionals managing budgets, or anyone needing a clear financial breakdown for reporting.",
-    "startDateLabel": "Start Date",
-    "endDateLabel": "End Date",
-    "includeEndDateLabel": "Include End Date",
-    "includeEndDateDescription": "Specifies if the end date counts as part of the period.",
+    "startDateLabel": "Service Period Start Date",
+    "endDateLabel": "Service Period End Date",
+    "includeEndDateLabel": "Include Final Day in Service Period?",
+    "includeEndDateDescription": "Check if the final day should be included in the service period calculation.",
     "includeEndDateTooltip": "If checked, the end date is included in the allocation period (+1 day). Example: Jan 1 to Jan 3 (inclusive) = 3 days.",
-    "amountsLabel": "Amounts",
+    "amountsLabel": "Invoice Amount",
     "amountsDescription": "Enter one or more amounts to allocate.",
-    "amountPlaceholder": "Enter amount",
-    "addAmountButton": "Add Amount",
-    "calculateButton": "Calculate Allocation",
+    "addAmountButton": "Add Another Amount",
+    "calculateButton": "Calculate Split",
     "calculatingButton": "Calculating...",
+    "calculationComplete": "Split completed successfully!",
     "errorDateFormat": "Invalid date format.",
     "errorEndDateBeforeStart": "End date must be on or after start date.",
     "errorStartDateRequired": "Start date is required.",
@@ -21,7 +21,8 @@
     "errorAmountRequired": "Please enter at least one amount.",
     "errorAmountPositive": "Amount must be a positive number.",
     "errorAmountNumber": "Amount must be a number.",
-    "errorAmountValueRequired": "Amount is required."
+    "errorAmountValueRequired": "Amount is required.",
+    "amountHelper": "Enter the total invoice amount for the service period."
   },
   "ResultsDisplay": {
     "resultsTitle": "Allocation Results",
@@ -35,7 +36,7 @@
     "enteredLabel": "entered",
     "aggregatedTitle": "Allocation per Year",
     "detailedTitle": "Detailed Allocation per Amount",
-    "calculationStepsTitle": "Show Calculation Details",
+    "calculationStepsTitle": "View Full Split Calculation",
     "yearHeader": "Year",
     "daysHeader": "Days",
     "proportionHeader": "Proportion",
@@ -43,8 +44,8 @@
     "totalHeader": "Total",
     "amountSplitHeader": "Amount {{index}}",
     "yearTotalHeader": "Year Total",
-    "exportExcelButton": "Export Excel",
-    "exportPdfButton": "Export PDF",
+    "exportExcelButton": "Download Excel Report",
+    "exportPdfButton": "Download PDF Report",
     "roundingNote": "Note: Totals may vary slightly due to rounding.",
     "errorNoSplits": "Calculation complete, but no allocation results generated.",
     "totalDuration": "Total Duration",
@@ -69,30 +70,46 @@
     "aggregatedSheetName": "Aggregated Results",
     "detailedSheetName": "Detailed Breakdown",
     "pdfTitle": "Invoice Split Calculation",
-    "amountHeader": "Amount"
+    "amountHeader": "Amount",
+    "successMessage": "Split completed successfully! Your detailed allocation is ready.",
+    "summaryTitle": "Summary"
   },
   "SettingsModal": {
     "title": "Number Formatting",
-    "useApostropheSeparatorLabel": "Thousands Sep.",
-    "useApostropheSeparatorDescription": "e.g., 1'000.00",
+    "useApostropheSeparatorLabel": "Thousands Separator",
+    "useApostropheSeparatorDescription": "e.g. 1'000.00",
     "decimalPlacesLabel": "Decimal Places",
-    "roundingPrecisionLabel": "Round To Nearest",
+    "roundingPrecisionLabel": "Round to nearest",
     "saveButton": "Save Settings",
-    "closeButton": "Close"
+    "closeButton": "Close",
+    "settingsModalTitle": "Number Formatting Settings",
+    "settingsModalDescription": "Customize your preferred number format for allocations and reports.",
+    "decimalPlacesDescription": "Set how many decimal places to display in results.",
+    "roundingPrecisionDescription": "Specify the nearest rounding step (e.g. 0.01 for cents).",
+    "useThousandsSeparatorLabel": "Use Thousands Separator",
+    "useThousandsSeparatorDescription": "Add separators in large numbers to improve readability.",
+    "thousandsSeparatorLabel": "Thousands Separator",
+    "thousandsSeparatorDescription": "Choose the separator style for numbers.",
+    "selectSeparatorPlaceholder": "Select separator format",
+    "comma": "Comma",
+    "period": "Period",
+    "apostrophe": "Apostrophe",
+    "space": "Space"
   },
   "General": {
       "appName": "Invoice Allocator",
       "allRightsReserved": "Copyright © by Siempi AG {{year}}",
       "privacyPolicy": "Privacy Policy",
       "termsOfUse": "Terms of Use",
-      "lastUpdated": "Last Updated: {{date}}"
+      "lastUpdated": "Last Updated: {{date}}",
+      "tagline": "Built for Finance Professionals. Trusted by SMEs and Accountants."
   },
   "Errors": {
       "calculationErrorTitle": "Calculation Error",
       "unexpectedError": "An unexpected error occurred during the calculation."
   },
   "FeedbackDialog": {
-      "sendFeedbackButton": "Send Feedback",
+      "sendFeedbackButton": "Share Your Feedback",
       "dialogTitle": "Provide Feedback",
       "description": "Share your thoughts, suggestions, or report issues. This will open your default email client.",
       "messageLabel": "Your Message",
@@ -120,5 +137,16 @@
     "acceptButton": "Accept",
     "declineButton": "Decline",
     "learnMoreButton": "Privacy Policy"
+  },
+  "Footer": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use",
+    "copyright": "© {{year}} Siempi AG — All rights reserved.",
+    "brandName": "BillSplitter by Siempi AG"
+  },
+  "App": {
+    "title": "Automated Invoice Split Calculator — Precise. Fast. Simple.",
+    "tagline": "Designed for finance professionals and businesses.",
+    "description": "Split invoices cleanly across fiscal years."
   }
 } 

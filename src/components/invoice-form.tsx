@@ -1,16 +1,17 @@
 "use client";
 
-import { CalculationInput, CalculationResult, calculateInvoiceSplit } from "@/lib/calculations";
-import { CalendarIcon, Info, PlusCircle, XCircle } from "lucide-react"; // Import icons
-import { ChangeEvent, useEffect, useState } from "react";
+import { AlertCircle, CalendarIcon, CheckCircle, Loader2, PlusCircle, XCircle } from "lucide-react"; // Import icons
 import {
+    FormLabel as BaseFormLabel,
+    FormMessage as BaseFormMessage,
     FormControl,
     FormDescription,
     FormField,
     FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { CalculationInput, CalculationResult, calculateInvoiceSplit } from "@/lib/calculations";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { ChangeEvent, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form"; // Import useFieldArray
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { de, enUS } from 'date-fns/locale'; // Import locales
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next'; // Import hook
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,12 +73,27 @@ type CalculationCallbackData = {
 }
 
 interface InvoiceFormProps {
-    onCalculate: (formData: CalculationCallbackData, results: CalculationResult | null, error?: string) => void;
+    onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: string) => void;
 }
 
-export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
+// Custom FormLabel that never turns red
+const FormLabel = ({ children, ...props }: React.ComponentProps<typeof BaseFormLabel>) => (
+    <BaseFormLabel {...props} style={{ color: 'var(--foreground)', fontWeight: 500 }}>
+        {children}
+    </BaseFormLabel>
+);
+
+// Custom FormMessage with proper alignment
+const FormMessage = ({ className, ...props }: React.ComponentProps<typeof import("@/components/ui/form").FormMessage>) => (
+    <BaseFormMessage className={cn("pl-3", className)} {...props} />
+);
+
+export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
     const { t, i18n } = useTranslation();
     const [mounted, setMounted] = useState(false); // Mounted state
+    const [isCalculating, setIsCalculating] = useState(false); // Add loading state
+    const [buttonText, setButtonText] = useState(''); // Dynamic button text
+    const [showSuccessGlow, setShowSuccessGlow] = useState(false); // Success indicator
 
     const currentFormSchema = formSchema(t);
     
@@ -117,7 +134,8 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
     // Effect to set mounted state on client
     useEffect(() => {
         setMounted(true);
-    }, []);
+        setButtonText(t('InvoiceForm.calculateButton'));
+    }, [t]);
 
     // Effect to update input strings when language changes
     useEffect(() => {
@@ -169,12 +187,17 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
     };
 
     function onSubmit(values: FormData) {
+        // Temporarily disable button and show loading state
+        setIsCalculating(true);
+        setButtonText(t('InvoiceForm.calculatingButton'));
+        
         // Zod refinement ensures dates are defined here if validation passed
         if (values.startDate === undefined || values.endDate === undefined) {
             // This should technically not happen if Zod validation is working
             // but good practice to guard
             console.error("Form submitted with undefined dates despite validation");
-            // You might want to trigger a form error display here
+            setIsCalculating(false);
+            setButtonText(t('InvoiceForm.calculateButton'));
             return; 
         }
 
@@ -187,7 +210,7 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
             amounts: amountsNum,
         };
 
-        onCalculate(formDataForCallback, null);
+        onCalculateAction(formDataForCallback, null);
 
         const calculationInput: CalculationInput = {
             startDate: values.startDate, // Guaranteed non-undefined
@@ -202,19 +225,41 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
             const results = calculateInvoiceSplit(calculationInput);
             console.log("Calculation Results:", results);
 
+            // Simulate a brief calculation delay for UX
+            setTimeout(() => {
             // Updated error checking:
             if (results.calculationSteps?.error) {
-                onCalculate(formDataForCallback, null, results.calculationSteps.error);
+                    onCalculateAction(formDataForCallback, null, results.calculationSteps.error);
+                    setButtonText(t('InvoiceForm.calculateButton'));
             } else if (!results.aggregatedSplits || results.aggregatedSplits.length === 0) {
                  // Handle cases where calculation might succeed but produce no splits unexpectedly
-                 onCalculate(formDataForCallback, null, "Calculation completed but resulted in no splits.");
+                    onCalculateAction(formDataForCallback, null, "Calculation completed but resulted in no splits.");
+                    setButtonText(t('InvoiceForm.calculateButton'));
             } else {
-                onCalculate(formDataForCallback, results);
-            }
+                    onCalculateAction(formDataForCallback, results);
+                    // Show success state
+                    setButtonText(t('InvoiceForm.calculationComplete', { defaultValue: 'Calculation Complete ✅' }));
+                    setShowSuccessGlow(true);
+                    
+                    // Reset button text after 2 seconds
+                    setTimeout(() => {
+                        setButtonText(t('InvoiceForm.calculateButton'));
+                        setShowSuccessGlow(false);
+                    }, 2000);
+                }
+                setIsCalculating(false);
+            }, 500); // Add a slight delay for better UX feedback
+            
         } catch (error) {
              console.error("Calculation Error:", error);
              const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred during calculation.";
-             onCalculate(formDataForCallback, null, errorMessage);
+            onCalculateAction(formDataForCallback, null, errorMessage);
+            
+            // Reset button state
+            setTimeout(() => {
+                setIsCalculating(false);
+                setButtonText(t('InvoiceForm.calculateButton'));
+            }, 500);
         }
     }
 
@@ -252,8 +297,14 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
 
     // Render full form after mount
     return (
+        <Card className="w-full">
+            <CardContent className="pt-6 px-6">
         <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div>
+                            <h2 className="text-xl font-semibold mb-8">{t('InvoiceForm.title')}</h2>
+                        </div>
+                        
                 {/* Date Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    {/* Start Date Field */}
@@ -262,7 +313,9 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                         name="startDate"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>{t('InvoiceForm.startDateLabel')}</FormLabel>
+                                        <FormLabel>
+                                            {t('InvoiceForm.startDateLabel')}
+                                        </FormLabel>
                                 <Popover open={isStartDatePopoverOpen} onOpenChange={setIsStartDatePopoverOpen}>
                                     <FormControl>
                                         <div className="relative">
@@ -270,11 +323,35 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                                 placeholder={displayDateFormat}
                                                 value={startDateString}
                                                 onChange={(e) => handleDateInputChange(e, 'startDate')}
-                                                className="pr-10"
-                                            />
+                                                        className={`pr-10 transition-transform duration-150 focus:scale-[1.01] ${
+                                                            form.formState.errors.startDate 
+                                                            ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" 
+                                                            : "focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        }`}
+                                                        autoFocus
+                                                    />
+                                                    
+                                                    <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                                                        {field.value && !form.formState.errors.startDate && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <CheckCircle className="h-4 w-4 text-green-500 animate-fadeIn" />
+                                                            </div>
+                                                        )}
+                                                        {form.formState.errors.startDate && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <AlertCircle className="h-4 w-4 text-destructive animate-fadeIn" />
+                                                            </div>
+                                                        )}
+                                                    </div>
                                             <PopoverTrigger asChild>
-                                                 <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open start date calendar">
-                                                    <CalendarIcon className="h-4 w-4" />
+                                                        <Button 
+                                                            type="button"
+                                                            variant="ghost" 
+                                                            className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 p-0 flex items-center justify-center" 
+                                                            tabIndex={-1}
+                                                            aria-label="Pick a date"
+                                                        >
+                                                            <CalendarIcon className="h-4 w-4 opacity-50" />
                                                 </Button>
                                             </PopoverTrigger>
                                         </div>
@@ -284,9 +361,8 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                             mode="single"
                                             selected={field.value}
                                             onSelect={onSelectStartDate}
+                                                    initialFocus
                                             locale={currentLocale}
-                                            initialFocus
-                                            disabled={field.disabled}
                                         />
                                     </PopoverContent>
                                 </Popover>
@@ -294,13 +370,16 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                             </FormItem>
                         )}
                     />
+
                     {/* End Date Field */}
                     <FormField
                          control={form.control}
                          name="endDate"
                          render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>{t('InvoiceForm.endDateLabel')}</FormLabel>
+                                        <FormLabel>
+                                            {t('InvoiceForm.endDateLabel')}
+                                        </FormLabel>
                                 <Popover open={isEndDatePopoverOpen} onOpenChange={setIsEndDatePopoverOpen}>
                                     <FormControl>
                                          <div className="relative">
@@ -308,11 +387,34 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                                 placeholder={displayDateFormat}
                                                 value={endDateString}
                                                 onChange={(e) => handleDateInputChange(e, 'endDate')}
-                                                className="pr-10"
-                                            />
+                                                        className={`pr-10 transition-transform duration-150 focus:scale-[1.01] ${
+                                                            form.formState.errors.endDate 
+                                                            ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" 
+                                                            : "focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        }`}
+                                                    />
+                                                    
+                                                    <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                                                        {field.value && !form.formState.errors.endDate && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <CheckCircle className="h-4 w-4 text-green-500 animate-fadeIn" />
+                                                            </div>
+                                                        )}
+                                                        {form.formState.errors.endDate && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <AlertCircle className="h-4 w-4 text-destructive animate-fadeIn" />
+                                                            </div>
+                                                        )}
+                                                    </div>
                                             <PopoverTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground" aria-label="Open end date calendar">
-                                                    <CalendarIcon className="h-4 w-4" />
+                                                        <Button 
+                                                            type="button"
+                                                            variant="ghost" 
+                                                            className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 p-0 flex items-center justify-center" 
+                                                            tabIndex={-1} 
+                                                            aria-label="Pick a date"
+                                                        >
+                                                            <CalendarIcon className="h-4 w-4 opacity-50" />
                                                 </Button>
                                             </PopoverTrigger>
                                         </div>
@@ -322,9 +424,8 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                                             mode="single"
                                             selected={field.value}
                                             onSelect={onSelectEndDate}
+                                                    initialFocus
                                             locale={currentLocale}
-                                            initialFocus
-                                            disabled={field.disabled}
                                          />
                                     </PopoverContent>
                                 </Popover>
@@ -334,26 +435,15 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                      />
                 </div>
 
-                {/* Include End Date Field */}
+                        {/* Include End Date Switch */}
                 <FormField
                     control={form.control}
                     name="includeEndDate"
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">
-                                <FormLabel className="text-base flex items-center">
+                                        <FormLabel className="text-base">
                                     {t('InvoiceForm.includeEndDateLabel')}
-                                    <Popover>
-                                        <PopoverTrigger asChild className="ml-2">
-                                            <Button variant="ghost" size="icon" className="h-5 w-5 cursor-pointer hover:text-primary focus:text-primary transition-colors">
-                                                 <Info className="h-4 w-4" />
-                                                 <span className="sr-only">More info</span>
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="text-sm w-auto max-w-xs sm:max-w-sm">
-                                             {t('InvoiceForm.includeEndDateTooltip')}
-                                        </PopoverContent>
-                                    </Popover>
                                 </FormLabel>
                                 <FormDescription>
                                     {t('InvoiceForm.includeEndDateDescription')}
@@ -370,7 +460,7 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                 />
 
                  {/* Dynamic Amount Fields Section */}
-                 <div className="space-y-4 rounded-lg border p-4">
+                        <div className="space-y-5 rounded-lg border p-6 shadow-xs">
                       <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
                       <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
                      {fields.map((item, index) => (
@@ -379,23 +469,45 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                              key={item.id}
                              name={`amounts.${index}.value`}
                              render={({ field }) => (
-                                 <FormItem>
+                                        <FormItem className="mb-3">
                                      <div className="flex flex-col gap-1">
                                          <FormLabel className="text-sm font-medium">
                                              #{index + 1}
                                          </FormLabel>
                                          <div className="flex items-center gap-2">
+                                                    <div className="relative flex-1">
                                              <FormControl>
                                                  <Input
                                                      type="number"
                                                      step="any"
-                                                     placeholder={t('InvoiceForm.amountPlaceholder', { index: index + 1 })}
+                                                                className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 focus:scale-[1.01] pr-8"
                                                      {...field}
                                                  />
                                              </FormControl>
+                                                        {/* Validation indicator */}
+                                                        <div className="absolute right-2 top-0 h-full flex items-center justify-center">
+                                                            {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
+                                                                <div className="flex items-center justify-center h-5 w-5">
+                                                                    <CheckCircle className="h-4 w-4 text-green-500 animate-fadeIn" />
+                                                                </div>
+                                                            )}
+                                                            {form.formState.errors.amounts?.[index]?.value && (
+                                                                <div className="flex items-center justify-center h-5 w-5">
+                                                                    <AlertCircle className="h-4 w-4 text-destructive animate-fadeIn" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                              {fields.length > 1 && (
-                                                 <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} className="text-destructive hover:text-destructive shrink-0" aria-label="Remove amount">
-                                                     <XCircle className="h-4 w-4" />
+                                                        <Button 
+                                                            type="button" 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => remove(index)} 
+                                                            className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
+                                                            aria-label="Remove amount"
+                                                        >
+                                                            <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
                                                  </Button>
                                              )}
                                          </div>
@@ -405,7 +517,16 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                              )}
                          />
                      ))}
-                      <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })} className="mt-2">
+                            <Button type="button" variant="outline" size="sm" onClick={() => {
+                                append({ value: "" });
+                                // Focus the new input after a short delay to allow DOM to update
+                                setTimeout(() => {
+                                    const newInputs = document.querySelectorAll('input[type="number"]');
+                                    if (newInputs.length > 0) {
+                                        (newInputs[newInputs.length - 1] as HTMLInputElement).focus();
+                                    }
+                                }, 10);
+                            }} className="mt-4">
                           <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
                       </Button>
                       {/* Display top-level error message for the amounts array */}
@@ -421,12 +542,25 @@ export function InvoiceForm({ onCalculate }: InvoiceFormProps) {
                          </p>
                      )}
                   </div>
-
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? t('InvoiceForm.calculatingButton') : t('InvoiceForm.calculateButton')}
+                    </form>
+                </FormProvider>
+            </CardContent>
+            <CardFooter className="flex justify-start px-6 py-6">
+                <Button 
+                    type="submit" 
+                    onClick={form.handleSubmit(onSubmit)}
+                    disabled={form.formState.isSubmitting || isCalculating}
+                    className={`bg-primary text-white hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
+                >
+                    {isCalculating ? (
+                        <span className="flex items-center">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {buttonText}
+                        </span>
+                    ) : buttonText}
                 </Button>
-            </form>
-        </FormProvider>
+            </CardFooter>
+        </Card>
     );
 }
 

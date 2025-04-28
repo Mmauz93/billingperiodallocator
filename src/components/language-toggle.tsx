@@ -2,60 +2,87 @@
 
 import * as React from "react"
 
+import { AnimatePresence, motion } from "framer-motion"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Languages } from "lucide-react"
+import { Globe } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from 'react-i18next';
 
-export function LanguageToggle() {
+export default function LanguageToggle() {
   const { i18n } = useTranslation();
-  const [mounted, setMounted] = React.useState(false)
+  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
+  // Ensure hydration works properly
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const changeLanguage = (lng: 'en' | 'de') => {
+  const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    setOpen(false);
   };
 
-  // Avoid hydration mismatch by not rendering full component on server/initial client render
-  if (!mounted) {
-    return (
-      <Button variant="ghost" size="icon" disabled>
-        <Languages className="h-5 w-5" />
-      </Button>
-    );
-  }
+  if (!mounted) return null;
+
+  const isEnglish = i18n.language === "en";
+  const isGerman = i18n.language === "de";
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Change language"> {/* TODO: Add translation key for aria-label */}
-          <Languages className="h-5 w-5" />
-          <span className="sr-only">Change language</span>
+        <Button variant="ghost" size="icon" className="flex items-center">
+          <Globe className="h-5 w-5" />
+          <span className="sr-only">Toggle language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem 
-            onClick={() => changeLanguage("en")} 
-            disabled={i18n.language.startsWith('en')}
-        >
-           English
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-            onClick={() => changeLanguage("de")} 
-            disabled={i18n.language.startsWith('de')}
-        >
-          Deutsch
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+      <AnimatePresence>
+        {open && (
+          <DropdownMenuContent asChild forceMount>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <DropdownMenuItem onClick={() => changeLanguage("en")}>
+                <ReactCountryFlag 
+                  countryCode="GB"
+                  svg
+                  style={{
+                    width: '1.2em',
+                    height: '1.2em',
+                    marginRight: '0.5rem'
+                  }}
+                  title="English"
+                />
+                <span className={isEnglish ? "font-bold" : ""}>English</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeLanguage("de")}>
+                <ReactCountryFlag 
+                  countryCode="DE"
+                  svg
+                  style={{
+                    width: '1.2em',
+                    height: '1.2em',
+                    marginRight: '0.5rem'
+                  }}
+                  title="Deutsch"
+                />
+                <span className={isGerman ? "font-bold" : ""}>Deutsch</span>
+              </DropdownMenuItem>
+            </motion.div>
+          </DropdownMenuContent>
+        )}
+      </AnimatePresence>
     </DropdownMenu>
-  )
+  );
 } 
