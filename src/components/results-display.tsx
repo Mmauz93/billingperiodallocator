@@ -474,7 +474,7 @@ export function ResultsDisplay({ results, inputData }: ResultsDisplayProps) {
                                                         <div 
                                                             className="absolute left-0 top-0 bottom-0 bg-primary/20 rounded-sm" 
                                                             style={{ 
-                                                                width: `${typeof cell === 'string' ? parseFloat(cell.replace(/[^0-9.]/g, '')) : 0}%`,
+                                                                width: `${aggregatedSplits[rowIndex].proportion * 100}%`,
                                                                 maxWidth: '100%' 
                                                             }}
                                                         />
