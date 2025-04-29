@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="30" y="15" width="180" height="150" rx="8" fill="#E1F2F9" />
+  <rect x="45" y="30" width="150" height="30" rx="4" fill="white" />
+  <rect x="45" y="70" width="45" height="20" rx="3" fill="#0284C7" opacity="0.8" />
+  <rect x="45" y="100" width="45" height="20" rx="3" fill="#0284C7" opacity="0.8" />
+  <rect x="45" y="130" width="45" height="20" rx="3" fill="#0284C7" opacity="0.8" />
+  <rect x="100" y="70" width="45" height="20" rx="3" fill="#0284C7" opacity="0.6" />
+  <rect x="100" y="100" width="45" height="20" rx="3" fill="#0284C7" opacity="0.6" />
+  <rect x="100" y="130" width="45" height="20" rx="3" fill="#0284C7" opacity="0.6" />
+  <rect x="155" y="70" width="40" height="80" rx="3" fill="#0284C7" opacity="0.4" />
+  <path d="M60 40H80M60 50H150" stroke="#0284C7" stroke-width="2" stroke-linecap="round" />
+  <path d="M200 45L190 90L180 80L170 100L160 95L150 130L140 110L130 120L120 115L110 140L100 125L90 135L80 130L70 150" stroke="#0284C7" stroke-width="1.5" />
+</svg> 

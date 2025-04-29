@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
+  <!-- Background circle -->
+  <circle cx="90" cy="90" r="90" fill="#E1F2F9" />
+  
+  <!-- Calendar outline -->
+  <rect x="30" y="40" width="120" height="120" rx="8" stroke="#0284C7" stroke-width="6" fill="none"/>
+  
+  <!-- Calendar header bar -->
+  <rect x="30" y="65" width="120" height="6" fill="#0284C7"/>
+  
+  <!-- Calendar tabs -->
+  <rect x="50" y="40" width="6" height="10" fill="#0284C7"/>
+  <rect x="124" y="40" width="6" height="10" fill="#0284C7"/>
+  
+  <!-- Left pie segment (30%) -->
+  <path d="M90 100 L90 140 A40 40 0 0 1 54.2 112 Z" fill="#0284C7" fill-opacity="0.7"/>
+  
+  <!-- Right pie segment (70%) -->
+  <path d="M90 100 L126 112 A40 40 0 0 1 90 140 Z" fill="#0284C7" fill-opacity="0.4"/>
+  
+  <!-- Center point of pie chart -->
+  <circle cx="90" cy="100" r="5" fill="#0284C7"/>
+</svg> 

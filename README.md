@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org) application that helps users allocate in
 ## Purpose
 
 The Invoice Period Allocator allows you to:
+
 - Split invoice amounts across multiple calendar years
 - Calculate proportional allocation based on days in each period
 - Export results to Excel or PDF formats
@@ -31,6 +32,7 @@ You can start editing the application by modifying files in the `src/` directory
 ## Project Structure
 
 The project follows standard Next.js structure:
+
 - `src/app` - Next.js app router pages
 - `src/components` - React components
 - `src/lib` - Utility functions and business logic
@@ -41,6 +43,7 @@ The project follows standard Next.js structure:
 ## Internationalization
 
 The application supports multiple languages:
+
 - English (default)
 - German
 

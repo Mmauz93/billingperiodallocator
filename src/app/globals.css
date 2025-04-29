@@ -46,75 +46,111 @@
 /* Updated color palette based on the branding guide */
 :root {
   --radius: 0.5rem; /* 8px border-radius as per design style */
-  --background: #F9FAFB; /* Light mode background */
+  --background: #f9fafb; /* Light mode background */
   --foreground: #111827; /* Heading text color */
-  --card: #FFFFFF; /* Card backgrounds */
+  --card: #ffffff; /* Card backgrounds */
   --card-foreground: #374151; /* Body text */
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: #374151;
-  --primary: #2E5A8C; /* Primary Blue (main brand) */
-  --primary-foreground: #FFFFFF;
-  --secondary: #F5A623; /* Accent Yellow (secondary brand) */
+  --primary: #2e5a8c; /* Primary Blue (main brand) */
+  --primary-foreground: #ffffff;
+  --secondary: #f5a623; /* Accent Yellow (secondary brand) */
   --secondary-foreground: #111827;
-  --muted: #F3F4F6; /* Input Field Background */
-  --muted-foreground: #6B7280; /* Info/Hint Text */
-  --accent: #2E5A8C; /* Primary Blue with reduced opacity for accents */
+  --muted: #f3f4f6; /* Input Field Background */
+  --muted-foreground: #5a6271; /* Adjusted Info/Hint Text for WCAG AA */
+  --accent: #2e5a8c; /* Primary Blue with reduced opacity for accents */
   --accent-foreground: #111827;
-  --destructive: #EF4444; /* Error Red */
-  --destructive-foreground: #FFFFFF;
-  --border: #E5E7EB; /* Border/Divider */
-  --input: #F3F4F6; /* Input Field Background */
-  --ring: #2E5A8C; /* Primary Blue for focus rings */
-  --chart-1: #2E5A8C; /* Primary Blue */
-  --chart-2: #F5A623; /* Accent Yellow */
-  --chart-3: #22C55E; /* Success Green */
-  --chart-4: #6B7280; /* Info/Hint */
-  --chart-5: #EF4444; /* Error Red */
-  --sidebar: #FFFFFF;
+  --destructive: #ef4444; /* Error Red */
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb; /* Border/Divider */
+  --input: #f3f4f6; /* Input Field Background */
+  --ring: #2e5a8c; /* Primary Blue for focus rings */
+
+  /* Base Chart Colors */
+  --chart-1: #2e5a8c;
+  --chart-2: #f5a623;
+  --chart-3: #22c55e;
+  --chart-4: #5a6271; /* Adjusted */
+  --chart-5: #ef4444;
+
+  /* Colorblind-Safe Chart Colors */
+  --colorblind-1: #1b9e77;
+  --colorblind-2: #d95f02;
+  --colorblind-3: #7570b3;
+  --colorblind-4: #e7298a;
+  --colorblind-5: #66a61e;
+  --colorblind-6: #e6ab02;
+  --colorblind-7: #a6761d;
+
+  /* Sidebar Colors */
+  --sidebar: #ffffff;
   --sidebar-foreground: #374151;
-  --sidebar-primary: #2E5A8C; /* Primary Blue */
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F9FAFB;
-  --sidebar-accent-foreground: #2E5A8C;
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: #2E5A8C;
+  --sidebar-primary: #2e5a8c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f9fafb;
+  --sidebar-accent-foreground: #2e5a8c;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #2e5a8c;
+
+  --pulse-highlight-color: rgba(74, 144, 226, 0.12);
 }
+
+/* Always show scrollbar to prevent layout shifts - REMOVED FROM HTML */
+/*
+html {
+  overflow-y: scroll;
+}
+*/
 
 /* Dark mode colors updated to match the branding */
 .dark {
-  --background: #121212; /* Dark mode background */
-  --foreground: #F9FAFB; /* Heading text color */
-  --card: #1E1E1E; /* Card backgrounds */
-  --card-foreground: #D1D5DB; /* Body text */
-  --popover: #1E1E1E;
-  --popover-foreground: #D1D5DB;
-  --primary: #4A90E2; /* Primary Blue (main brand) - lighter in dark mode */
-  --primary-foreground: #FFFFFF;
-  --secondary: #F5A623; /* Accent Yellow (secondary brand) - same in both modes */
+  --background: #121212;
+  --foreground: #f9fafb;
+  --card: #1e1e1e;
+  --card-foreground: #d1d5db;
+  --popover: #1e1e1e;
+  --popover-foreground: #d1d5db;
+  --primary: #4a90e2;
+  --primary-foreground: #ffffff;
+  --secondary: #f5a623;
   --secondary-foreground: #121212;
-  --muted: #2A2A2A; /* Input Field Background */
-  --muted-foreground: #9CA3AF; /* Info/Hint Text */
-  --accent: #4A90E2; /* Primary Blue for accents */
-  --accent-foreground: #FFFFFF;
-  --destructive: #F87171; /* Error Red - slightly softer in dark mode */
-  --destructive-foreground: #FFFFFF;
-  --border: #3A3A3A; /* Border/Divider */
-  --input: #2A2A2A; /* Input Field Background */
-  --ring: #4A90E2; /* Primary Blue for focus rings */
-  --chart-1: #4A90E2; /* Primary Blue */
-  --chart-2: #F5A623; /* Accent Yellow */
-  --chart-3: #22C55E; /* Success Green */
-  --chart-4: #9CA3AF; /* Info/Hint */
-  --chart-5: #F87171; /* Error Red */
-  --sidebar: #1E1E1E;
-  --sidebar-foreground: #D1D5DB;
-  --sidebar-primary: #4A90E2; /* Primary Blue */
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2A2A2A;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #3A3A3A;
-  --sidebar-ring: #4A90E2;
-  --pulse-highlight-color: rgba(74, 144, 226, 0.12); /* Dark mode primary with opacity */
+  --muted: #2a2a2a;
+  --muted-foreground: #9ca3af; /* Original dark mode value is fine */
+  --accent: #4a90e2;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --border: #3a3a3a;
+  --input: #2a2a2a;
+  --ring: #4a90e2;
+
+  /* Base Chart Colors (Dark) */
+  --chart-1: #4a90e2;
+  --chart-2: #f5a623;
+  --chart-3: #22c55e;
+  --chart-4: #9ca3af;
+  --chart-5: #f87171;
+
+  /* Colorblind-Safe Chart Colors (Can be same as light if contrast is sufficient) */
+  --colorblind-1: #1b9e77;
+  --colorblind-2: #d95f02;
+  --colorblind-3: #7570b3;
+  --colorblind-4: #e7298a;
+  --colorblind-5: #66a61e;
+  --colorblind-6: #e6ab02;
+  --colorblind-7: #a6761d;
+
+  /* Sidebar Colors (Dark) */
+  --sidebar: #1e1e1e;
+  --sidebar-foreground: #d1d5db;
+  --sidebar-primary: #4a90e2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #3a3a3a;
+  --sidebar-ring: #4a90e2;
+
+  --pulse-highlight-color: rgba(74, 144, 226, 0.12);
 }
 
 @layer base {
@@ -123,55 +159,56 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-size: 16px;
     line-height: 1.4;
+    overflow-y: scroll;
   }
 
   h1 {
-    font-size: 40px;
+    font-size: clamp(2.25rem, 1.5rem + 2vw, 2.5rem); /* Fluid typography */
     font-weight: 700;
     line-height: 1.2;
   }
 
   h2 {
-    font-size: 32px;
+    font-size: clamp(1.75rem, 1.25rem + 1.5vw, 2rem); /* Fluid typography */
     font-weight: 600;
     line-height: 1.25;
   }
 
   h3 {
-    font-size: 24px;
+    font-size: clamp(1.25rem, 1rem + 0.75vw, 1.5rem); /* Fluid typography */
     font-weight: 500;
     line-height: 1.3;
   }
 
   /* Hide arrows from number inputs */
   /* Chrome, Safari, Edge, Opera */
-  input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-webkit-inner-spin-button {
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
   /* Firefox */
-  input[type=number] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
 }
 
 /* Global input styles */
-input, 
-select, 
+input,
+select,
 textarea {
-  @apply w-full rounded-lg border-input py-2 px-3 shadow-sm transition-all;
+  @apply w-full rounded-lg border-input py-2 px-3 shadow-sm;
   background-color: var(--input);
   color: var(--foreground);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-input:focus, 
-select:focus, 
+input:focus,
+select:focus,
 textarea:focus {
   @apply border-primary ring-2 ring-primary/20 outline-none;
 }
@@ -182,8 +219,14 @@ textarea:focus {
 
 /* Animation for user interface elements */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {
@@ -192,9 +235,15 @@ textarea:focus {
 
 /* Add a pulse-highlight animation for results section */
 @keyframes pulseHighlight {
-  0% { background-color: transparent; }
-  30% { background-color: rgba(46, 90, 140, 0.08); } /* Light mode primary with opacity */
-  100% { background-color: transparent; }
+  0% {
+    background-color: transparent;
+  }
+  30% {
+    background-color: rgba(46, 90, 140, 0.08);
+  } /* Light mode primary with opacity */
+  100% {
+    background-color: transparent;
+  }
 }
 
 .pulse-highlight {
@@ -208,48 +257,88 @@ textarea:focus {
 }
 
 @keyframes darkPulseHighlight {
-  0% { background-color: transparent; }
-  30% { background-color: rgba(74, 144, 226, 0.12); } /* Dark mode primary with opacity */
-  100% { background-color: transparent; }
+  0% {
+    background-color: transparent;
+  }
+  30% {
+    background-color: rgba(74, 144, 226, 0.12);
+  } /* Dark mode primary with opacity */
+  100% {
+    background-color: transparent;
+  }
 }
 
 /* Add proportilon highlight styles as specified in the branding guide */
 .proportion-highlight {
-  background-color: rgba(46, 90, 140, 0.1); /* Proportion Highlight Background in light mode */
-  color: #2E5A8C; /* Proportion Text in light mode */
+  background-color: rgba(
+    46,
+    90,
+    140,
+    0.1
+  ); /* Proportion Highlight Background in light mode */
+  color: #2e5a8c; /* Proportion Text in light mode */
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
 }
 
 .dark .proportion-highlight {
-  background-color: rgba(74, 144, 226, 0.2); /* Proportion Highlight Background in dark mode */
-  color: #FFFFFF; /* Proportion Text in dark mode */
+  background-color: rgba(
+    74,
+    144,
+    226,
+    0.2
+  ); /* Proportion Highlight Background in dark mode */
+  color: #ffffff; /* Proportion Text in dark mode */
 }
 
 /* Result reveal animation */
 @keyframes resultReveal {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Success glow animation for the submit button */
 @keyframes successGlow {
-  0% { box-shadow: 0 0 0 rgba(34, 197, 94, 0); } /* Success Green with 0 opacity */
-  50% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.8); } /* Success Green with high opacity */
-  100% { box-shadow: 0 0 0 rgba(34, 197, 94, 0); } /* Success Green with 0 opacity */
+  0% {
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+  } /* Success Green with 0 opacity */
+  50% {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  } /* Success Green with high opacity */
+  100% {
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+  } /* Success Green with 0 opacity */
 }
 
 /* Success glow animation for the result card */
 @keyframes resultSuccessGlow {
-  0% { box-shadow: 0 0 2px rgba(46, 90, 140, 0.1); } /* Primary Blue with low opacity */
-  40% { box-shadow: 0 0 15px rgba(46, 90, 140, 0.3); } /* Primary Blue with medium opacity */
-  100% { box-shadow: 0 0 2px rgba(46, 90, 140, 0.1); } /* Primary Blue with low opacity */
+  0% {
+    box-shadow: 0 0 2px rgba(46, 90, 140, 0.1);
+  } /* Primary Blue with low opacity */
+  40% {
+    box-shadow: 0 0 15px rgba(46, 90, 140, 0.3);
+  } /* Primary Blue with medium opacity */
+  100% {
+    box-shadow: 0 0 2px rgba(46, 90, 140, 0.1);
+  } /* Primary Blue with low opacity */
 }
 
 @keyframes darkResultSuccessGlow {
-  0% { box-shadow: 0 0 2px rgba(74, 144, 226, 0.1); } /* Dark mode Primary Blue with low opacity */
-  40% { box-shadow: 0 0 15px rgba(74, 144, 226, 0.3); } /* Dark mode Primary Blue with medium opacity */
-  100% { box-shadow: 0 0 2px rgba(74, 144, 226, 0.1); } /* Dark mode Primary Blue with low opacity */
+  0% {
+    box-shadow: 0 0 2px rgba(74, 144, 226, 0.1);
+  } /* Dark mode Primary Blue with low opacity */
+  40% {
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+  } /* Dark mode Primary Blue with medium opacity */
+  100% {
+    box-shadow: 0 0 2px rgba(74, 144, 226, 0.1);
+  } /* Dark mode Primary Blue with low opacity */
 }
 
 .animate-success-glow {
@@ -271,19 +360,30 @@ textarea:focus {
 }
 
 /* Premium button hover effects */
-button:not(:disabled), 
+button:not(:disabled),
 .button:not(:disabled) {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
-button:not(:disabled):hover, 
-.button:not(:disabled):hover {
-  transform: translateY(-2px) scale(1.015);
+button:not(:disabled):hover,
+.button:not(:disabled):hover,
+[role="button"]:not(:disabled):hover,
+input[type="submit"]:not(:disabled):hover,
+input[type="button"]:not(:disabled):hover {
+  transform: none !important;
 }
 
 /* Premium button gradient for special actions */
 .premium-button {
-  background: linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary) 80%, var(--secondary)));
+  background: linear-gradient(
+    to right,
+    var(--primary),
+    color-mix(in srgb, var(--primary) 80%, var(--secondary))
+  );
   color: white;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -294,7 +394,11 @@ button:not(:disabled):hover,
 }
 
 .dark .premium-button {
-  background: linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary) 70%, var(--secondary)));
+  background: linear-gradient(
+    to right,
+    var(--primary),
+    color-mix(in srgb, var(--primary) 70%, var(--secondary))
+  );
 }
 
 /* Custom tooltip styles */
@@ -318,14 +422,16 @@ button:not(:disabled):hover,
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s, visibility 0.2s;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
   z-index: 1000;
   pointer-events: none;
   border: 1px solid var(--border);
 }
 
 .premium-tooltip::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -335,7 +441,9 @@ button:not(:disabled):hover,
   border-color: #333 transparent transparent transparent;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
   z-index: 100;
   pointer-events: none;
 }
@@ -357,7 +465,11 @@ button:not(:disabled):hover,
     width: 100%;
     height: 100vh;
     z-index: -1;
-    background: linear-gradient(to bottom, rgba(46, 90, 140, 0.05), rgba(255, 255, 255, 0));
+    background: linear-gradient(
+      to bottom,
+      rgba(46, 90, 140, 0.05),
+      rgba(255, 255, 255, 0)
+    );
     transform: translateY(0);
     will-change: transform;
   }
@@ -365,24 +477,32 @@ button:not(:disabled):hover,
 
 /* Add scale animation for buttons and inputs */
 @keyframes scaleIn {
-  from { transform: scale(1); }
-  to { transform: scale(1.03); }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
 }
 
 /* Add transitions for smooth theme switching */
 html {
-  transition: background-color 0.5s, color 0.5s;
+  transition:
+    background-color 0.5s,
+    color 0.5s;
 }
 
 body * {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property:
+    /* background-color, */ border-color, color, fill, stroke, opacity, box-shadow,
+    /* transform, */ filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 0.15s;
 }
 
 /* Overrides for react-cookie-consent buttons */
 #rcc-confirm-button {
-  background-color: #2E5A8C !important; /* Primary Blue */
+  background-color: #2e5a8c !important; /* Primary Blue */
   color: white !important;
   border: 1px solid hsl(var(--border)) !important;
   padding: 0.5rem 0.75rem !important;
@@ -394,7 +514,12 @@ body * {
 }
 
 #rcc-confirm-button:hover {
-  background-color: rgba(46, 90, 140, 0.9) !important; /* Slightly lighter Primary Blue */
+  background-color: rgba(
+    46,
+    90,
+    140,
+    0.9
+  ) !important; /* Slightly lighter Primary Blue */
 }
 
 #rcc-decline-button {
@@ -411,3 +536,100 @@ body * {
 #rcc-decline-button:hover {
   text-decoration: underline !important;
 }
+
+/* Reduced Motion Helper */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* PrivacyBee Widget Light Mode Overrides REMOVED - Trying data-theme attribute instead */
+/*
+html:not(.dark) privacybee-widget {
+    // ... removed overrides ...
+}
+*/
+
+/* Add smoother transitions globally */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Add fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Add staggered fade-in for lists */
+@keyframes staggeredFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.staggered-item {
+  animation: staggeredFadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+/* Prevent flashing during theme changes */
+html.transitioning * {
+  transition: none !important;
+}
+
+/* Add padding to account for fixed header - Handled by inner div padding */
+body {
+  /* padding-top: 4rem; */ /* Remove, will be added to inner div */
+  overflow-x: hidden; /* Restore to prevent potential layout shifts during scroll/interaction */
+  /* overflow-y: scroll; */ /* Add scroll rule here - MOVED TO @layer base */
+}
+
+/* Prevent layout shifts during theme changes */
+html.transitioning {
+  overflow-y: scroll !important; /* Force scrollbar to remain visible */
+}
+
+/* Ensure fixed elements stay in place during transitions */
+.fixed {
+  transform: translateZ(0); /* Force GPU acceleration for fixed elements */
+  will-change: transform; /* Hint to browser about upcoming changes */
+  backface-visibility: hidden; /* Prevent flickering in some browsers */
+}
+
+/* Improve header appearance during scrolling */
+header.fixed {
+  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Ensure sticky header works consistently - REMOVED as Tailwind class is sufficient */
+/*
+header.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  will-change: transform; 
+}
+*/
