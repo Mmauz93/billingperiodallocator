@@ -1,6 +1,11 @@
-'use client';
+"use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -29,7 +34,7 @@ export function LegalDocumentModal({
           <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
         </DialogHeader>
         <div className="text-sm text-muted-foreground mb-2">
-          {t('General.lastUpdated', { date: 'April 25, 2025' })}
+          {t("General.lastUpdated", { date: "April 25, 2025" })}
         </div>
         <div className="overflow-y-auto pr-6 -mr-6 pb-4 text-sm">
           <div className="space-y-4">
@@ -53,9 +58,7 @@ export function LegalDocumentModal({
                 ol: ({ ...props }) => (
                   <ol className="list-decimal pl-6 mb-3" {...props} />
                 ),
-                li: ({ ...props }) => (
-                  <li className="mb-1" {...props} />
-                ),
+                li: ({ ...props }) => <li className="mb-1" {...props} />,
                 a: ({ ...props }) => (
                   <a
                     className="text-primary hover:underline"
@@ -66,14 +69,16 @@ export function LegalDocumentModal({
                 ),
               }}
             >
-              {content || ''}
+              {content || ""}
             </ReactMarkdown>
           </div>
         </div>
         <div className="flex justify-end mt-4">
-          <Button onClick={() => onOpenChange(false)}>{t("SettingsModal.closeButton")}</Button>
+          <Button onClick={() => onOpenChange(false)}>
+            {t("SettingsModal.closeButton")}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
-} 
+}

@@ -1,34 +1,62 @@
 ## 1. General Information
-These Terms of Service ("Terms") govern your access and use of https://siempi.ch/ ("the Website"), operated by Siempi AG ("we" or "us"). The Website serves as a technical interface that operates on the Ethereum blockchain. Our platform facilitates the creation of ERC20 tokens through smart contracts, which are used to establish legally binding agreements directly on the blockchain. Users must connect their MetaMask wallets to interact with the services offered. Each time you access the Website, you irrevocably agree to be bound by the Terms posted on the Website.
+These Terms of Service ("Terms") govern your access to and use of https://siempi.ch/ ("Website"), operated by Siempi AG ("we", "us").
+Our Website acts as a technical interface on the Ethereum blockchain, facilitating the creation of ERC20 tokens via smart contracts. These tokens establish legally binding agreements directly on-chain.
+To use our services, you must connect your MetaMask wallet. By accessing or using the Website, you irrevocably agree to these Terms.
 
 ## 2. User Acknowledgements
-You acknowledge that all transactions initiated via our Website, are performed on blockchain networks using MetaMask and are governed by their respective privacy policies and terms. Siempi AG is not affiliated with the Ethereum organization and does not control, influence, or guarantee the functionality of the Ethereum blockchain or any other blockchain network. You understand the inherent risks associated with blockchain technology and agree to them.
+By using the Website, you acknowledge and agree that:
+
+- All transactions are executed on blockchain networks via MetaMask and are subject to MetaMask's own terms and privacy policies.
+- Siempi AG is not affiliated with the Ethereum organization and has no control over the functionality, availability, or security of the Ethereum blockchain or any other network.
+- You accept all risks inherent in blockchain technology, including transaction finality, volatility, and smart contract risks.
 
 ## 3. Eligibility
-You must be at least the age of majority in your jurisdiction to use our Website. You affirm that your use of the Website will comply with all applicable laws and regulations. Additionally, you confirm that you are not located in or a resident of any jurisdiction under trade embargoes or sanctions by your government.
+To use this Website, you must:
+
+- Be at least the age of majority in your jurisdiction.
+- Comply with all applicable laws and regulations.
+- Not reside in any jurisdiction under a trade embargo or sanctions applicable to your government.
 
 ## 4. Disclaimer
-The Website is provided on an "as is" and "as available" basis without warranties of any kind. We do not offer legal, financial, or investment advice, and no information provided should be taken as such. We disclaim all liability related to your use of the Website. Additionally, Siempi AG makes no guarantees that the Website is free of errors, mistakes, misrepresentations, or failures. References and links to third-party websites are outside our area of responsibility, and we reject any responsibility for such websites. Users will act at their own risk in accessing or relying on the content of the Website and are solely responsible for any consequences thereof.
+The Website is provided "as is" and "as available" without any warranties.
+Siempi AG:
+
+- Does not provide legal, financial, or investment advice.
+- Disclaims all liability related to your use of the Website.
+- Makes no guarantees regarding accuracy, completeness, or uninterrupted availability.
+- External links are provided for convenience; we do not endorse or take responsibility for third-party content. 
+
+Your use of the Website and reliance on any content is at your own risk.
 
 ## 5. Intellectual Property
-All content on this website, including but not limited to text, graphics, logos, images, and software, is the property of Siempi AG or its content suppliers and is protected by international copyright laws. You may not reproduce, distribute, modify, transmit, reuse, or adapt any portion of this website without express written consent from us.
+All content on the Website — including text, graphics, logos, images, and software — is the exclusive property of Siempi AG or its licensors.
+Without our prior written permission, you may not:
+
+- Reproduce
+- Distribute
+- Modify
+- Transmit
+- Reuse or adapt any portion of the Website.
 
 ## 6. Violations and Disclosures
-We reserve the right to disclose any information necessary to satisfy any applicable law, regulation, legal process, or governmental request. If you violate these Terms, we may take legal action against you and you agree to be responsible for legal fees in such cases.
+We reserve the right to disclose any information necessary to:
+
+- Comply with applicable laws, regulations, or governmental requests.
+- Investigate suspected violations.
+
+In cases of violations of these Terms, you agree to be responsible for all legal fees and damages resulting from your misconduct.
 
 ## 7. Changes to Terms
-Siempi AG reserves the right to modify these Terms at any time. We will provide notice of these changes by revising the date at the top of the Terms. Your continued use of the Website after such changes will constitute acceptance of the new Terms.
+We may revise these Terms at any time. Updates will be reflected by changing the "Last Updated" date at the top of the page.
+By continuing to use the Website after changes are posted, you accept the revised Terms.
 
-## 8. Contact Us
-If you have any questions or concerns regarding these Terms, please contact us at:
+## 8. Contact Information
+If you have any questions about these Terms, please contact us:
 
 **Siempi AG**  
 Birkenstrasse 47  
-6343 Rotkreuz  
-Switzerland  
+6343 Rotkreuz, Switzerland  
 info@siempi.ch
 
 Legal seat: Risch  
 Registration number: CHE-369.093.556
-
-**Copyright © 2025 Siempi AG. All rights reserved.** 

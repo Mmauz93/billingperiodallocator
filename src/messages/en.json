@@ -22,7 +22,14 @@
     "errorAmountPositive": "Amount must be a positive number.",
     "errorAmountNumber": "Amount must be a number.",
     "errorAmountValueRequired": "Amount is required.",
-    "amountHelper": "Enter the total invoice amount for the service period."
+    "amountHelper": "Enter the total invoice amount for the service period.",
+    "supportedDateFormats": "Supported formats: YYYY-MM-DD, DD.MM.YYYY",
+    "splitPeriodLabel": "Split Period",
+    "splitPeriodDescription": "Choose how to split the invoice amounts.",
+    "periodYearly": "Yearly",
+    "periodQuarterly": "Quarterly",
+    "periodMonthly": "Monthly",
+    "selectPeriodPlaceholder": "Select..."
   },
   "ResultsDisplay": {
     "resultsTitle": "Allocation Results",
@@ -34,10 +41,13 @@
     "amountLabel": "amount",
     "amountsLabel": "amounts",
     "enteredLabel": "entered",
-    "aggregatedTitle": "Allocation per Year",
+    "aggregatedTitle": "Allocation per Period",
     "detailedTitle": "Detailed Allocation per Amount",
     "calculationStepsTitle": "View Full Split Calculation",
     "yearHeader": "Year",
+    "periodHeader": "Period",
+    "quarterHeader": "Quarter",
+    "monthHeader": "Month",
     "daysHeader": "Days",
     "proportionHeader": "Proportion",
     "totalSplitAmountHeader": "Amount",
@@ -64,6 +74,7 @@
     "summaryTotal": "{{total}} ({{count}} {{amountLabel}} {{enteredLabel}})",
     "inputSummary": "Input Summary",
     "yesLabel": "Yes",
+    "noLabel": "No",
     "totalDurationLabel": "Total Duration (days)",
     "originalTotalAmountLabel": "Original Total Amount",
     "inputSummarySheetName": "Input Summary",
@@ -72,7 +83,8 @@
     "pdfTitle": "Invoice Split Calculation",
     "amountHeader": "Amount",
     "successMessage": "Split completed successfully! Your detailed allocation is ready.",
-    "summaryTitle": "Summary"
+    "summaryTitle": "Summary",
+    "placeholderText": "Calculation results will appear here."
   },
   "SettingsModal": {
     "title": "Number Formatting",
@@ -97,31 +109,39 @@
     "space": "Space"
   },
   "General": {
-      "appName": "Invoice Allocator",
-      "allRightsReserved": "Copyright © by Siempi AG {{year}}",
-      "privacyPolicy": "Privacy Policy",
-      "termsOfUse": "Terms of Use",
-      "lastUpdated": "Last Updated: {{date}}",
-      "tagline": "Built for Finance Professionals. Trusted by SMEs and Accountants."
+    "appName": "Invoice Allocator",
+    "allRightsReserved": "Copyright © by Siempi AG {{year}}",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use",
+    "impressum": "Imprint",
+    "lastUpdated": "Last Updated: {{date}}",
+    "tagline": "Built for Finance Professionals. Trusted by SMEs and Accountants.",
+    "getStarted": "Get Started",
+    "feedback": "Share Feedback"
   },
   "Errors": {
-      "calculationErrorTitle": "Calculation Error",
-      "unexpectedError": "An unexpected error occurred during the calculation."
+    "calculationErrorTitle": "Calculation Error",
+    "unexpectedError": "An unexpected error occurred during the calculation."
   },
   "FeedbackDialog": {
-      "sendFeedbackButton": "Share Your Feedback",
-      "dialogTitle": "Provide Feedback",
-      "description": "Share your thoughts, suggestions, or report issues. This will open your default email client.",
-      "messageLabel": "Your Message",
-      "messagePlaceholder": "Type your message here...",
-      "cancelButton": "Cancel",
-      "openEmailButton": "Open Email Client"
+    "sendFeedbackButton": "Share Your Feedback",
+    "dialogTitle": "Provide Feedback",
+    "description": "Share your thoughts, suggestions, or report issues. This will open your default email client.",
+    "messageLabel": "Your Message",
+    "messagePlaceholder": "Type your message here...",
+    "cancelButton": "Cancel",
+    "openEmailButton": "Open Email Client",
+    "submitButton": "Submit",
+    "submittingButton": "Submitting...",
+    "successMessage": "Feedback submitted successfully!",
+    "errorEmptyMessage": "Please enter a message.",
+    "errorSubmit": "Error submitting feedback."
   },
   "ThemeToggle": {
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System",
-      "toggleTheme": "Toggle theme"
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggleTheme": "Toggle theme"
   },
   "Accessibility": {
     "settingsDescription": "Adjust number formatting preferences.",
@@ -142,11 +162,37 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
     "copyright": "© {{year}} Siempi AG — All rights reserved.",
-    "brandName": "BillSplitter by Siempi AG"
+    "brandName": "BillSplitter by Siempi AG",
+    "tagline": "Designed for finance professionals and businesses.",
+    "description": "Split invoices cleanly across fiscal years.",
+    "productName": "Bill",
+    "companyName": "Siempi AG"
   },
   "App": {
     "title": "Automated Invoice Split Calculator — Precise. Fast. Simple.",
     "tagline": "Designed for finance professionals and businesses.",
     "description": "Split invoices cleanly across fiscal years."
+  },
+  "AppPage": {
+    "title": "Enter Invoice Details",
+    "description": "Fill in the fields below to split invoice amounts across fiscal periods."
+  },
+  "Landing": {
+    "logoAlt": "BillSplitter Logo Icon",
+    "heroTitle": "Automated Invoice Split Calculator",
+    "heroSubtitle": "BillSplitter helps you split invoices across fiscal years accurately and effortlessly. Built for finance professionals and businesses. Fast, simple, precise.",
+    "feature1Alt": "Accurate Allocation Icon",
+    "feature1Title": "Accurate Period Allocation",
+    "feature1Desc": "Automatically calculate how much of an invoice belongs to each fiscal year — no more manual errors.",
+    "feature2Alt": "Deferred Revenue Icon",
+    "feature2Title": "Prepaid Expenses & Deferred Revenue",
+    "feature2Desc": "Supports allocation aligned with IFRS 15, HGB, and OR standards for clean, compliant bookkeeping.",
+    "feature3Alt": "No Login Needed Icon",
+    "feature3Title": "No Login. No Data Storage.",
+    "feature3Desc": "Use BillSplitter instantly without creating an account. Your data stays secure and private.",
+    "ctaTitle": "Start Splitting Invoices Now",
+    "ctaSubtitle": "Launch the calculator and automate your revenue and expense allocations within seconds.",
+    "ctaButton": "Test with Demo Data",
+    "ctaIconAlt": "Invoice Allocation Illustration"
   }
-} 
+}

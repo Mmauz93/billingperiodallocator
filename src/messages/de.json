@@ -27,7 +27,14 @@
     "endDateTooltip": "Wählen Sie, wann der Leistungszeitraum endet.",
     "startDateHelper": "Wählen Sie den ersten Tag des Leistungszeitraums.",
     "endDateHelper": "Wählen Sie den letzten Tag des Leistungszeitraums.",
-    "amountHelper": "Geben Sie den Gesamtrechnungsbetrag für den Leistungszeitraum ein."
+    "amountHelper": "Geben Sie den Gesamtrechnungsbetrag für den Leistungszeitraum ein.",
+    "supportedDateFormats": "Unterstützte Formate: TT.MM.JJJJ, JJJJ-MM-TT",
+    "splitPeriodLabel": "Aufteilungszeitraum",
+    "splitPeriodDescription": "Wählen Sie, wie die Rechnungsbeträge aufgeteilt werden sollen.",
+    "periodYearly": "Jährlich",
+    "periodQuarterly": "Quartalsweise",
+    "periodMonthly": "Monatlich",
+    "selectPeriodPlaceholder": "Wählen..."
   },
   "ResultsDisplay": {
     "resultsTitle": "Zuteilungsergebnisse",
@@ -39,10 +46,13 @@
     "amountLabel": "Betrag",
     "amountsLabel": "Beträge",
     "enteredLabel": "eingegeben",
-    "aggregatedTitle": "Zuteilung pro Jahr",
+    "aggregatedTitle": "Zuteilung pro Periode",
     "detailedTitle": "Detaillierte Zuteilung pro Betrag",
     "calculationStepsTitle": "Vollständige Berechnungsdetails anzeigen",
     "yearHeader": "Jahr",
+    "periodHeader": "Periode",
+    "quarterHeader": "Quartal",
+    "monthHeader": "Monat",
     "daysHeader": "Tage",
     "proportionHeader": "Anteil %",
     "totalSplitAmountHeader": "Betrag",
@@ -69,6 +79,7 @@
     "summaryTotal": "{{total}} ({{count}} {{amountLabel}} {{enteredLabel}})",
     "inputSummary": "Eingabeübersicht",
     "yesLabel": "Ja",
+    "noLabel": "Nein",
     "totalDurationLabel": "Gesamtdauer (Tage)",
     "originalTotalAmountLabel": "Ursprünglicher Gesamtbetrag",
     "inputSummarySheetName": "Eingabeübersicht",
@@ -77,7 +88,8 @@
     "pdfTitle": "Rechnungsaufteilungsberechnung",
     "amountHeader": "Betrag",
     "successMessage": "Aufteilung erfolgreich abgeschlossen! Ihre detaillierte Zuteilung ist bereit.",
-    "summaryTitle": "Zusammenfassung"
+    "summaryTitle": "Zusammenfassung",
+    "placeholderText": "Berechnungsergebnisse werden hier angezeigt."
   },
   "SettingsModal": {
     "title": "Zahlenformatierung",
@@ -102,42 +114,54 @@
     "space": "Leerzeichen"
   },
   "General": {
-      "appName": "Rechnungsverteiler",
-      "allRightsReserved": "Copyright © von Siempi AG {{year}}",
-      "privacyPolicy": "Datenschutzerklärung",
-      "termsOfUse": "Nutzungsbedingungen",
-      "lastUpdated": "Zuletzt aktualisiert: {{date}}",
-      "tagline": "Entwickelt für Finanzfachleute. Vertraut von KMUs und Buchhaltern."
+    "appName": "Rechnungsverteiler",
+    "allRightsReserved": "Copyright © von Siempi AG {{year}}",
+    "privacyPolicy": "Datenschutzerklärung",
+    "termsOfUse": "Nutzungsbedingungen",
+    "impressum": "Impressum",
+    "lastUpdated": "Zuletzt aktualisiert: {{date}}",
+    "tagline": "Entwickelt für Finanzfachleute. Vertraut von KMUs und Buchhaltern.",
+    "getStarted": "Jetzt starten",
+    "feedback": "Feedback geben"
   },
   "App": {
-    "title": "Automatisierter Rechnungsaufteilungs-Rechner — Präzise. Schnell. Einfach.",
-    "tagline": "Entwickelt für Finanzprofis und Unternehmen.",
-    "description": "Rechnungen sauber über Geschäftsjahre hinweg aufteilen."
+    "title": "Automatisierter Rechnungsperioden-Rechner — Präzise. Schnell. Einfach.",
+    "tagline": "Entwickelt für Finanzfachleute und Unternehmen.",
+    "description": "Teilen Sie Rechnungen sauber über Geschäftsjahre auf."
   },
   "Footer": {
     "privacyPolicy": "Datenschutzerklärung",
     "termsOfUse": "Nutzungsbedingungen",
     "copyright": "© {{year}} Siempi AG — Alle Rechte vorbehalten.",
-    "brandName": "BillSplitter von Siempi AG"
+    "brandName": "BillSplitter von Siempi AG",
+    "tagline": "Entwickelt für Finanzfachleute und Unternehmen.",
+    "description": "Teilen Sie Rechnungen sauber auf Geschäftsjahre auf.",
+    "productName": "Bill",
+    "companyName": "Siempi AG"
   },
   "Errors": {
-      "calculationErrorTitle": "Berechnungsfehler",
-      "unexpectedError": "Während der Berechnung ist ein unerwarteter Fehler aufgetreten."
+    "calculationErrorTitle": "Berechnungsfehler",
+    "unexpectedError": "Während der Berechnung ist ein unerwarteter Fehler aufgetreten."
   },
   "FeedbackDialog": {
-      "sendFeedbackButton": "Feedback teilen",
-      "dialogTitle": "Feedback geben",
-      "description": "Teilen Sie Ihre Gedanken, Vorschläge oder melden Sie Probleme. Dies öffnet Ihren Standard-E-Mail-Client.",
-      "messageLabel": "Ihre Nachricht",
-      "messagePlaceholder": "Schreiben Sie Ihre Nachricht hier...",
-      "cancelButton": "Abbrechen",
-      "openEmailButton": "E-Mail-Client öffnen"
+    "sendFeedbackButton": "Feedback teilen",
+    "dialogTitle": "Feedback geben",
+    "description": "Teilen Sie Ihre Gedanken, Vorschläge oder melden Sie Probleme. Dies öffnet Ihren Standard-E-Mail-Client.",
+    "messageLabel": "Ihre Nachricht",
+    "messagePlaceholder": "Schreiben Sie Ihre Nachricht hier...",
+    "cancelButton": "Abbrechen",
+    "openEmailButton": "E-Mail-Client öffnen",
+    "submitButton": "Senden",
+    "submittingButton": "Wird gesendet...",
+    "successMessage": "Feedback erfolgreich gesendet!",
+    "errorEmptyMessage": "Bitte geben Sie eine Nachricht ein.",
+    "errorSubmit": "Fehler beim Senden des Feedbacks."
   },
   "ThemeToggle": {
-      "light": "Hell",
-      "dark": "Dunkel",
-      "system": "System",
-      "toggleTheme": "Design umschalten"
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "toggleTheme": "Design umschalten"
   },
   "Accessibility": {
     "settingsDescription": "Passen Sie Zahlenformatierungspräferenzen an.",
@@ -153,5 +177,41 @@
     "acceptButton": "Akzeptieren",
     "declineButton": "Ablehnen",
     "learnMoreButton": "Datenschutzerklärung"
+  },
+  "Legal": {
+    "lastUpdated": "Zuletzt aktualisiert am"
+  },
+  "AppPage": {
+    "title": "Rechnungsdetails eingeben",
+    "description": "Füllen Sie die folgenden Felder aus, um Rechnungsbeträge über Geschäftsperioden aufzuteilen."
+  },
+  "Landing": {
+    "logoAlt": "BillSplitter Logo Symbol",
+    "heroTitle": "Automatisierter Rechnungsperioden-Rechner",
+    "heroSubtitle": "BillSplitter hilft Ihnen, Rechnungen präzise und mühelos über Geschäftsjahre zu verteilen. Entwickelt für Finanzfachleute und Unternehmen. Schnell, einfach, präzise.",
+    "feature1Alt": "Symbol für genaue Zuteilung",
+    "feature1Title": "Genaue Periodenzuteilung",
+    "feature1Desc": "Berechnen Sie automatisch, wie viel einer Rechnung in jedes Geschäftsjahr gehört — keine manuellen Fehler mehr.",
+    "feature2Alt": "Symbol für abgegrenzte Erträge",
+    "feature2Title": "Vorauszahlungen & Rechnungsabgrenzung",
+    "feature2Desc": "Unterstützt Allokationen gemäß IFRS 15, HGB und OR für eine saubere, konforme Buchhaltung.",
+    "feature3Alt": "Symbol für keine Anmeldung nötig",
+    "feature3Title": "Keine Anmeldung. Keine Datenspeicherung.",
+    "feature3Desc": "Nutzen Sie BillSplitter sofort ohne Konto. Ihre Daten bleiben sicher und privat.",
+    "ctaTitle": "Starten Sie jetzt mit der Rechnungsaufteilung",
+    "ctaSubtitle": "Starten Sie den Rechner und automatisieren Sie Ihre Ertrags- und Ausgabenzuteilungen in Sekundenschnelle.",
+    "ctaButton": "Jetzt ausprobieren",
+    "ctaIconAlt": "Illustration zur Rechnungsaufteilung",
+    "faqTitle": "Häufig gestellte Fragen",
+    "faqQuestion1": "Wie berechnet BillSplitter Rechnungsaufteilungen?",
+    "faqAnswer1": "BillSplitter berechnet anteilige Zuweisungen basierend auf der genauen Anzahl der Tage in jeder Rechnungsperiode. Es teilt den Gesamtrechnungsbetrag durch die Anzahl der Tage im Leistungszeitraum und multipliziert diesen dann mit den Tagen in jedem Geschäftsjahr oder jeder Periode.",
+    "faqQuestion2": "Muss ich ein Konto erstellen, um BillSplitter zu nutzen?",
+    "faqAnswer2": "Nein, BillSplitter ist vollständig ohne Konto nutzbar. Sie können es sofort verwenden, ohne sich anzumelden, ein Passwort zu erstellen oder persönliche Daten anzugeben. Ihre Daten werden lokal verarbeitet und niemals auf unseren Servern gespeichert.",
+    "faqQuestion3": "Ist BillSplitter konform mit Buchhaltungsstandards?",
+    "faqAnswer3": "Ja, BillSplitter folgt den Prinzipien der periodengerechten Abgrenzung gemäß IFRS 15, HGB und OR, was es für die korrekte Erfassung von abgegrenzten Erträgen und aktiven Rechnungsabgrenzungsposten in Finanzberichten geeignet macht.",
+    "faqQuestion4": "Kann ich Rechnungen nach monatlichen, vierteljährlichen oder jährlichen Zeiträumen aufteilen?",
+    "faqAnswer4": "Ja, BillSplitter unterstützt mehrere Aufteilungsoptionen. Sie können Rechnungen nach jährlichen, vierteljährlichen oder monatlichen Zeiträumen aufteilen, je nach Ihren Buchhaltungs- und Berichtsanforderungen.",
+    "faqQuestion5": "Wie genau sind die Berechnungen?",
+    "faqAnswer5": "BillSplitter liefert hochpräzise Berechnungen bis auf den Tag genau, mit korrekter Rundung auf die Dezimalstelle Ihrer Wahl. Etwaige geringfügige Rundungsdifferenzen werden automatisch angepasst, um sicherzustellen, dass die Gesamtsumme immer Ihrem eingegebenen Betrag entspricht."
   }
 }

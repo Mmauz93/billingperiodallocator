@@ -1,20 +1,21 @@
-'use client'
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useEffect, useState } from "react"
+} from "@/components/ui/dropdown-menu";
+import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
-import { useTranslation } from 'react-i18next';
+import { changeLanguage } from "@/i18n-client";
+import { useTranslation } from "react-i18next";
 
 export default function LanguageToggle() {
   const { i18n } = useTranslation();
@@ -26,8 +27,8 @@ export default function LanguageToggle() {
     setMounted(true);
   }, []);
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  const handleLanguageChange = (lng: string) => {
+    changeLanguage(lng);
     setOpen(false);
   };
 
@@ -46,34 +47,34 @@ export default function LanguageToggle() {
       </DropdownMenuTrigger>
       <AnimatePresence>
         {open && (
-          <DropdownMenuContent asChild forceMount>
+          <DropdownMenuContent align="end" side="top" sideOffset={4} asChild forceMount>
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
             >
-              <DropdownMenuItem onClick={() => changeLanguage("en")}>
-                <ReactCountryFlag 
+              <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
+                <ReactCountryFlag
                   countryCode="GB"
                   svg
                   style={{
-                    width: '1.2em',
-                    height: '1.2em',
-                    marginRight: '0.5rem'
+                    width: "1.2em",
+                    height: "1.2em",
+                    marginRight: "0.5rem",
                   }}
                   title="English"
                 />
                 <span className={isEnglish ? "font-bold" : ""}>English</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("de")}>
-                <ReactCountryFlag 
+              <DropdownMenuItem onClick={() => handleLanguageChange("de")}>
+                <ReactCountryFlag
                   countryCode="DE"
                   svg
                   style={{
-                    width: '1.2em',
-                    height: '1.2em',
-                    marginRight: '0.5rem'
+                    width: "1.2em",
+                    height: "1.2em",
+                    marginRight: "0.5rem",
                   }}
                   title="Deutsch"
                 />
@@ -85,4 +86,4 @@ export default function LanguageToggle() {
       </AnimatePresence>
     </DropdownMenu>
   );
-} 
+}

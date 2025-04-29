@@ -1,10 +1,9 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-
+import LanguageDetector from "i18next-browser-languagedetector";
+import deTranslations from "./messages/de.json";
 // Import your translation files directly
-import enTranslations from './messages/en.json';
-import deTranslations from './messages/de.json';
+import enTranslations from "./messages/en.json";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 i18n
   // Detect user language
@@ -13,8 +12,8 @@ i18n
   .use(initReactI18next)
   // Init i18next
   .init({
-    debug: process.env.NODE_ENV === 'development', // Enable debug output in development
-    fallbackLng: 'en', // Fallback language if detection fails
+    debug: process.env.NODE_ENV === "development", // Enable debug output in development
+    fallbackLng: "en", // Fallback language if detection fails
     interpolation: {
       escapeValue: false, // React already safes from xss
     },
@@ -29,25 +28,31 @@ i18n
     // Configuration for LanguageDetector (optional, customize as needed)
     detection: {
       // Order and from where user language should be detected
-      order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+      order: ["localStorage", "cookie", "navigator", "htmlTag"],
 
       // Keys or params to lookup language from
-      lookupLocalStorage: 'appSettings.locale', // Sync with our settings context key if possible
-      // lookupQuerystring: 'lng',
-      // lookupCookie: 'i18next',
-      // lookupFromPathIndex: 0,
-      // lookupFromSubdomainIndex: 0,
+      lookupLocalStorage: "billingperiodallocator-language", // Simple key for localStorage
+      lookupCookie: "billingperiodallocator-language", // Use matching cookie name
 
       // Cache user language on
-      caches: ['localStorage'], // Cache detected language in localStorage (i18next will use its own key)
-      // excludeCacheFor: ['cimode'], // Languages to not follow the cache
-
-      // Optional htmlTag update, set lang attr on <html> (usually handled by react-helmet or next/head)
-      // htmlTag: document.documentElement,
-
-      // Optional set cookie options: 
-      // cookieOptions: { path: '/', sameSite: 'strict' }
-    }
+      caches: ["localStorage", "cookie"], // Cache in both localStorage and cookie for persistence
+      
+      // Cookie options for better persistence
+      cookieOptions: { 
+        path: '/', 
+        sameSite: 'strict',
+        maxAge: 31536000 // Cookie valid for 1 year (365 days in seconds)
+      }
+    },
   });
 
-export default i18n; 
+// Force language reloading on page changes
+export const changeLanguage = (lng: string) => {
+  return i18n.changeLanguage(lng).then(() => {
+    localStorage.setItem("billingperiodallocator-language", lng);
+    document.documentElement.lang = lng;
+  });
+};
+
+export default i18n;
+
