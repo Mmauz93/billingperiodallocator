@@ -251,69 +251,70 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
         }
     }, [t, onCalculateAction, setIsCalculating, setButtonText, setShowSuccessGlow]);
 
-    // Effect for Initial Data Loading (URL Params > Session Storage > Defaults)
+    // Effect for Initial Data Loading (URL Demo Data via Session > Session Storage > Defaults)
     useEffect(() => {
         if (typeof window === 'undefined' || mounted) {
             return; // Run only once on the client after initial mount
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const demoStartDateParam = params.get('startDate');
-        const demoEndDateParam = params.get('endDate');
-        const demoAmountParam = params.get('amount');
+        let initialDataSet = false;
+        const demoDataString = sessionStorage.getItem('billSplitterDemoData');
 
-        if (demoStartDateParam && demoEndDateParam && demoAmountParam) {
-            const demoValues: Partial<FormSchemaType> = {
-                includeEndDate: params.get('includeEndDate') === 'true',
-                splitPeriod: (params.get('splitPeriod') as FormSchemaType['splitPeriod']) || 'yearly',
-                amounts: [{ value: demoAmountParam.replace(/,/g, '') }]
-            };
+        if (demoDataString) {
+            try {
+                const demoData = JSON.parse(demoDataString);
+                if (demoData.isDemo) { // Check the flag
+                    const demoValuesForForm: Partial<FormSchemaType> = {
+                        startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
+                        endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
+                        includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
+                        splitPeriod: demoData.splitPeriod || 'yearly',
+                        amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
+                    };
+                    
+                    const fullDemoValues: FormSchemaType = {
+                        startDateString: demoValuesForForm.startDateString || '',
+                        endDateString: demoValuesForForm.endDateString || '',
+                        includeEndDate: demoValuesForForm.includeEndDate !== undefined ? demoValuesForForm.includeEndDate : true,
+                        splitPeriod: demoValuesForForm.splitPeriod || 'yearly',
+                        amounts: demoValuesForForm.amounts || [{value: ''}]
+                    };
 
-            const parsedStartDate = tryParseDate(demoStartDateParam);
-            if (parsedStartDate) {
-                demoValues.startDateString = format(parsedStartDate, displayDateFormat);
-            }
-            const parsedEndDate = tryParseDate(demoEndDateParam);
-            if (parsedEndDate) {
-                demoValues.endDateString = format(parsedEndDate, displayDateFormat);
-            }
-            
-            // Construct the full object for reset to ensure all fields are considered
-            const fullDemoValues: FormSchemaType = {
-                startDateString: demoValues.startDateString || '',
-                endDateString: demoValues.endDateString || '',
-                includeEndDate: demoValues.includeEndDate !== undefined ? demoValues.includeEndDate : true,
-                splitPeriod: demoValues.splitPeriod || 'yearly',
-                amounts: demoValues.amounts || [{value: ''}]
-            };
+                    form.reset(fullDemoValues);
+                    // No need to save back to session storage if it was just for demo init
+                    // sessionStorage.setItem(storageKey, JSON.stringify(fullDemoValues)); 
+                    sessionStorage.removeItem('billSplitterDemoData'); // Clear the demo flag/data
+                    initialDataSet = true;
 
-            form.reset(fullDemoValues);
-            sessionStorage.setItem(storageKey, JSON.stringify(fullDemoValues));
-
-            form.trigger().then((isValidAfterTrigger) => {
-                if (isValidAfterTrigger) {
-                    setTimeout(() => {
-                        if (form.formState.isValid) form.handleSubmit(onSubmit)();
-                    }, 500);
+                    form.trigger().then((isValidAfterTrigger) => {
+                        if (isValidAfterTrigger) {
+                            setTimeout(() => {
+                                if (form.formState.isValid) form.handleSubmit(onSubmit)();
+                            }, 500);
+                        }
+                    });
                 }
-            });
-
-            if (window.history && window.history.replaceState) {
-                const newUrl = window.location.pathname + window.location.hash;
-                window.history.replaceState({}, document.title, newUrl);
+            } catch (error) {
+                console.error("Error parsing demo data from session storage:", error);
+                sessionStorage.removeItem('billSplitterDemoData'); // Clear if corrupt
             }
-        } else {
+        }
+        
+        // If demo data wasn't used, try loading regular persisted form data
+        if (!initialDataSet) {
             const savedData = sessionStorage.getItem(storageKey);
             if (savedData) {
                 try {
                     const parsedData = JSON.parse(savedData) as FormSchemaType;
                     form.reset(parsedData);
+                    // initialDataSet = true; // Not strictly needed here anymore
                 } catch (error) {
                     console.error("Failed to parse cached form data:", error);
                     sessionStorage.removeItem(storageKey);
                 }
             }
         }
+        // If no data was applied from URL or session, useForm defaultValues are already in place.
         setMounted(true);
         setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
 

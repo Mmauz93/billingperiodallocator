@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"; // Import hooks
 
 import { Button } from "@/components/ui/button"; // Import Button for CTA
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 
 // Metadata should be defined in layout.tsx
@@ -71,8 +70,21 @@ export default function NewLandingPage() {
   // Split period - yearly is default
   const demoSplitPeriod = "yearly";
   
-  // Create query string for demo data
-  const demoQueryString = `?startDate=${demoStartDate}&endDate=${demoEndDate}&amount=${demoAmount}&includeEndDate=${demoIncludeEndDate}&splitPeriod=${demoSplitPeriod}`;
+  const handleTestWithDemoData = () => {
+    if (typeof window !== "undefined") {
+      const demoDataForForm = {
+        startDateString: demoStartDate, // Store in the format InvoiceForm expects
+        endDateString: demoEndDate,
+        amount: demoAmount,
+        includeEndDate: demoIncludeEndDate === 'true',
+        splitPeriod: demoSplitPeriod as 'yearly' | 'quarterly' | 'monthly',
+        isDemo: true // Add a flag to indicate this is demo data
+      };
+      sessionStorage.setItem('billSplitterDemoData', JSON.stringify(demoDataForForm));
+      // Navigate to /app in a new tab
+      window.open('/app', '_blank');
+    }
+  };
   
   // Early return null or placeholder if not mounted to avoid hydration mismatch
   if (!mounted) {
@@ -167,19 +179,12 @@ export default function NewLandingPage() {
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
               <Button 
-                asChild 
                 size="lg" 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
+                onClick={handleTestWithDemoData}
               > 
-                <Link 
-                  href={`/app${demoQueryString}`} 
-                  className="flex items-center gap-2"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('Landing.ctaButton', { defaultValue: ctaButton })}
-                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-                </Link>
+                {t('Landing.ctaButton', { defaultValue: ctaButton })}
+                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Button>
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
