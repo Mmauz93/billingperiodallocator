@@ -16,6 +16,10 @@ export default function NewLandingPage() {
 
   useEffect(() => {
     setMounted(true);
+    // Force scroll to top when component mounts
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   // Define default texts for translation keys
@@ -98,14 +102,14 @@ export default function NewLandingPage() {
 
       {/* Features Section - MOVED ABOVE CTA */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background">
-        <div className="flex flex-col items-center">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
               alt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })} 
               width={28} 
               height={28} 
-              className="text-primary"
+              className="text-primary transition-colors duration-200"
             />
           </div>
           <h2 className="text-xl font-semibold mb-2 text-foreground">
@@ -115,14 +119,14 @@ export default function NewLandingPage() {
             {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
           </p>
         </div>
-        <div className="flex flex-col items-center">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
               alt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })} 
               width={28} 
               height={28} 
-              className="text-primary"
+              className="text-primary transition-colors duration-200"
             />
           </div>
           <h2 className="text-xl font-semibold mb-2 text-foreground">
@@ -132,14 +136,14 @@ export default function NewLandingPage() {
             {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
           </p>
         </div>
-        <div className="flex flex-col items-center">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 
               alt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })} 
               width={28} 
               height={28} 
-              className="text-primary"
+              className="text-primary transition-colors duration-200"
             />
           </div>
           <h2 className="text-xl font-semibold mb-2 text-foreground">
@@ -152,7 +156,7 @@ export default function NewLandingPage() {
       </section>
 
       {/* Call to Action - MOVED AFTER FEATURES */}
-      <section className="py-14 px-6 mb-10"> 
+      <section className="py-20 px-6 mb-16"> 
         <div className="max-w-4xl mx-auto bg-muted/30 shadow-lg rounded-xl border border-border overflow-hidden">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
             <div className="text-left flex-1">
@@ -167,7 +171,12 @@ export default function NewLandingPage() {
                 size="lg" 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
               > 
-                <Link href={`/app${demoQueryString}`} className="flex items-center gap-2">
+                <Link 
+                  href={`/app${demoQueryString}`} 
+                  className="flex items-center gap-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {t('Landing.ctaButton', { defaultValue: ctaButton })}
                   <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
                 </Link>
@@ -180,6 +189,7 @@ export default function NewLandingPage() {
                 width={240} 
                 height={180} 
                 className="object-contain"
+                priority
               />
             </div>
           </div>
@@ -187,7 +197,7 @@ export default function NewLandingPage() {
       </section>
       
       {/* FAQ/Q&A Section for SEO - Converted to Accordion */}
-      <section className="py-16 px-6 max-w-3xl mx-auto bg-background">
+      <section className="py-16 px-6 max-w-3xl mx-auto bg-background mt-24 sm:mt-32">
         <h2 className="text-3xl font-bold mb-10 text-center text-foreground">
           {t('Landing.faqTitle', { defaultValue: 'Frequently Asked Questions' })}
         </h2>
@@ -196,9 +206,9 @@ export default function NewLandingPage() {
             <AccordionItem 
               key={index} 
               value={`item-${index}`}
-              className="bg-muted/30 rounded-xl px-6 py-2 border border-border"
+              className="bg-muted/30 rounded-xl px-6 py-2 border border-border cursor-default"
             >
-              <AccordionTrigger className="text-xl font-semibold text-foreground hover:no-underline">
+              <AccordionTrigger className="text-xl font-semibold text-foreground hover:no-underline cursor-pointer">
                 {t(`Landing.faqQuestion${index + 1}`, { defaultValue: faq.question })}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">

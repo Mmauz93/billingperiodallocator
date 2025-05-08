@@ -101,7 +101,10 @@
 /* Prevent layout shifts due to scrollbar appearing/disappearing */
 html {
   scrollbar-gutter: stable;
-  overflow-y: scroll;
+  overflow-y: scroll !important; /* Force consistent scrollbar with !important */
+  overflow-x: hidden !important; /* Prevent horizontal scrolling with !important */
+  overflow-anchor: none; /* Prevent scroll jumps during content updates */
+  width: 100%; /* Fix width to prevent layout shifts */
 }
 
 /* Style for when the scrollbar needs to be preserved during modals */
@@ -115,6 +118,7 @@ html.prevent-scrollbar-shift {
 @supports not (scrollbar-gutter: stable) {
   html {
     overflow-y: scroll;
+    overflow-x: hidden; /* Added to prevent horizontal scrolling */
   }
   
   /* When modal is open, prevent layout shifts */
@@ -177,13 +181,16 @@ html.prevent-scrollbar-shift {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    max-width: 100%; /* Ensure no element exceeds its container width */
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
     font-family: "Roboto", sans-serif;
     font-size: 16px;
     line-height: 1.4;
-    overflow-y: scroll;
+    overflow-x: hidden; /* Prevent horizontal scrolling at body level */
+    width: 100%; /* Ensure body takes exactly viewport width */
+    isolation: isolate; /* Create a new stacking context */
   }
 
   h1 {
@@ -645,6 +652,19 @@ header.fixed {
   transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Ensure text elements don't display text editor cursor */
+p, h1, h2, h3, h4, h5, h6, span, div:not([contenteditable="true"]), li, a:not([href]), section, header, footer {
+  cursor: default !important;
+}
+/* Interactive elements should maintain their appropriate cursor */
+a[href], button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer {
+  cursor: pointer !important;
+}
+/* Input elements should show text cursor */
+input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, [contenteditable="true"] {
+  cursor: text !important;
+}
+
 /* Ensure sticky header works consistently - REMOVED as Tailwind class is sufficient */
 /*
 header.sticky {
@@ -654,3 +674,52 @@ header.sticky {
   will-change: transform; 
 }
 */
+
+/* Add dropdown menu containment to prevent scrollbar issues */
+[data-radix-popper-content-wrapper] {
+  overflow: hidden !important;
+  contain: content !important;
+  overscroll-behavior: contain !important;
+  max-height: 100vh !important;
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+}
+
+/* Ensure all dropdown menus have proper overflow behavior */
+.dropdown-menu-content,
+[role="menu"],
+[data-state="open"],
+[data-radix-popper-content] {
+  max-height: calc(100vh - 10px) !important;
+  overscroll-behavior: contain !important;
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+}
+
+/* Prevent any portals from affecting document flow */
+[data-radix-portal] {
+  overflow: visible !important;
+  z-index: 1000 !important;
+}
+
+/* Force dropdown positioning to fixed to prevent reflow */
+.dropdown-menu-content[data-state="open"],
+.dropdown-content[data-state="open"],
+[role="dialog"],
+[role="menu"] {
+}
+
+/* Reset overflow on body and html to ensure no double scrollbars */
+html, body {
+  max-width: 100vw !important;
+  overscroll-behavior: none !important;
+}
+
+/* Ensure fixed/absolute positioned elements follow proper stacking */
+.fixed,
+.absolute,
+[data-radix-popper-content-wrapper] {
+  z-index: 100; /* Higher z-index for popups/dropdowns */
+  transform: translateZ(0);
+  will-change: transform; /* Hint to browser about upcoming changes */
+}

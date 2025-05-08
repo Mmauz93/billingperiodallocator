@@ -20,7 +20,7 @@ export function CustomCookieConsentBanner({
   onAcceptAction, 
   onDeclineAction, 
   consentCookieName, 
-  onOpenPrivacyAction 
+  onOpenPrivacyAction
 }: CustomCookieConsentBannerProps) {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -28,22 +28,42 @@ export function CustomCookieConsentBanner({
 
   // Wrap in useCallback to prevent dependency cycle
   const handleAccept = useCallback(() => {
+    // Store scroll position before closing
+    const scrollPos = window.scrollY;
+    
+    // Set cookie and close banner
     Cookies.set(consentCookieName, "true", { expires: 150 });
     setVisible(false);
     onAcceptAction();
+    
+    // Restore scroll position after a short delay
+    setTimeout(() => window.scrollTo(0, scrollPos), 10);
   }, [consentCookieName, onAcceptAction]);
 
   const handleDecline = useCallback(() => {
+    // Store scroll position before closing
+    const scrollPos = window.scrollY;
+    
+    // Set cookie and close banner
     Cookies.set(consentCookieName, "false", { expires: 150 });
     setVisible(false);
     onDeclineAction();
+    
+    // Restore scroll position after a short delay
+    setTimeout(() => window.scrollTo(0, scrollPos), 10);
   }, [consentCookieName, onDeclineAction]);
 
   useEffect(() => {
     const consent = Cookies.get(consentCookieName);
     if (consent !== "true" && consent !== "false") {
       // Small delay to prevent the banner from appearing during page load animations
-      const timer = setTimeout(() => setVisible(true), 800);
+      const timer = setTimeout(() => {
+        // Save the current scroll position before showing the banner
+        const scrollPos = window.scrollY;
+        setVisible(true);
+        // Restore scroll position to prevent jumping
+        setTimeout(() => window.scrollTo(0, scrollPos), 10);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [consentCookieName]);
@@ -51,14 +71,23 @@ export function CustomCookieConsentBanner({
   useEffect(() => {
     if (!visible) return;
     
-    // Add class to prevent layout shift when modal opens
     document.documentElement.classList.add('prevent-scrollbar-shift');
+    
+    const scrollPos = window.scrollY;
+    const preventScrollJump = () => {
+      if (window.scrollY !== scrollPos) {
+        window.scrollTo(0, scrollPos);
+      }
+    };
+    preventScrollJump();
+    setTimeout(preventScrollJump, 50);
+    setTimeout(preventScrollJump, 150);
     
     const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const modal = modalRef.current;
     if (!modal) return;
     const focusableEls = modal.querySelectorAll<HTMLElement>(focusableSelectors);
-    if (focusableEls.length) focusableEls[0].focus();
+    // if (focusableEls.length) focusableEls[0].focus(); // Temporarily remove auto-focus
     
     function handleTab(e: KeyboardEvent) {
       if (e.key !== 'Tab') return;
@@ -93,15 +122,25 @@ export function CustomCookieConsentBanner({
     }
   }, [visible, handleDecline]);
 
+  // Always use the default (right side) positioning
+  const getPositionClass = () => {
+    // Use responsive positioning for better mobile view
+    // Removed the invalid !important modifier
+    return "fixed bottom-6 right-6 left-6 sm:left-auto sm:right-6 z-[2000] w-full max-w-sm pointer-events-none";
+  };
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
+          exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed left-0 bottom-6 w-screen flex justify-center z-[2000] pointer-events-none md:max-w-sm md:left-auto md:right-8 md:bottom-8"
+          className={getPositionClass()}
+          aria-label="Cookie consent banner"
+          aria-live="polite"
+          role="region"
         >
           <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
             <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">

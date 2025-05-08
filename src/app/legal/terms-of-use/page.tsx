@@ -26,25 +26,40 @@ const TermsOfUseContent = dynamic<TermsOfUseContentProps>(() =>
     
     return (
       <article className="prose prose-lg dark:prose-invert">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-          {!isLoading ? (langPrefix === 'de' ? 'Nutzungsbedingungen' : 'Terms of Use') : 'Terms of Use'}
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">
-          {t('Legal.lastUpdated', 'Last updated on')} {new Date().toLocaleDateString(
-            langPrefix === 'de' ? 'de-DE' : 'en-US',
-            { year: 'numeric', month: 'long', day: 'numeric' }
-          )}
-        </p>
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            {!isLoading ? (langPrefix === 'de' ? 'Nutzungsbedingungen' : 'Terms of Use') : 'Terms of Use'}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {t('Legal.lastUpdated', 'Last updated on')} {new Date().toLocaleDateString(
+              langPrefix === 'de' ? 'de-DE' : 'en-US',
+              { year: 'numeric', month: 'long', day: 'numeric' }
+            )}
+          </p>
+        </div>
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
           </div>
         ) : (
-          <>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>  
+          <div className="custom-markdown-container">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({ ...props }) => <h1 {...props} className="text-2xl font-bold mt-12 mb-4 text-primary" />,
+                h2: ({ ...props }) => <h2 {...props} className="text-xl font-semibold mt-12 mb-4 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" />,
+                h3: ({ ...props }) => <h3 {...props} className="text-lg font-medium mt-10 mb-3 text-primary" />,
+                p: ({ ...props }) => <p {...props} className="text-sm leading-relaxed text-muted-foreground mb-6" />,
+                ul: ({ ...props }) => <ul {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-disc" />,
+                ol: ({ ...props }) => <ol {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-decimal" />,
+                li: ({ ...props }) => <li {...props} className="mb-2" />,
+                a: ({ ...props }) => <a {...props} className="text-primary hover:underline" />,
+                strong: ({ ...props }) => <strong {...props} className="font-semibold" />,
+              }}
+            >  
               {termsContent}
             </ReactMarkdown>
-          </>
+          </div>
         )}
       </article>
     );
@@ -96,7 +111,7 @@ export default function TermsOfUsePage() {
   }, [i18n.language]);
   
   return (
-    <main className="container mx-auto max-w-3xl py-10">
+    <main className="container mx-auto max-w-3xl px-6 py-16">
       <NoSSR>
         <TermsOfUseContent 
           termsContent={termsContent} 

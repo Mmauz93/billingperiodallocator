@@ -3,13 +3,14 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Import the CalculationCallbackData type from InvoiceForm
 import { CalculationCallbackData } from "@/components/invoice-form";
 import Cookies from 'js-cookie';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { InvoiceForm } from "@/components/invoice-form";
+import { Loader2 } from "lucide-react";
 import { ResultsDisplay } from "@/components/results-display";
 import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
@@ -36,6 +37,8 @@ export function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientPr
   // Update storedInputData to use CalculationCallbackData type
   const [storedInputData, setStoredInputData] = useState<CalculationCallbackData>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Add ref for the results section
+  const resultsSectionRef = useRef<HTMLDivElement>(null);
 
   // --- Consent Management State and Logic --- 
   const gaMeasurementId = "G-9H2KTHX5YK"; 
@@ -68,6 +71,17 @@ export function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientPr
 
     if (formData && results && !error) {
         setStoredInputData(formData);
+        // Use requestAnimationFrame + timeout to ensure the layout is stable before scrolling
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            if (resultsSectionRef.current) {
+              resultsSectionRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+            }
+          });
+        }, 200); // Slightly longer delay to ensure layout is fully settled
     } else {
         setStoredInputData(null);
     }
@@ -78,41 +92,79 @@ export function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientPr
       {/* Conditionally render Google Analytics only if consent is given */}
       {hasConsent && gaMeasurementId && <GoogleAnalytics gaId={gaMeasurementId} />}
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl grow">
-         {/* Title and description moved outside the card */}
-         <div className="text-center mb-8">
-           <h1 className="text-3xl font-bold mb-4">
-             {dynamicTitle}
-           </h1>
-           <div className="max-w-2xl mx-auto space-y-2">
-             {mounted ? <p>{t('InvoiceForm.description_p1')}</p> : <p>Loading description...</p>}
-             {mounted ? <p>{t('InvoiceForm.description_p2')}</p> : <p></p>}
-           </div>
-         </div>
-         
-         {/* Wrap just the form in a Card */}
-         <Card className="mb-12 shadow-md">
-             <CardContent className="pt-6">
-                 <div className="w-full">
-                     <InvoiceForm onCalculateAction={handleCalculation} />
-                 </div>
-             </CardContent>
-         </Card>
+      <div className="container mx-auto px-4 py-8 max-w-4xl grow overflow-hidden w-full">
+        {/* Title and description moved outside the card */}
+        <div className="text-center mb-8">
+          {!mounted ? (
+            <>
+              <div className="h-9 bg-muted/60 rounded-md animate-pulse w-1/3 mx-auto mb-4" />
+              <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-2/3 mx-auto mb-2" />
+              <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-1/2 mx-auto" />
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold mb-4">
+                {dynamicTitle}
+              </h1>
+              <div className="max-w-2xl mx-auto space-y-2 px-4">
+                <p>{t('InvoiceForm.description_p1')}</p>
+                <p>{t('InvoiceForm.description_p2')}</p>
+              </div>
+            </>
+          )}
+        </div>
+        
+        {/* Only show loading indicator when component is not mounted */}
+        {!mounted && (
+          <div className="flex items-center gap-2 justify-center text-muted-foreground text-sm mb-6">
+            <Loader2 className="animate-spin h-4 w-4 text-primary" />
+            <span>Loading calculator...</span>
+          </div>
+        )}
+        
+        {/* Fixed-width container for consistent card sizes */}
+        <div className="mx-auto" style={{ maxWidth: "768px" }}>
+          {/* Form Card */}
+          <Card className="mb-12 shadow-md w-full transition-opacity duration-300 ease-in-out" 
+                data-loaded={mounted ? "true" : "false"}
+                style={{ opacity: mounted ? 1 : 0.85 }}>
+            <CardContent className="pt-6">
+              <div className="w-full">
+                <InvoiceForm onCalculateAction={handleCalculation} />
+              </div>
+            </CardContent>
+          </Card>
 
-        <div id="results-section" className="mt-12 w-full flex justify-center">
-          {mounted && calculationError && (
-            <Alert variant="destructive" className="max-w-2xl">
+          {/* Results Section */}
+          <div ref={resultsSectionRef} className="mt-12 w-full">
+            {mounted && calculationError && (
+              <Alert variant="destructive" className="w-full">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>{t('Errors.calculationErrorTitle')}</AlertTitle>
                 <AlertDescription>{calculationError}</AlertDescription>
-            </Alert>
-          )}
-          {mounted && calculationResult && storedInputData && !calculationError && (
-            <ResultsDisplay 
-              results={calculationResult} 
-              inputData={storedInputData as InputDataForDisplay}
-            />
-          )}
+              </Alert>
+            )}
+            {mounted && calculationResult && storedInputData && !calculationError && (
+              <ResultsDisplay 
+                results={calculationResult} 
+                inputData={storedInputData as InputDataForDisplay}
+              />
+            )}
+            {!mounted && calculationResult === null && (
+              <Card className="shadow-md w-full h-64 flex items-center justify-center">
+                <div className="space-y-4 p-6 w-full">
+                  <div className="h-6 bg-muted/60 rounded-md animate-pulse w-3/4 mx-auto mb-8" />
+                  <div className="grid grid-cols-4 gap-4 mb-6">
+                    <div className="h-4 bg-muted/60 rounded-sm animate-pulse" />
+                    <div className="h-4 bg-muted/60 rounded-sm animate-pulse" />
+                    <div className="h-4 bg-muted/60 rounded-sm animate-pulse" />
+                    <div className="h-4 bg-muted/60 rounded-sm animate-pulse" />
+                  </div>
+                  <div className="h-24 bg-muted/60 rounded-md animate-pulse" />
+                </div>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
 

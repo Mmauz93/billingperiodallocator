@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
     loader: "default",
     path: "/_next/image",
   },
+  reactStrictMode: true,
+  experimental: {
+    scrollRestoration: false,
+  },
   /* config options here */
 };
 

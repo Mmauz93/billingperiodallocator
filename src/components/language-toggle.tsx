@@ -40,21 +40,41 @@ export default function LanguageToggle() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="flex items-center">
-          <Globe className="h-5 w-5" />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative w-10 h-10 flex items-center justify-center"
+          onClick={(e) => {
+            // Prevent event propagation to avoid layout shifts
+            e.stopPropagation();
+          }}
+        >
+          <div className="relative w-5 h-5 flex items-center justify-center">
+            <Globe className="h-5 w-5 text-foreground hover:text-primary" />
+          </div>
           <span className="sr-only">Toggle language</span>
         </Button>
       </DropdownMenuTrigger>
       <AnimatePresence>
         {open && (
-          <DropdownMenuContent align="end" side="top" sideOffset={4} asChild forceMount>
+          <DropdownMenuContent 
+            align="end" 
+            side="top" 
+            sideOffset={4} 
+            className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
+            asChild
+            forceMount
+          >
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: 5 }}
+              transition={{ duration: 0.15 }}
             >
-              <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
+              <DropdownMenuItem 
+                onClick={() => handleLanguageChange("en")}
+                className={`cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
+              >
                 <ReactCountryFlag
                   countryCode="GB"
                   svg
@@ -67,7 +87,10 @@ export default function LanguageToggle() {
                 />
                 <span className={isEnglish ? "font-bold" : ""}>English</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleLanguageChange("de")}>
+              <DropdownMenuItem 
+                onClick={() => handleLanguageChange("de")}
+                className={`cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
+              >
                 <ReactCountryFlag
                   countryCode="DE"
                   svg

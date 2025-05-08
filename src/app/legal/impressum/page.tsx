@@ -25,33 +25,39 @@ const ImpressumContent = dynamic<ImpressumContentProps>(() =>
     const title = isMounted ? t("General.impressum") : (lang === 'de' ? "Impressum" : "Imprint");
     
     return (
-      <article className="max-w-3xl mx-auto prose dark:prose-invert">
-        <h1>{title}</h1>
-        <p className="text-sm text-muted-foreground">{lastUpdated}</p>
+      <article className="prose prose-lg dark:prose-invert" aria-label="Legal information">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            {title}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">{lastUpdated}</p>
+        </div>
         
-        <div>
-          <p>
-            {lang === 'de' ? 'Verantwortlich für den Inhalt dieser Website:' : 'Responsible for the content of this website:'}
-          </p>
-
-          <h2>Siempi AG</h2>
-          <p>
-            Mauro Miotti
-          </p>
-          <p>
-            Birkenstrasse 47<br />
-            CH-6343 Rotkreuz<br />
-            Switzerland
-          </p>
+        <div className="space-y-8">
+          <section>
+            <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
+              {lang === 'de' ? 'Verantwortlich für diese Website' : 'Responsible for this website'}
+            </h2>
+            <p className="mb-6 text-sm leading-relaxed">
+              <strong>Siempi AG</strong><br />
+              Mauro Miotti<br />
+              Birkenstrasse 47<br />
+              CH-6343 Rotkreuz<br />
+              Switzerland<br />
+              Email: <a href="mailto:info@siempi.ch" className="text-primary hover:underline">info@siempi.ch</a>
+            </p>
+          </section>
           
-          <p>
-            Email: <a href="mailto:info@siempi.ch">info@siempi.ch</a>
-          </p>
-          
-          <h3>{lang === 'de' ? 'Handelsregister' : 'Commercial Register'}</h3>
-          <p>{lang === 'de' ? 'Eingetragen im Handelsregister des Kantons Zug' : 'Registered in the Commercial Register of the Canton of Zug'}</p>
-          <p>UID: CHE-369.093.556</p>
-          <p>{lang === 'de' ? 'Handelsregisternummer' : 'Commercial Register Number'}: CH-170.3.042.725-7</p>
+          <section className="border-t border-muted pt-6">
+            <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
+              {lang === 'de' ? 'Handelsregister' : 'Commercial Register'}
+            </h2>
+            <p className="text-sm leading-relaxed">
+              {lang === 'de' ? 'Eingetragen im Handelsregister des Kantons Zug' : 'Registered in the Commercial Register of the Canton of Zug'}<br />
+              UID: CHE-369.093.556<br />
+              {lang === 'de' ? 'Handelsregisternummer' : 'Commercial Register Number'}: CH-170.3.042.725-7
+            </p>
+          </section>
         </div>
       </article>
     );
@@ -72,7 +78,7 @@ export default function ImprintPage() {
   }, [t, i18n.language]);
   
   return (
-    <main className="container mx-auto py-10">
+    <main className="container mx-auto max-w-2xl px-6 py-16">
       <NoSSR>
         <ImpressumContent 
           lastUpdated={lastUpdatedText || "Last Updated: 2024-04-29"}

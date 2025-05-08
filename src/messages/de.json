@@ -57,6 +57,7 @@
     "proportionHeader": "Anteil %",
     "totalSplitAmountHeader": "Betrag",
     "totalHeader": "Gesamt",
+    "totalLabel": "Gesamt",
     "amountSplitHeader": "Betrag {{index}}",
     "yearTotalHeader": "Jahressumme",
     "exportExcelButton": "Excel-Bericht herunterladen",
@@ -89,7 +90,8 @@
     "amountHeader": "Betrag",
     "successMessage": "Aufteilung erfolgreich abgeschlossen! Ihre detaillierte Zuteilung ist bereit.",
     "summaryTitle": "Zusammenfassung",
-    "placeholderText": "Berechnungsergebnisse werden hier angezeigt."
+    "placeholderText": "Berechnungsergebnisse werden hier angezeigt.",
+    "settingsLabel": "Einstellungen"
   },
   "SettingsModal": {
     "title": "Zahlenformatierung",
@@ -122,7 +124,8 @@
     "lastUpdated": "Zuletzt aktualisiert: {{date}}",
     "tagline": "Entwickelt für Finanzfachleute. Vertraut von KMUs und Buchhaltern.",
     "getStarted": "Jetzt starten",
-    "feedback": "Feedback geben"
+    "feedback": "Feedback geben",
+    "loading": "Rechner lädt..."
   },
   "App": {
     "title": "Automatisierter Rechnungsperioden-Rechner — Präzise. Schnell. Einfach.",
@@ -173,6 +176,7 @@
     "de": "Deutsch"
   },
   "ConsentBanner": {
+    "headline": "Wir verwenden Cookies",
     "message": "Diese Webseite verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern und den Traffic zu analysieren. Indem Sie auf \"Akzeptieren\" klicken, stimmen Sie der Verwendung von Analyse-Cookies zu.",
     "acceptButton": "Akzeptieren",
     "declineButton": "Ablehnen",

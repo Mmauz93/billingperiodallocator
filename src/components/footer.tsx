@@ -42,14 +42,15 @@ export function Footer() {
               className="w-6 h-6"
               priority
             />
-            <Image 
-              src="/images/logo.svg" 
-              alt="BillSplitter Logo" 
-              width={130}
-              height={30} 
-              className="h-7"
-              priority
-            />
+            <div className="relative h-7" style={{ width: '130px' }}>
+              <Image 
+                src="/images/logo.svg" 
+                alt="BillSplitter Logo" 
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
             <span className="text-gray-500 text-xs ml-0">by {companyLabel}</span>
           </Link>
         </div>

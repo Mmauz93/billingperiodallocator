@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 
 // Create a NoSSR wrapper component with proper typing
@@ -28,15 +29,28 @@ const PrivacyWidget = dynamic<PrivacyWidgetProps>(() =>
 
 export default function PrivacyPolicyPage() {
   const { i18n } = useTranslation();
+  const { theme: currentTheme, setTheme } = useTheme(); // Get current theme and setTheme function
+  const originalThemeRef = useRef<string | undefined>(undefined); // Ref to store original theme
   const [isMounted, setIsMounted] = useState(false);
   const [language, setLanguage] = useState('en');
 
-  // Effect to ensure component only renders client-side
+  // Effect to manage theme override
   useEffect(() => {
     setIsMounted(true);
     setLanguage(i18n.language.startsWith('de') ? 'de' : 'en');
 
-    // Ensure PrivacyBee script is loaded once
+    // Store the original theme only once when the component mounts
+    if (originalThemeRef.current === undefined) {
+      originalThemeRef.current = currentTheme;
+    }
+
+    // Force DARK theme using next-themes
+    // Check if it's not already dark to avoid unnecessary calls
+    if (currentTheme !== 'dark') {
+      setTheme('dark');
+    }
+
+    // --- PrivacyBee script loading --- 
     let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://app.privacybee.io/widget.js"]',
     );
@@ -46,8 +60,17 @@ export default function PrivacyPolicyPage() {
       script.defer = true;
       document.head.appendChild(script);
     }
-    // No cleanup needed for script tag added to head
-  }, [i18n.language]); // Run when language changes
+    // --- End script loading ---
+    
+    // Cleanup function to restore original theme
+    return () => {
+      // Restore the theme that was active when the component first mounted
+      if (originalThemeRef.current !== undefined) {
+        setTheme(originalThemeRef.current);
+      }
+    };
+    // Depend only on language for script loading, theme handled separately
+  }, [i18n.language, currentTheme, setTheme]); 
 
   // Render loading indicator or null until mounted
   if (!isMounted) {
@@ -58,7 +81,7 @@ export default function PrivacyPolicyPage() {
     );
   }
 
-  // Render the widget via dangerouslySetInnerHTML with centered container
+  // Render the widget
   return (
     <div className="container mx-auto max-w-3xl py-10">
       <NoSSR>

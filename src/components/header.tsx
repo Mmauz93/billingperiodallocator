@@ -20,6 +20,7 @@ export function Header() {
   }, []);
 
   const isLandingPage = pathname === '/';
+  const showThemeToggle = pathname !== '/legal/privacy-policy';
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
@@ -45,13 +46,17 @@ export function Header() {
               size="sm" 
               className="hidden sm:flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              <Link href="/app">
+              <Link 
+                href="/app" 
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {t("General.getStarted", { defaultValue: "Get Started" })}
               </Link>
             </Button>
           )}
           <LanguageToggle />
-          <ThemeToggle />
+          {showThemeToggle && <ThemeToggle />}
         </nav>
       </div>
     </header>

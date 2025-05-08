@@ -45,11 +45,11 @@ export default function RootLayout({
   // Simple privacy policy link handler
   const handleOpenPrivacyAction = () => {
     console.log(t("ConsentBanner.learnMoreButton"));
-    window.open("/legal/privacy-policy", "_blank");
+    window.location.href = "/legal/privacy-policy";
   };
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -63,7 +63,7 @@ export default function RootLayout({
           href="https://billsplitter.siempi.ch/en/"
         />
       </head>
-      <body className={cn(roboto.className, "bg-background")} suppressHydrationWarning>
+      <body className={cn(roboto.className, "bg-background antialiased")} suppressHydrationWarning>
         <SettingsProvider>
           <ThemeProvider
             attribute="class"
@@ -73,21 +73,22 @@ export default function RootLayout({
           >
             <TooltipProvider>
               <I18nProvider>
-                <div className="flex flex-col min-h-screen">
+                <div className="flex flex-col min-h-screen w-full">
                   <Header />
-                  <main className="flex-1 pt-16">{children}</main>
+                  <main className="flex-grow w-full pt-16">{children}</main>
                   <Footer />
                 </div>
-                <CustomCookieConsentBanner
-                  onAcceptAction={handleGlobalAcceptAction}
-                  onDeclineAction={handleGlobalDeclineAction}
-                  consentCookieName={consentCookieName}
-                  onOpenPrivacyAction={handleOpenPrivacyAction}
-                />
               </I18nProvider>
             </TooltipProvider>
           </ThemeProvider>
         </SettingsProvider>
+        
+        <CustomCookieConsentBanner
+          onAcceptAction={handleGlobalAcceptAction}
+          onDeclineAction={handleGlobalDeclineAction}
+          consentCookieName={consentCookieName}
+          onOpenPrivacyAction={handleOpenPrivacyAction}
+        />
       </body>
     </html>
   );
