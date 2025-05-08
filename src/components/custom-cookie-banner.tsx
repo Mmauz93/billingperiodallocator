@@ -122,14 +122,6 @@ export function CustomCookieConsentBanner({
                 {t('ConsentBanner.message')}
               </p>
               
-              <button
-                type="button"
-                onClick={onOpenPrivacyAction}
-                className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm"
-              >
-                {t('ConsentBanner.learnMoreButton')}
-              </button>
-              
               <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 justify-center w-full mt-1">
                 <Button
                   variant="default"
@@ -147,6 +139,14 @@ export function CustomCookieConsentBanner({
                   {t('ConsentBanner.declineButton')}
                 </Button>
               </div>
+
+              <button
+                type="button"
+                onClick={onOpenPrivacyAction}
+                className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mt-3"
+              >
+                {t('ConsentBanner.learnMoreButton')}
+              </button>
             </div>
           </div>
         </motion.div>
