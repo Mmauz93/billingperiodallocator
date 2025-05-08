@@ -1,9 +1,9 @@
+'use client';
 // Root Layout remains a Server Component
 
 import "@/app/globals.css";
 
-import { Metadata, Viewport } from "next";
-
+import { CustomCookieConsentBanner } from "@/components/custom-cookie-banner";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import I18nProvider from "@/components/i18n-provider";
@@ -12,81 +12,13 @@ import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
 });
-
-// Define metadataBase for absolute URLs
-const siteUrl = "https://billsplitter.siempi.ch";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "BillSplitter | Split Invoices Easily Across Fiscal Years",
-    template: "%s | BillSplitter",
-  },
-  description:
-    "Use BillSplitter to split invoices across fiscal periods. Automate prepaid expenses and deferred revenue allocation — simple, accurate, fast. No login required.",
-  keywords: [
-    "invoice allocation",
-    "split invoice",
-    "multi-year billing",
-    "fiscal year allocation",
-    "proportional calculation",
-    "accounting tool",
-    "budgeting tool",
-    "accrual accounting",
-    "deferred revenue",
-    "prepaid expenses",
-  ],
-  openGraph: {
-    title: "BillSplitter | Invoice Split Calculator",
-    description:
-      "Split invoices into correct accounting periods. Fast, secure, and GDPR compliant.",
-    url: siteUrl,
-    siteName: "BillSplitter",
-    images: [
-      {
-        url: "/og-image.png", // Updated to correct path
-        width: 1200,
-        height: 630,
-        alt: "BillSplitter - Invoice Split Calculator",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  icons: {
-    icon: "/images/icon.svg",
-    shortcut: "/images/icon.svg",
-    apple: "/images/icon.svg",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  alternates: {
-    languages: {
-      en: `${siteUrl}/en`,
-      de: `${siteUrl}/de`,
-    },
-  },
-};
-
-// Optional: Add viewport settings
-export const viewport: Viewport = {
-  themeColor: "#2E5A8C",
-};
 
 export default function RootLayout({
   children,
@@ -95,10 +27,31 @@ export default function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  const { t } = useTranslation();
+  const consentCookieName = "siempiBillSplitterConsent";
+  
+  // Functions for the cookie banner
+  const handleGlobalAcceptAction = () => {
+    console.log("Global consent accepted");
+    if (typeof window !== "undefined") {
+      window.location.reload(); // Reload to ensure GA picks up the change
+    }
+  };
+
+  const handleGlobalDeclineAction = () => {
+    console.log("Global consent declined");
+  };
+
+  // Simple privacy policy link handler
+  const handleOpenPrivacyAction = () => {
+    console.log(t("ConsentBanner.learnMoreButton"));
+    window.open("/legal/privacy-policy", "_blank");
+  };
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <meta name="viewport" content={viewport.toString()} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           rel="alternate"
           hrefLang="de"
@@ -125,6 +78,12 @@ export default function RootLayout({
                   <main className="flex-1 pt-16">{children}</main>
                   <Footer />
                 </div>
+                <CustomCookieConsentBanner
+                  onAcceptAction={handleGlobalAcceptAction}
+                  onDeclineAction={handleGlobalDeclineAction}
+                  consentCookieName={consentCookieName}
+                  onOpenPrivacyAction={handleOpenPrivacyAction}
+                />
               </I18nProvider>
             </TooltipProvider>
           </ThemeProvider>

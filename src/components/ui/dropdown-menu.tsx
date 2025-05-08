@@ -1,15 +1,100 @@
 "use client";
 
-import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import * as React from "react";
+
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+// Helper function to get scrollbar width
+function getScrollbarWidth() {
+  if (typeof window === 'undefined') return 0;
+  return window.innerWidth - document.documentElement.clientWidth;
+}
+
+// Add this useEffect to set a CSS variable for the scrollbar width on mount
+function useScrollbarSize() {
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Add a class to html that will maintain scrollbar width
+      document.documentElement.classList.add('prevent-scrollbar-shift');
+      
+      // Set the scrollbar width as a CSS variable
+      const scrollbarWidth = getScrollbarWidth();
+      document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+      
+      // Clean up on unmount
+      return () => {
+        document.documentElement.classList.remove('prevent-scrollbar-shift');
+      };
+    }
+  }, []);
+}
+
 function DropdownMenu({
+  onOpenChange, // Capture the original onOpenChange prop
+  open: controlledOpen, // Allow controlled open state
+  defaultOpen,
+  modal = false, // Set default modal to false to try and prevent scroll lock
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
+  const [isOpen, setIsOpen] = React.useState(defaultOpen ?? false);
+  
+  // Call the hook to set up scrollbar size
+  useScrollbarSize();
+
+  // Use controlled state if provided, otherwise internal state
+  const isActuallyOpen = controlledOpen !== undefined ? controlledOpen : isOpen;
+
+  const handleOpenChange = React.useCallback((open: boolean) => {
+    setIsOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+
+    if (typeof document !== 'undefined') {
+      if (open) {
+        // Instead of changing padding, just lock scroll but keep scrollbar space
+        document.body.style.overflow = 'hidden';
+        // Maintain visual stability by preventing content shift
+        document.body.style.paddingRight = 'var(--scrollbar-width)';
+      } else {
+        // Use a short timeout to prevent jarring transition if another 
+        // scroll-locking component opens immediately after.
+        setTimeout(() => {
+           // Check if any OTHER radix component might still require lock
+           // This is a basic check, more robust solutions exist
+           if (!document.body.style.overflow.includes('hidden') || 
+               !document.querySelector('[data-radix-scroll-area-viewport]')) { 
+               document.body.style.paddingRight = '';
+               document.body.style.overflow = '';
+           }
+        }, 100); // Adjust timeout as needed
+      }
+    }
+  }, [onOpenChange]);
+
+  // Effect to handle cleanup if component unmounts while open
+  React.useEffect(() => {
+      return () => {
+          if (isActuallyOpen && typeof document !== 'undefined') {
+              // Ensure styles are cleaned up on unmount
+              document.body.style.paddingRight = '';
+              document.body.style.overflow = '';
+          }
+      };
+  }, [isActuallyOpen]);
+
+  return (
+      <DropdownMenuPrimitive.Root 
+          data-slot="dropdown-menu" 
+          {...props} 
+          open={isActuallyOpen}
+          onOpenChange={handleOpenChange}
+          modal={modal}
+      />
+  );
 }
 
 function DropdownMenuPortal({

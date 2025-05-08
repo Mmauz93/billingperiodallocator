@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select components
 import { de, enUS } from 'date-fns/locale'; // Import locales
 import { format, isValid, parse, startOfDay } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -216,6 +216,84 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
         }
     }, [t, mounted]);
 
+    // Wrap onSubmit in useCallback to prevent recreating the function on each render
+    const onSubmit = useCallback((values: FormSchemaType) => {
+        setIsCalculating(true);
+        setButtonText(t('InvoiceForm.calculatingButton'));
+
+        const startDate = tryParseDate(values.startDateString || '');
+        const endDate = tryParseDate(values.endDateString || '');
+
+        if (!startDate || !endDate) {
+            console.error("Parsed dates are invalid despite passing Zod validation.");
+            onCalculateAction(null, null, t('Errors.unexpectedError')); 
+            setIsCalculating(false);
+            // Reset button text correctly
+            setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+            return; 
+        }
+
+        const amountsNum = values.amounts.map(amount => Number(amount.value));
+        const splitPeriod = values.splitPeriod || 'yearly';
+
+        const validFormData: CalculationCallbackData = {
+            startDate: startDate,
+            endDate: endDate,
+            includeEndDate: values.includeEndDate,
+            splitPeriod: splitPeriod,
+            amounts: amountsNum,
+        };
+
+        onCalculateAction(validFormData, null, undefined); // Clear previous results/errors immediately
+
+        const calculationInput: CalculationInput = {
+            startDate: startDate,
+            endDate: endDate,
+            includeEndDate: values.includeEndDate,
+            amounts: amountsNum,
+            splitPeriod: splitPeriod,
+        };
+
+        console.log("Calculating with input:", calculationInput);
+
+        try {
+            const results = calculateInvoiceSplit(calculationInput);
+            console.log("Calculation Results:", results);
+
+            // Simulate a brief calculation delay for UX feedback
+            setTimeout(() => {
+                if (results.calculationSteps?.error) {
+                    onCalculateAction(validFormData, null, results.calculationSteps.error);
+                     setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+                } else if (!results.aggregatedSplits || results.aggregatedSplits.length === 0) {
+                    onCalculateAction(validFormData, null, "Calculation completed but resulted in no splits.");
+                    setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+                } else {
+                    onCalculateAction(validFormData, results);
+                    setButtonText(t('InvoiceForm.calculationComplete', { defaultValue: 'Split completed successfully!' }));
+                    setShowSuccessGlow(true);
+                    
+                    setTimeout(() => {
+                        setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+                        setShowSuccessGlow(false);
+                    }, 2000);
+                }
+                setIsCalculating(false);
+            }, 300); // Slightly shorter delay
+            
+        } catch (error) {
+             console.error("Calculation Error:", error);
+             const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred during calculation.";
+             // Pass validFormData even on error for context if needed
+            onCalculateAction(validFormData, null, errorMessage);
+            
+            setTimeout(() => {
+                setIsCalculating(false);
+                setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+            }, 300);
+        }
+    }, [t, setIsCalculating, setButtonText, onCalculateAction, setShowSuccessGlow]);
+
     // Parse URL parameters for demo data when the component mounts
     useEffect(() => {
         // Only run on client side after mounting
@@ -283,7 +361,7 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
                 }
             }
         }
-    }, [mounted, form, displayDateFormat]);
+    }, [mounted, form, displayDateFormat, onSubmit]);
     
     // --- Form Field Watching Logic ---
     // Create a watch subscription for fields we want to save
@@ -360,23 +438,26 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
         
         setMounted(true); // Set mounted after resetting form
         setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [t, form, replace, onCalculateAction]); // Include all dependencies
 
     // Debounced function to save data to sessionStorage
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const debouncedSave = useCallback(
-        debounce((dataToSave) => {
+    const saveToStorage = useMemo(() => 
+        debounce((data: FormSchemaType) => {
             try {
                  // Only save if component is mounted to avoid saving initial undefined state
                  if (mounted) {
-                     sessionStorage.setItem(storageKey, JSON.stringify(dataToSave));
+                     sessionStorage.setItem(storageKey, JSON.stringify(data));
                  }       
             } catch (error) {
                 console.error("Failed to save form data to cache:", error);
             }
         }, 500), // Debounce saving by 500ms
     [mounted]); // Depend on mounted state
+
+    // Use the memoized debounced function in a simple callback
+    const debouncedSave = useCallback((dataToSave: FormSchemaType) => {
+        saveToStorage(dataToSave);
+    }, [saveToStorage]);
 
     // Effect to trigger debounced save when watched fields change
     useEffect(() => {
@@ -392,83 +473,6 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
 
     // Removed effect for language change date reformatting for now to simplify
     // It might conflict with loading from session storage. Re-evaluate if needed.
-
-    function onSubmit(values: FormSchemaType) { // Use FormSchemaType here
-        setIsCalculating(true);
-        setButtonText(t('InvoiceForm.calculatingButton'));
-
-        const startDate = tryParseDate(values.startDateString || '');
-        const endDate = tryParseDate(values.endDateString || '');
-
-        if (!startDate || !endDate) {
-            console.error("Parsed dates are invalid despite passing Zod validation.");
-            onCalculateAction(null, null, t('Errors.unexpectedError')); 
-            setIsCalculating(false);
-            // Reset button text correctly
-            setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-            return; 
-        }
-
-        const amountsNum = values.amounts.map(amount => Number(amount.value));
-        const splitPeriod = values.splitPeriod || 'yearly';
-
-        const validFormData: CalculationCallbackData = {
-            startDate: startDate,
-            endDate: endDate,
-            includeEndDate: values.includeEndDate,
-            splitPeriod: splitPeriod,
-            amounts: amountsNum,
-        };
-
-        onCalculateAction(validFormData, null, undefined); // Clear previous results/errors immediately
-
-        const calculationInput: CalculationInput = {
-            startDate: startDate,
-            endDate: endDate,
-            includeEndDate: values.includeEndDate,
-            amounts: amountsNum,
-            splitPeriod: splitPeriod,
-        };
-
-        console.log("Calculating with input:", calculationInput);
-
-        try {
-            const results = calculateInvoiceSplit(calculationInput);
-            console.log("Calculation Results:", results);
-
-            // Simulate a brief calculation delay for UX feedback
-            setTimeout(() => {
-                if (results.calculationSteps?.error) {
-                    onCalculateAction(validFormData, null, results.calculationSteps.error);
-                     setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-                } else if (!results.aggregatedSplits || results.aggregatedSplits.length === 0) {
-                    onCalculateAction(validFormData, null, "Calculation completed but resulted in no splits.");
-                    setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-                } else {
-                    onCalculateAction(validFormData, results);
-                    setButtonText(t('InvoiceForm.calculationComplete', { defaultValue: 'Split completed successfully!' }));
-                    setShowSuccessGlow(true);
-                    
-                    setTimeout(() => {
-                        setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-                        setShowSuccessGlow(false);
-                    }, 2000);
-                }
-                setIsCalculating(false);
-            }, 300); // Slightly shorter delay
-            
-        } catch (error) {
-             console.error("Calculation Error:", error);
-             const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred during calculation.";
-             // Pass validFormData even on error for context if needed
-            onCalculateAction(validFormData, null, errorMessage);
-            
-            setTimeout(() => {
-                setIsCalculating(false);
-                setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-            }, 300);
-        }
-    }
 
     const onSelectStartDate = (date: Date | undefined) => {
         if (date) {

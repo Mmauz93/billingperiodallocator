@@ -8,6 +8,6 @@ export default function AppPage() {
   return (
     // The surrounding layout.tsx provides structure, header, footer
     // This page only needs to render the core calculator component
-    <InvoiceCalculatorClient />
+    <InvoiceCalculatorClient pageTitle="Invoice Calculator" />
   );
 } 

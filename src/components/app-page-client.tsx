@@ -26,7 +26,7 @@ export function AppPageClient() {
           {mounted ? t('AppPage.description', { defaultValue: defaultDescription }) : defaultDescription}
         </p>
       </div>
-      <InvoiceCalculatorClient />
+      <InvoiceCalculatorClient pageTitle={mounted ? t('AppPage.title', { defaultValue: defaultTitle }) : defaultTitle} />
     </div>
   );
 } 

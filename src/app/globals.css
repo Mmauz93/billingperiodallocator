@@ -93,14 +93,35 @@
   --sidebar-ring: #2e5a8c;
 
   --pulse-highlight-color: rgba(74, 144, 226, 0.12);
+
+  /* Added scrollbar width variable */
+  --scrollbar-width: 0px;
 }
 
-/* Always show scrollbar to prevent layout shifts - REMOVED FROM HTML */
-/*
+/* Prevent layout shifts due to scrollbar appearing/disappearing */
 html {
+  scrollbar-gutter: stable;
   overflow-y: scroll;
 }
-*/
+
+/* Style for when the scrollbar needs to be preserved during modals */
+html.prevent-scrollbar-shift {
+  overflow-y: scroll !important;
+  padding-right: 0 !important; /* Prevent automatic padding */
+  margin-right: calc(var(--scrollbar-width) * -1) !important; /* Negative margin to compensate */
+}
+
+/* For browsers that don't support scrollbar-gutter */
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+  
+  /* When modal is open, prevent layout shifts */
+  html.prevent-scrollbar-shift body {
+    position: relative;
+  }
+}
 
 /* Dark mode colors updated to match the branding */
 .dark {
