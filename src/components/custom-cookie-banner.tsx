@@ -101,7 +101,7 @@ export function CustomCookieConsentBanner({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed left-0 bottom-6 w-screen flex justify-center z-[2000] pointer-events-none md:bottom-8 md:left-auto md:right-8 md:w-auto md:justify-end"
+          className="fixed left-0 bottom-6 w-screen flex justify-center z-[2000] pointer-events-none md:max-w-sm md:left-auto md:right-8 md:bottom-8"
         >
           <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
             <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
@@ -133,7 +133,7 @@ export function CustomCookieConsentBanner({
               <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 justify-center w-full mt-1">
                 <Button
                   variant="default"
-                  className="w-full"
+                  className="w-full sm:w-auto"
                   onClick={handleAccept}
                   autoFocus
                 >
@@ -141,7 +141,7 @@ export function CustomCookieConsentBanner({
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full sm:w-auto"
                   onClick={handleDecline}
                 >
                   {t('ConsentBanner.declineButton')}
