@@ -116,7 +116,7 @@
     "space": "Leerzeichen"
   },
   "General": {
-    "appName": "Rechnungsverteiler",
+    "appName": "Rechner",
     "allRightsReserved": "Copyright © von Siempi AG {{year}}",
     "privacyPolicy": "Datenschutzerklärung",
     "termsOfUse": "Nutzungsbedingungen",
@@ -191,8 +191,11 @@
     "termsOfUseTitle": "Nutzungsbedingungen"
   },
   "AppPage": {
-    "title": "Rechnungsdetails eingeben",
+    "title": "Rechner",
     "description": "Füllen Sie die folgenden Felder aus, um Rechnungsbeträge über Geschäftsperioden aufzuteilen."
+  },
+  "LandingPage": {
+    "title": "Startseite"
   },
   "Landing": {
     "logoAlt": "BillSplitter Logo Symbol",

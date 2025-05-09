@@ -23,6 +23,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { de, enUS } from 'date-fns/locale';
+import {
+  formatDateLocale as utilFormatDateLocale,
+  formatNumber as utilFormatNumber,
+  formatPercent as utilFormatPercent,
+} from "@/lib/formattingUtils";
 
 import { AppSettings } from "@/context/settings-context";
 import { Button } from "@/components/ui/button";
@@ -60,80 +65,6 @@ interface ResultsDisplayProps {
   inputData: InputDataForDisplay;
 }
 
-// --- Formatting Helpers ---
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function roundValue(value: number, precision: number): number {
-  if (!precision || precision <= 0) return value; // No rounding if precision is invalid
-  return Math.round(value / precision) * precision;
-}
-
-// Formats a number according to locale and decimal places settings
-function formatNumber(
-  value: number | undefined | null,
-  locale: string,
-  settings: Omit<AppSettings, "locale">,
-): string {
-  if (value === undefined || value === null || isNaN(value)) return "";
-
-  let formattedString = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: settings.decimalPlaces,
-    maximumFractionDigits: settings.decimalPlaces,
-    useGrouping: true,
-  }).format(value);
-
-  // Apply custom thousands separator if needed
-  const defaultSeparator = locale.startsWith("de") ? "." : ",";
-
-  if (
-    settings.thousandsSeparator &&
-    settings.thousandsSeparator !== defaultSeparator
-  ) {
-    // Replace the default separator with the custom one
-    formattedString = formattedString.replace(
-      new RegExp(`\\${defaultSeparator}`, "g"),
-      settings.thousandsSeparator,
-    );
-  }
-
-  return formattedString;
-}
-
-// Formats a percentage according to locale and decimal places settings
-function formatPercent(
-  value: number | undefined | null,
-  locale: string,
-): string {
-  if (value === undefined || value === null || isNaN(value)) return "";
-  const percentageValue = value * 100;
-  return (
-    new Intl.NumberFormat(locale, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(percentageValue) + "%"
-  );
-}
-
-// Formats a date string (yyyy-MM-dd) according to locale
-function formatDateLocale(
-  dateString: string | undefined | null,
-  locale: string,
-): string {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString + "T00:00:00Z"); // Treat as UTC date
-    if (isNaN(date.getTime())) return dateString; // Return original if invalid
-    return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    }).format(date);
-  } catch (e) {
-    console.error("Error formatting date:", e);
-    return dateString; // Fallback to original string on error
-  }
-}
-
 // --- Period Formatting Helper ---
 function formatPeriodIdentifier(
   identifier: string,
@@ -142,22 +73,17 @@ function formatPeriodIdentifier(
 ): string {
   switch (periodType) {
     case 'monthly':
-      // Identifier is YYYY-MM
       try {
         const [year, month] = identifier.split('-');
-        // Create a date object just to format the month name
         const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-        return format(date, 'MMMM yyyy', { locale: locale === 'de' ? de : enUS }); // Use date-fns locale
+        return format(date, 'MMMM yyyy', { locale: locale === 'de' ? de : enUS });
       } catch { 
-        // Handle error silently and return original identifier
         return identifier; 
       }
     case 'quarterly':
-      // Identifier is YYYY-Qn
-      return identifier; // Keep as is, or potentially localize 'Q'
+      return identifier;
     case 'yearly':
     default:
-      // Identifier is YYYY
       return identifier;
   }
 }
@@ -181,8 +107,10 @@ const CalculationStepsDisplay = ({
 
   const { periodSegments, amountCalculations } = steps;
 
-  const fmtNum = (num: number) => formatNumber(num, currentLocale, settings);
+  const fmtNum = (num: number) => utilFormatNumber(num, currentLocale, settings);
   const fmtPeriod = (id: string) => formatPeriodIdentifier(id, splitPeriodUsed, currentLocale);
+  const fmtDate = (dateStr: string) => utilFormatDateLocale(dateStr, currentLocale);
+  const fmtPct = (val: number) => utilFormatPercent(val, currentLocale);
 
   return (
     <div className="text-sm space-y-6">
@@ -190,7 +118,7 @@ const CalculationStepsDisplay = ({
       <section className="bg-muted/40 rounded-lg p-4 space-y-4">
         <h4 className="font-semibold text-foreground">{t('ResultsDisplay.totalDuration')}</h4>
         <div className="grid grid-cols-2 gap-2 text-xs border-b pb-2 mb-2">
-          <div>{t('ResultsDisplay.periodLabel')}</div> <div className="text-right">{formatDateLocale(steps.totalDuration.start, currentLocale)} - {formatDateLocale(steps.totalDuration.end, currentLocale)}</div>
+          <div>{t('ResultsDisplay.periodLabel')}</div> <div className="text-right">{fmtDate(steps.totalDuration.start)} - {fmtDate(steps.totalDuration.end)}</div>
           <div>{t('ResultsDisplay.totalDays')}</div> <div className="text-right">{steps.totalDuration.days} ({steps.totalDuration.included ? t('ResultsDisplay.inclusiveLabel') : t('ResultsDisplay.exclusiveLabel')})</div>
         </div>
         <h4 className="font-semibold text-foreground">{t('ResultsDisplay.proportionCalculation')}</h4>
@@ -199,7 +127,7 @@ const CalculationStepsDisplay = ({
             <div key={seg.periodIdentifier} className="grid grid-cols-3 gap-2 text-xs">
               <div className="font-medium">{fmtPeriod(seg.periodIdentifier)}:</div>
               <div className="text-muted-foreground text-center">{seg.days} / {steps.totalDuration.days} {t('ResultsDisplay.daysLabel')}</div>
-              <div className="text-muted-foreground text-right">{formatPercent(seg.proportion, currentLocale)}</div>
+              <div className="text-muted-foreground text-right">{fmtPct(seg.proportion)}</div>
             </div>
           ))}
         </div>
@@ -300,13 +228,13 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
   const splitPeriodUsed = inputData.splitPeriod || 'yearly';
 
   // Memoized formatting functions based on current settings and locale
-  const formatNum = (value: number | undefined) =>
-    value !== undefined ? formatNumber(value, currentLocale, settings) : "";
-  const formatPct = (value: number | undefined) => 
-    value !== undefined ? formatPercent(value, currentLocale) : "";
-  const formatDateForDisplay = (date: Date | undefined) =>
-    date ? formatDateLocale(format(date, "yyyy-MM-dd"), currentLocale) : "";
-  const formatPeriodId = (id: string) => formatPeriodIdentifier(id, splitPeriodUsed, currentLocale);
+  const formatNumForDisplay = (value: number | undefined) =>
+    value !== undefined ? utilFormatNumber(value, currentLocale, settings) : "";
+  const formatPctForDisplay = (value: number | undefined) => 
+    value !== undefined ? utilFormatPercent(value, currentLocale) : "";
+  const formatDateForDisplay = (dateObj: Date | string | undefined) =>
+    dateObj ? utilFormatDateLocale(dateObj, currentLocale) : "";
+  const formatPeriodIdForDisplay = (id: string) => formatPeriodIdentifier(id, splitPeriodUsed, currentLocale);
 
   // Function to get appropriate header for the allocation table
   const getPeriodHeader = () => {
@@ -327,136 +255,147 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
   // Export functions (keep implementations as they were)
   function handleExportExcel() { 
       import('xlsx').then(XLSX => {
-          // Create multiple sheets for comprehensive data
+          // Create a single consolidated sheet for all data
           const workbook = XLSX.utils.book_new();
           
-          // 1. Summary Sheet
-          const summaryData = [
-              [t("ResultsDisplay.summaryTitle", { defaultValue: "Summary" })],
-              [],
-              [t("ResultsDisplay.periodLabel"), `${formatDateForDisplay(inputData.startDate)} - ${formatDateForDisplay(inputData.endDate)}`],
-              [t("ResultsDisplay.totalDurationLabel", { defaultValue: "Total Duration (days)" }), `${totalDurationDays} ${t("ResultsDisplay.daysLabel")}`],
-              [t("InvoiceForm.includeEndDateLabel", { defaultValue: "Include Final Day in Service Period?" }), inputData.includeEndDate ? t("ResultsDisplay.yesLabel", { defaultValue: "Yes" }) : t("ResultsDisplay.noLabel", { defaultValue: "No" })],
-              [t("InvoiceForm.splitPeriodLabel", { defaultValue: "Split Period" }), splitPeriodUsed === 'yearly' ? t('InvoiceForm.periodYearly') : splitPeriodUsed === 'quarterly' ? t('InvoiceForm.periodQuarterly') : t('InvoiceForm.periodMonthly')],
-              [t("ResultsDisplay.originalTotalLabel", { defaultValue: "Total Input Amount:" }), formatNum(totalInputAmount)]
-          ];
-          const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-          XLSX.utils.book_append_sheet(workbook, summarySheet, t("ResultsDisplay.inputSummarySheetName", { defaultValue: "Input Summary" }));
-
-          // 2. Allocation Results Sheet
-          const excelData = [
-              [getPeriodHeader(), t("ResultsDisplay.daysHeader"), t("ResultsDisplay.proportionHeader"), t("ResultsDisplay.amountHeader")],
-              ...(results.aggregatedSplits?.map(split => [
-                  formatPeriodId(split.periodIdentifier),
-                  split.daysInPeriod, // Assuming daysInPeriod exists
+          // Prepare all data for a single sheet
+          const consolidatedData = [];
+          
+          // 1. Title and Summary Section
+          consolidatedData.push([t("ResultsDisplay.summaryTitle", { defaultValue: "Summary" })]);
+          consolidatedData.push([]);
+          consolidatedData.push([t("ResultsDisplay.periodLabel"), `${formatDateForDisplay(inputData.startDate)} - ${formatDateForDisplay(inputData.endDate)}`]);
+          consolidatedData.push([t("ResultsDisplay.totalDurationLabel", { defaultValue: "Total Duration (days)" }), `${totalDurationDays} ${t("ResultsDisplay.daysLabel")}`]);
+          consolidatedData.push([t("InvoiceForm.includeEndDateLabel", { defaultValue: "Include Final Day in Service Period?" }), inputData.includeEndDate ? t("ResultsDisplay.yesLabel", { defaultValue: "Yes" }) : t("ResultsDisplay.noLabel", { defaultValue: "No" })]);
+          consolidatedData.push([t("InvoiceForm.splitPeriodLabel", { defaultValue: "Split Period" }), splitPeriodUsed === 'yearly' ? t('InvoiceForm.periodYearly') : splitPeriodUsed === 'quarterly' ? t('InvoiceForm.periodQuarterly') : t('InvoiceForm.periodMonthly')]);
+          consolidatedData.push([t("ResultsDisplay.originalTotalLabel", { defaultValue: "Total Input Amount:" }), formatNumForDisplay(totalInputAmount)]);
+          consolidatedData.push([]);
+          
+          // 2. Allocation Results Section
+          consolidatedData.push([t("ResultsDisplay.aggregatedTitle", { defaultValue: "Allocation per Period" })]);
+          consolidatedData.push([]);
+          consolidatedData.push([getPeriodHeader(), t("ResultsDisplay.daysHeader"), t("ResultsDisplay.proportionHeader"), t("ResultsDisplay.amountHeader")]);
+          
+          results.aggregatedSplits?.forEach(split => {
+              consolidatedData.push([
+                  formatPeriodIdForDisplay(split.periodIdentifier),
+                  split.daysInPeriod,
                   split.proportion,
-                  split.totalSplitAmount // Assuming totalSplitAmount exists
-              ]) || []),
-              [t("ResultsDisplay.totalLabel", { defaultValue: "Total" }), totalDurationDays, 1, totalAggregatedAmount]
-          ];
-          const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+                  split.totalSplitAmount
+              ]);
+          });
           
-          // Add null check for worksheet['!ref']
-          const sheetRef = worksheet['!ref'];
-          if (sheetRef) {
-            const range = XLSX.utils.decode_range(sheetRef);
-            for (let R = range.s.r + 1; R <= range.e.r -1; ++R) { 
-                const propCellRef = XLSX.utils.encode_cell({ c: 2, r: R });
-                if (worksheet[propCellRef]) {
-                    worksheet[propCellRef].t = 'n'; 
-                    worksheet[propCellRef].z = '0.00%';
-                }
-                const amtCellRef = XLSX.utils.encode_cell({ c: 3, r: R });
-                if (worksheet[amtCellRef]) {
-                    worksheet[amtCellRef].t = 'n';
-                    worksheet[amtCellRef].z = `#,##0.${ '0'.repeat(settings.decimalPlaces || 2)}`;
-                }
-            }
-             const totalAmtCellRef = XLSX.utils.encode_cell({ c: 3, r: range.e.r });
-             if (worksheet[totalAmtCellRef]) {
-                 worksheet[totalAmtCellRef].t = 'n';
-                 worksheet[totalAmtCellRef].z = `#,##0.${ '0'.repeat(settings.decimalPlaces || 2)}`;
-             }
-          }
+          consolidatedData.push([t("ResultsDisplay.totalLabel", { defaultValue: "Total" }), totalDurationDays, 1, totalAggregatedAmount]);
+          consolidatedData.push([]);
+          consolidatedData.push([]);
           
-          XLSX.utils.book_append_sheet(workbook, worksheet, t("ResultsDisplay.aggregatedSheetName", { defaultValue: "Aggregated Results" }));
-          
-          // 3. Detailed Calculation Sheet
+          // 3. Detailed Calculation Section
           if (results.calculationSteps) {
               const steps = results.calculationSteps;
               const { periodSegments, amountCalculations } = steps;
-              const detailsData = [];
               
               // a. Add title
-              detailsData.push([t('ResultsDisplay.calculationStepsTitle', { defaultValue: "View Full Split Calculation" })]);
-              detailsData.push([]);
+              consolidatedData.push([t('ResultsDisplay.calculationStepsTitle', { defaultValue: "View Full Split Calculation" })]);
+              consolidatedData.push([]);
               
               // b. Add total duration section
-              detailsData.push([t('ResultsDisplay.totalDuration')]);
-              detailsData.push([
+              consolidatedData.push([t('ResultsDisplay.totalDuration')]);
+              consolidatedData.push([
                   t('ResultsDisplay.periodLabel'), 
-                  `${formatDateLocale(steps.totalDuration.start, currentLocale)} - ${formatDateLocale(steps.totalDuration.end, currentLocale)}`
+                  `${formatDateForDisplay(typeof steps.totalDuration.start === 'string' ? new Date(steps.totalDuration.start) : steps.totalDuration.start)} - ${formatDateForDisplay(typeof steps.totalDuration.end === 'string' ? new Date(steps.totalDuration.end) : steps.totalDuration.end)}`
               ]);
-              detailsData.push([
+              consolidatedData.push([
                   t('ResultsDisplay.totalDays'),
                   `${steps.totalDuration.days} ${steps.totalDuration.included ? t('ResultsDisplay.inclusiveLabel') : t('ResultsDisplay.exclusiveLabel')}`
               ]);
-              detailsData.push([]);
+              consolidatedData.push([]);
 
               // c. Add proportion calculation
-              detailsData.push([t('ResultsDisplay.proportionCalculation')]);
+              consolidatedData.push([t('ResultsDisplay.proportionCalculation')]);
               for (const segment of periodSegments) {
-                  detailsData.push([
-                      formatPeriodIdentifier(segment.periodIdentifier, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale),
-                      `${segment.days} / ${steps.totalDuration.days} = ${formatPercent(segment.proportion, currentLocale)}`
+                  consolidatedData.push([
+                      formatPeriodIdForDisplay(segment.periodIdentifier),
+                      `${segment.days} / ${steps.totalDuration.days} = ${utilFormatPercent(segment.proportion, currentLocale)}`
                   ]);
               }
-              detailsData.push([]);
+              consolidatedData.push([]);
               
               // d. Add amount calculations
-              detailsData.push([t('ResultsDisplay.splitCalculation')]);
+              consolidatedData.push([t('ResultsDisplay.splitCalculation')]);
+              consolidatedData.push([]);
+              
               for (let i = 0; i < amountCalculations.length; i++) {
                   const amtCalc = amountCalculations[i];
-                  detailsData.push([`${t("ResultsDisplay.inputAmountLabel")} #${i + 1}:`, formatNum(amtCalc.originalAmount)]);
+                  consolidatedData.push([`${t("ResultsDisplay.inputAmountLabel")} #${i + 1}:`, formatNumForDisplay(amtCalc.originalAmount)]);
                   
                   for (const split of amtCalc.periodSplits) {
                       const periodSeg = periodSegments.find(s => s.periodIdentifier === split.periodIdentifier);
-                      detailsData.push([
-                          formatPeriodIdentifier(split.periodIdentifier, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale),
-                          `${formatNum(amtCalc.originalAmount)} × ${periodSeg?.proportion.toFixed(6)} = ${split.rawSplit.toFixed(6)} → ${formatNum(split.roundedSplit)}`
+                      consolidatedData.push([
+                          formatPeriodIdForDisplay(split.periodIdentifier),
+                          `${formatNumForDisplay(amtCalc.originalAmount)} × ${periodSeg?.proportion.toFixed(6)} = ${split.rawSplit.toFixed(6)} → ${formatNumForDisplay(split.roundedSplit)}`
                       ]);
                       
                       if (split.adjustment !== 0) {
-                          detailsData.push([
-                              t("ResultsDisplay.adjustmentLabel"),
-                              formatNum(split.adjustment)
+                          consolidatedData.push([
+                              `  ${t("ResultsDisplay.adjustmentLabel")}:`,
+                              formatNumForDisplay(split.adjustment)
                           ]);
                       }
                   }
                   
-                  detailsData.push([
+                  consolidatedData.push([
                       t("ResultsDisplay.discrepancyLabel"),
-                      formatNum(amtCalc.discrepancy)
+                      formatNumForDisplay(amtCalc.discrepancy)
                   ]);
                   
                   if (amtCalc.adjustmentAppliedToPeriod) {
-                      detailsData.push([
+                      consolidatedData.push([
                           t("ResultsDisplay.adjustedInYearLabel", { defaultValue: "Applied in Year" }),
-                          formatPeriodIdentifier(amtCalc.adjustmentAppliedToPeriod, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale)
+                          formatPeriodIdForDisplay(amtCalc.adjustmentAppliedToPeriod)
                       ]);
                   }
                   
-                  detailsData.push([
+                  consolidatedData.push([
                       t("ResultsDisplay.finalSumLabel"),
-                      formatNum(amtCalc.finalSum)
+                      formatNumForDisplay(amtCalc.finalSum)
                   ]);
                   
-                  detailsData.push([]);
+                  consolidatedData.push([]);
               }
-              
-              const detailsSheet = XLSX.utils.aoa_to_sheet(detailsData);
-              XLSX.utils.book_append_sheet(workbook, detailsSheet, t("ResultsDisplay.detailedSheetName", { defaultValue: "Detailed Breakdown" }));
           }
+          
+          // Create the consolidated worksheet with all data
+          const consolidatedSheet = XLSX.utils.aoa_to_sheet(consolidatedData);
+          
+          // Apply cell formatting for numbers and percentages
+          // Find the row range for the allocation results table (skip headers)
+          const allocationTableStartRow = 12; // 0-based index for the first data row after headers
+          const allocationTableEndRow = allocationTableStartRow + (results.aggregatedSplits?.length || 0);
+          
+          // Format proportion column (index 2) as percentage
+          for (let R = allocationTableStartRow; R < allocationTableEndRow; R++) {
+              const propCellRef = XLSX.utils.encode_cell({ c: 2, r: R });
+              if (consolidatedSheet[propCellRef]) {
+                  consolidatedSheet[propCellRef].t = 'n';
+                  consolidatedSheet[propCellRef].z = '0.00%';
+              }
+          }
+          
+          // Format amount column (index 3) with proper decimal places
+          for (let R = allocationTableStartRow; R < allocationTableEndRow + 1; R++) { // +1 to include total row
+              const amtCellRef = XLSX.utils.encode_cell({ c: 3, r: R });
+              if (consolidatedSheet[amtCellRef]) {
+                  consolidatedSheet[amtCellRef].t = 'n';
+                  consolidatedSheet[amtCellRef].z = `#,##0.${'0'.repeat(settings.decimalPlaces || 2)}`;
+              }
+          }
+          
+          // Add the consolidated sheet to the workbook with a meaningful name
+          XLSX.utils.book_append_sheet(
+              workbook, 
+              consolidatedSheet, 
+              t("ResultsDisplay.consolidatedSheetName", { defaultValue: "Invoice Split Report" })
+          );
           
           const filename = `InvoiceSplit_${format(new Date(), 'yyyyMMdd')}.xlsx`;
           XLSX.writeFile(workbook, filename);
@@ -467,53 +406,30 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
   }
 
   function handleExportPdf() {
-      Promise.all([
-          import('jspdf'),
-          import('jspdf-autotable')
-      ]).then(([{ jsPDF }, { default: autoTable }]) => {
+      Promise.all([import('jspdf'), import('jspdf-autotable')]).then(([{ jsPDF }, { default: autoTable }]) => {
           try {
-              const doc = new jsPDF();
-              // Track the current Y position for content placement
+              const doc = new jsPDF() as JsPDFWithInternal;
               let yPos = 20;
-              
-              // --- 1. Summary Section ---
-              doc.setFontSize(14);
-              doc.text(t("ResultsDisplay.summaryTitle"), 14, yPos);
-              yPos += 10;
-              doc.setFontSize(10);
-              doc.text(`${t("ResultsDisplay.periodLabel")}: ${formatDateForDisplay(inputData.startDate)} - ${formatDateForDisplay(inputData.endDate)}`, 14, yPos);
-              yPos += 5;
-              doc.text(`${t("ResultsDisplay.totalDurationLabel", { defaultValue: "Total Duration (days)" })}: ${totalDurationDays} ${t("ResultsDisplay.daysLabel")}`, 14, yPos);
-              yPos += 5;
-              doc.text(`${t("InvoiceForm.includeEndDateLabel", { defaultValue: "Include Final Day in Service Period?" })}: ${inputData.includeEndDate ? t("ResultsDisplay.yesLabel", { defaultValue: "Yes" }) : t("ResultsDisplay.noLabel", { defaultValue: "No" })}`, 14, yPos);
-              yPos += 5;
-              doc.text(`${t("InvoiceForm.splitPeriodLabel", { defaultValue: "Split Period" })}: ${splitPeriodUsed === 'yearly' ? t('InvoiceForm.periodYearly') : splitPeriodUsed === 'quarterly' ? t('InvoiceForm.periodQuarterly') : t('InvoiceForm.periodMonthly')}`, 14, yPos);
-              yPos += 5;
-              doc.text(`${t("ResultsDisplay.originalTotalLabel", { defaultValue: "Total Input Amount:" })}: ${formatNum(totalInputAmount)}`, 14, yPos);
-              yPos += 15;
-              
-              // --- 2. Allocation Table Section ---
-              doc.setFontSize(14);
-              doc.text(t("ResultsDisplay.aggregatedTitle", { defaultValue: "Allocation per Period" }), 14, yPos);
-              yPos += 5;
-              const tableColumn = [getPeriodHeader(), t("ResultsDisplay.daysHeader"), t("ResultsDisplay.proportionHeader"), t("ResultsDisplay.amountHeader")];
-              const tableRows = results.aggregatedSplits?.map(split => [
-                  formatPeriodId(split.periodIdentifier),
-                  split.daysInPeriod, // Assuming daysInPeriod exists
-                  formatPct(split.proportion),
-                  formatNum(split.totalSplitAmount) // Assuming totalSplitAmount exists
+              const filename = `InvoiceSplit_${format(new Date(), 'yyyyMMdd')}.pdf`;
+
+              // Summary Section
+              doc.text(`${t("ResultsDisplay.periodLabel")}: ${utilFormatDateLocale(inputData.startDate, currentLocale)} - ${utilFormatDateLocale(inputData.endDate, currentLocale)}`, 14, yPos); yPos += 5;
+              doc.text(`${t("ResultsDisplay.originalTotalLabel", { defaultValue: "Total Input Amount:" })}: ${utilFormatNumber(totalInputAmount, currentLocale, settings)}`, 14, yPos); yPos += 15;
+              doc.text(`${t("ResultsDisplay.totalDurationLabel", { defaultValue: "Total Duration (days)" })}: ${totalDurationDays} ${t("ResultsDisplay.daysLabel")}`, 14, yPos); yPos += 5;
+              doc.text(`${t("InvoiceForm.includeEndDateLabel", { defaultValue: "Include Final Day in Service Period?" })}: ${inputData.includeEndDate ? t("ResultsDisplay.yesLabel", { defaultValue: "Yes" }) : t("ResultsDisplay.noLabel", { defaultValue: "No" })}`, 14, yPos); yPos += 5;
+              doc.text(`${t("InvoiceForm.splitPeriodLabel", { defaultValue: "Split Period" })}: ${splitPeriodUsed === 'yearly' ? t('InvoiceForm.periodYearly') : splitPeriodUsed === 'quarterly' ? t('InvoiceForm.periodQuarterly') : t('InvoiceForm.periodMonthly')}`, 14, yPos); yPos += 5;
+
+              // Allocation Table
+              const tableRowsData = results.aggregatedSplits?.map(split => [
+                  formatPeriodIdentifier(split.periodIdentifier, splitPeriodUsed, currentLocale),
+                  split.daysInPeriod,
+                  utilFormatPercent(split.proportion, currentLocale),
+                  utilFormatNumber(split.totalSplitAmount, currentLocale, settings)
               ]) || [];
-              const tableFooter = [
-                  t("ResultsDisplay.totalLabel", { defaultValue: "Total" }),
-                  totalDurationDays,
-                  formatPct(1),
-                  formatNum(totalAggregatedAmount)
-              ];
-              // Apply the autoTable plugin to the document
               autoTable(doc, {
-                  head: [tableColumn],
-                  body: tableRows,
-                  foot: [tableFooter],
+                  head: [[getPeriodHeader(), t("ResultsDisplay.daysHeader"), t("ResultsDisplay.proportionHeader"), t("ResultsDisplay.amountHeader")]],
+                  body: tableRowsData,
+                  foot: [[t("ResultsDisplay.totalLabel", { defaultValue: "Total" }), totalDurationDays, utilFormatPercent(1, currentLocale), utilFormatNumber(totalAggregatedAmount, currentLocale, settings)]],
                   startY: yPos, 
                   theme: 'grid', 
                   headStyles: { fillColor: [46, 90, 140] }, 
@@ -525,123 +441,81 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   }
               });
               
-              // --- 3. Full Calculation Details Section ---
+              // Calculation Steps Section
               if (results.calculationSteps) {
                   const steps = results.calculationSteps;
                   const { periodSegments, amountCalculations } = steps;
+                  yPos = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 15 : yPos + 50;
                   
-                  // Get final Y position after the table
-                  const docWithInternal = doc as unknown as JsPDFWithInternal;
-                  yPos = docWithInternal.lastAutoTable?.finalY ? docWithInternal.lastAutoTable.finalY + 15 : yPos + 50;
-                  
-                  // Add section title
-                  doc.setFontSize(14);
                   doc.text(t('ResultsDisplay.calculationStepsTitle', { defaultValue: "View Full Split Calculation" }), 14, yPos);
                   yPos += 10;
                   
-                  // a. Total Duration section
-                  doc.setFontSize(12);
                   doc.text(t('ResultsDisplay.totalDuration'), 14, yPos);
                   yPos += 7;
-                  doc.setFontSize(10);
-                  doc.text(`${t('ResultsDisplay.periodLabel')}: ${formatDateLocale(steps.totalDuration.start, currentLocale)} - ${formatDateLocale(steps.totalDuration.end, currentLocale)}`, 20, yPos);
+                  
+                  // Use type assertions to handle the string dates from the API
+                  const startDate = steps.totalDuration.start as string;
+                  const endDate = steps.totalDuration.end as string;
+                  
+                  doc.text(`${t('ResultsDisplay.periodLabel')}: ${utilFormatDateLocale(startDate, currentLocale)} - ${utilFormatDateLocale(endDate, currentLocale)}`, 20, yPos);
                   yPos += 5;
                   doc.text(`${t('ResultsDisplay.totalDays')}: ${steps.totalDuration.days} ${steps.totalDuration.included ? t('ResultsDisplay.inclusiveLabel') : t('ResultsDisplay.exclusiveLabel')}`, 20, yPos);
                   yPos += 10;
                   
-                  // b. Proportion Calculation section
-                  doc.setFontSize(12);
                   doc.text(t('ResultsDisplay.proportionCalculation'), 14, yPos);
                   yPos += 7;
                   doc.setFontSize(10);
                   
-                  // Check if we need a new page for the proportion calculations
-                  if (yPos > docWithInternal.internal.pageSize.height - 50) {
-                      doc.addPage();
-                      yPos = 20;
-                  }
+                  if (yPos > doc.internal.pageSize.height - 50) { doc.addPage(); yPos = 20; }
                   
                   for (const segment of periodSegments) {
-                      doc.text(`${formatPeriodIdentifier(segment.periodIdentifier, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale)}: ${segment.days} / ${steps.totalDuration.days} = ${formatPercent(segment.proportion, currentLocale)}`, 20, yPos);
+                      doc.text(`${formatPeriodIdentifier(segment.periodIdentifier, splitPeriodUsed, currentLocale)}: ${segment.days} / ${steps.totalDuration.days} = ${utilFormatPercent(segment.proportion, currentLocale)}`, 20, yPos);
                       yPos += 5;
-                      
-                      // Add a new page if needed
-                      if (yPos > docWithInternal.internal.pageSize.height - 30) {
-                          doc.addPage();
-                          yPos = 20;
-                      }
+                      if (yPos > doc.internal.pageSize.height - 30) { doc.addPage(); yPos = 20; }
                   }
                   yPos += 5;
                   
-                  // c. Per-Amount Calculations section
-                  doc.setFontSize(12);
                   doc.text(t('ResultsDisplay.splitCalculation'), 14, yPos);
                   yPos += 7;
                   
                   for (let i = 0; i < amountCalculations.length; i++) {
                       const amtCalc = amountCalculations[i];
-                      
-                      // Check if we need a new page for this amount calculation
-                      if (yPos > docWithInternal.internal.pageSize.height - 70) {
-                          doc.addPage();
-                          yPos = 20;
-                      }
-                      
+                      if (yPos > doc.internal.pageSize.height - 70) { doc.addPage(); yPos = 20; }
                       doc.setFontSize(11);
-                      doc.text(`${t("ResultsDisplay.inputAmountLabel")} #${i + 1}: ${formatNum(amtCalc.originalAmount)}`, 20, yPos);
+                      doc.text(`${t("ResultsDisplay.inputAmountLabel")} #${i + 1}: ${utilFormatNumber(amtCalc.originalAmount, currentLocale, settings)}`, 20, yPos);
                       yPos += 7;
                       doc.setFontSize(10);
                       
                       for (const split of amtCalc.periodSplits) {
                           const periodSeg = periodSegments.find(s => s.periodIdentifier === split.periodIdentifier);
-                          doc.text(`${formatPeriodIdentifier(split.periodIdentifier, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale)}:`, 25, yPos);
+                          doc.text(`${formatPeriodIdentifier(split.periodIdentifier, splitPeriodUsed, currentLocale)}:`, 25, yPos);
                           yPos += 5;
-                          doc.text(`${formatNum(amtCalc.originalAmount)} × ${periodSeg?.proportion.toFixed(6)} = ${split.rawSplit.toFixed(6)}`, 30, yPos);
+                          doc.text(`${utilFormatNumber(amtCalc.originalAmount, currentLocale, settings)} × ${periodSeg?.proportion.toFixed(6)} = ${split.rawSplit.toFixed(6)}`, 30, yPos);
                           yPos += 5;
-                          doc.text(`→ ${t("ResultsDisplay.roundedLabel")}: ${formatNum(split.roundedSplit)}`, 30, yPos);
+                          doc.text(`→ ${t("ResultsDisplay.roundedLabel")}: ${utilFormatNumber(split.roundedSplit, currentLocale, settings)}`, 30, yPos);
                           yPos += 5;
-                          
-                          if (split.adjustment !== 0) {
-                              doc.text(`${t("ResultsDisplay.adjustmentLabel")}: ${formatNum(split.adjustment)}`, 30, yPos);
-                              yPos += 5;
-                          }
-                          
-                          // Add a new page if needed
-                          if (yPos > docWithInternal.internal.pageSize.height - 40) {
-                              doc.addPage();
-                              yPos = 20;
-                          }
+                          if (split.adjustment !== 0) { doc.text(`${t("ResultsDisplay.adjustmentLabel")}: ${utilFormatNumber(split.adjustment, currentLocale, settings)}`, 30, yPos); yPos += 5; }
+                          if (yPos > doc.internal.pageSize.height - 40) { doc.addPage(); yPos = 20; }
                       }
-                      
-                      doc.text(`${t("ResultsDisplay.discrepancyLabel")}: ${formatNum(amtCalc.discrepancy)}`, 25, yPos);
+                      doc.text(`${t("ResultsDisplay.discrepancyLabel")}: ${utilFormatNumber(amtCalc.discrepancy, currentLocale, settings)}`, 25, yPos);
                       yPos += 5;
-                      
                       if (amtCalc.adjustmentAppliedToPeriod) {
-                          doc.text(`${t("ResultsDisplay.adjustedInYearLabel", { defaultValue: "Applied in Year" })}: ${formatPeriodIdentifier(amtCalc.adjustmentAppliedToPeriod, splitPeriodUsed as 'yearly' | 'quarterly' | 'monthly', currentLocale)}`, 25, yPos);
+                          doc.text(`${t("ResultsDisplay.adjustedInYearLabel", { defaultValue: "Applied in Year" })}: ${formatPeriodIdentifier(amtCalc.adjustmentAppliedToPeriod, splitPeriodUsed, currentLocale)}`, 25, yPos);
                           yPos += 5;
                       }
-                      
-                      doc.text(`${t("ResultsDisplay.finalSumLabel")}: ${formatNum(amtCalc.finalSum)}`, 25, yPos);
+                      doc.text(`${t("ResultsDisplay.finalSumLabel")}: ${utilFormatNumber(amtCalc.finalSum, currentLocale, settings)}`, 25, yPos);
                       yPos += 10;
-                      
-                      // Add a new page if needed
-                      if (yPos > docWithInternal.internal.pageSize.height - 50 && i < amountCalculations.length - 1) {
-                          doc.addPage();
-                          yPos = 20;
-                      }
+                      if (yPos > doc.internal.pageSize.height - 50 && i < amountCalculations.length - 1) { doc.addPage(); yPos = 20; }
                   }
               }
               
-              // Cast to unknown first, then to our specific type to avoid direct type conversion errors
-              const docWithInternal = doc as unknown as JsPDFWithInternal;
-              const pageCount = docWithInternal.internal.getNumberOfPages();
+              const pageCount = doc.internal.getNumberOfPages();
               doc.setFontSize(8);
               for (let i = 1; i <= pageCount; i++) {
                   doc.setPage(i);
-                  doc.text(`Generated by BillSplitter - ${format(new Date(), 'PPpp')}`, 14, docWithInternal.internal.pageSize.height - 10);
-                  doc.text(`Page ${i} of ${pageCount}`, docWithInternal.internal.pageSize.width - 35, docWithInternal.internal.pageSize.height - 10);
+                  doc.text(`Generated by BillSplitter - ${format(new Date(), 'PPpp', { locale: currentLocale === 'de' ? de : enUS })}`, 14, doc.internal.pageSize.height - 10);
+                  doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 35, doc.internal.pageSize.height - 10);
               }
-              const filename = `InvoiceSplit_${format(new Date(), 'yyyyMMdd')}.pdf`;
               doc.save(filename);
           } catch (error) {
               console.error("Error generating PDF:", error);
@@ -706,7 +580,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                  <div className="flex justify-between pt-2 border-t border-border/30">
                   <span className="font-semibold text-foreground">{t("ResultsDisplay.originalTotalLabel", { defaultValue: "Total Input Amount:" })}</span>
                   <span className="font-semibold text-foreground">
-                    {formatNum(totalInputAmount)}
+                    {formatNumForDisplay(totalInputAmount)}
                 </span>
               </div>
             </div>
@@ -731,13 +605,13 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   {results.aggregatedSplits?.map((split, index) => (
                     <TableRow key={index}>
                       <TableCell className="font-medium text-foreground whitespace-nowrap">
-                        {formatPeriodId(split.periodIdentifier)}
+                        {formatPeriodIdForDisplay(split.periodIdentifier)}
                   </TableCell>
                       {/* Assuming AggregatedPeriodSplit has daysInPeriod */}
                       <TableCell className="text-right text-muted-foreground">{split.daysInPeriod}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">{formatPct(split.proportion)}</TableCell>
+                      <TableCell className="text-right text-muted-foreground">{formatPctForDisplay(split.proportion)}</TableCell>
                       {/* Assuming AggregatedPeriodSplit has totalSplitAmount */}
-                      <TableCell className="text-right font-medium text-foreground">{formatNum(split.totalSplitAmount)}</TableCell>
+                      <TableCell className="text-right font-medium text-foreground">{formatNumForDisplay(split.totalSplitAmount)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -745,8 +619,8 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   <TableRow>
                     <TableCell>{t("ResultsDisplay.totalLabel", { defaultValue: "Total" })}</TableCell>
                     <TableCell className="text-right font-semibold text-foreground">{totalDurationDays}</TableCell>
-                    <TableCell className="text-right font-semibold text-foreground">{formatPct(1)}</TableCell>
-                    <TableCell className="text-right font-semibold text-foreground">{formatNum(totalAggregatedAmount)}</TableCell>
+                    <TableCell className="text-right font-semibold text-foreground">{formatPctForDisplay(1)}</TableCell>
+                    <TableCell className="text-right font-semibold text-foreground">{formatNumForDisplay(totalAggregatedAmount)}</TableCell>
               </TableRow>
             </TableFooter>
           </Table>
@@ -811,16 +685,5 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
 
 // Wrapper component to provide context
 export function ResultsDisplay(props: ResultsDisplayProps) {
-  // Provide Settings context if it's not already provided higher up
-  // This assumes ResultsDisplay might be used where context isn't available
-  // but in this app, SettingsProvider is in layout.tsx, so it's likely redundant
-  // const { settings } = useSettings();
-  // if (!settings) { 
-  //  return <SettingsProvider><ResultsDisplayComponent {...props} /></SettingsProvider>
-  // }
-  return (
-    //<SettingsProvider> Remove if already provided in layout
-      <ResultsDisplayComponent {...props} />
-    //</SettingsProvider>
-  );
+  return <ResultsDisplayComponent {...props} />;
 }

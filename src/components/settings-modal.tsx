@@ -3,23 +3,22 @@
 import * as z from "zod";
 
 import {
-  FormDescription as BaseFormDescription,
-  FormItem as BaseFormItem,
-  FormLabel as BaseFormLabel,
-  FormMessage as BaseFormMessage,
-  Form,
-  FormControl,
-  FormField,
-  useFormField,
-} from "@/components/ui/form";
-import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription as UiDialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -32,57 +31,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { useSettings } from "@/context/settings-context";
 import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-// Custom FormLabel that never turns red on error
-const FormLabel = ({
-  children,
-  ...props
-}: React.ComponentProps<typeof BaseFormLabel>) => (
-  <BaseFormLabel
-    {...props}
-    style={{ color: "var(--foreground)", fontWeight: 500 }}
-  >
-    {children}
-  </BaseFormLabel>
-);
-
-// Custom FormMessage with proper alignment
-const FormMessage = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof BaseFormMessage>) => (
-  <BaseFormMessage
-    className={cn("text-destructive text-sm", className)}
-    {...props}
-  />
-);
-
-// Custom FormDescription that's only shown when there's no error
-const FormDescription = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof BaseFormDescription>) => {
-  const { error } = useFormField();
-
-  if (error) {
-    return null; // Don't show description when there's an error
-  }
-
-  return <BaseFormDescription className={className} {...props} />;
-};
-
-// Custom FormItem that shows either description or error message
-const FormItem = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof BaseFormItem>) => {
-  return <BaseFormItem className={className} {...props} />;
-};
 
 // Define a simpler form schema without transforms to avoid type issues
 const FormSchema = z.object({
@@ -264,7 +216,7 @@ export function SettingsModal({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
-            <DialogDescription>{dialogDescription}</DialogDescription>
+            <UiDialogDescription>{dialogDescription}</UiDialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

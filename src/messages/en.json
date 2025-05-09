@@ -111,7 +111,7 @@
     "space": "Space"
   },
   "General": {
-    "appName": "Invoice Allocator",
+    "appName": "Calculator",
     "allRightsReserved": "Copyright © by Siempi AG {{year}}",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
@@ -186,8 +186,11 @@
     "description": "Split invoices cleanly across fiscal years."
   },
   "AppPage": {
-    "title": "Enter Invoice Details",
+    "title": "Calculator",
     "description": "Fill in the fields below to split invoice amounts across fiscal periods."
+  },
+  "LandingPage": {
+    "title": "Home"
   },
   "Landing": {
     "logoAlt": "BillSplitter Logo Icon",

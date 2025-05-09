@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Anwendung | BillSplitter',
+  title: 'Rechner | BillSplitter',
   description: "Nutzen Sie das BillSplitter-Tool zum Hochladen & Aufteilen von Rechnungen.",
 };
 

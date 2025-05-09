@@ -111,10 +111,21 @@ export function Header() {
   const linkLangForButton = currentLang || defaultLang;
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
+    <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          <Link href={`/${linkLangForButton}/`} className="flex items-center">
+          <Link 
+            href={`/${linkLangForButton}/`} 
+            className="flex items-center"
+            onClick={() => {
+              // Clear all form data from sessionStorage when navigating to home
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('billSplitterDemoData');
+                sessionStorage.removeItem('invoiceFormDataCache');
+                console.log("Cleared form data from sessionStorage when navigating to home");
+              }
+            }}
+          >
             <Image
               src="/images/logo.svg"
               alt="BillSplitter Logo"
@@ -136,6 +147,16 @@ export function Header() {
             >
               <Link 
                 href={`/${linkLangForButton}/app/`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                onClick={() => {
+                  // Clear all form data from sessionStorage to ensure a clean start
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem('billSplitterDemoData');
+                    sessionStorage.removeItem('invoiceFormDataCache');
+                    console.log("Cleared form data from sessionStorage for clean start");
+                  }
+                }}
               >
                 {t("General.getStarted", { defaultValue: "Get Started" })}
               </Link>

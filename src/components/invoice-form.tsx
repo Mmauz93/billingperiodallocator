@@ -1,19 +1,19 @@
 "use client";
 
-import { AlertCircle, CalendarIcon, CheckCircle, Loader2, PlusCircle, XCircle } from "lucide-react"; // Removed Info import
+import { AlertCircle, CalendarIcon, CheckCircle, Loader2, PlusCircle, XCircle } from "lucide-react";
+import { CalculationInput, CalculationResult, calculateInvoiceSplit } from "@/lib/calculations";
 import {
-    FormLabel as BaseFormLabel,
-    FormMessage as BaseFormMessage,
     FormControl,
     FormDescription,
     FormField,
     FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
-import { CalculationInput, CalculationResult, calculateInvoiceSplit } from "@/lib/calculations";
-import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form"; // Import FormProvider and useFieldArray
+import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select components
-import { de, enUS } from 'date-fns/locale'; // Import locales
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { de, enUS } from 'date-fns/locale';
 import { format, isValid, parse, startOfDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -22,12 +22,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { debounce } from 'lodash'; // Re-add debounce
-import { useTranslation } from 'react-i18next'; // Import hook
+import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Constants for date formats - Define all supported formats
+// Constants for date formats
 const DATE_FORMAT_ISO = "yyyy-MM-dd";
 const DATE_FORMAT_DE = "dd.MM.yyyy";
 const DATE_FORMAT_US = "MM/dd/yyyy";
@@ -37,12 +37,12 @@ const DATE_FORMAT_DASHES = "dd-MM-yyyy";
 
 // List of all supported date formats for parsing
 const supportedDateFormats = [
-    DATE_FORMAT_ISO,    // yyyy-MM-dd
-    DATE_FORMAT_DE,     // dd.MM.yyyy
-    DATE_FORMAT_US,     // MM/dd/yyyy
-    DATE_FORMAT_DOTS,   // dd.MM.yy
-    DATE_FORMAT_SLASHES, // MM/dd/yy
-    DATE_FORMAT_DASHES  // dd-MM-yyyy
+    DATE_FORMAT_ISO,
+    DATE_FORMAT_DE,
+    DATE_FORMAT_US,
+    DATE_FORMAT_DOTS,
+    DATE_FORMAT_SLASHES,
+    DATE_FORMAT_DASHES
 ];
 
 // Function to try parsing a date string with multiple formats
@@ -53,14 +53,12 @@ const tryParseDate = (value: string): Date | null => {
     const trimmedValue = value.trim();
     
     // Basic format check before attempting parsing - require separators
-    // This will reject inputs like "200000" that don't have date separators
     const hasDateSeparators = /[\.\-\/]/.test(trimmedValue);
     if (!hasDateSeparators) {
         return null;
     }
     
     // Validate against common date patterns to ensure complete dates
-    // This enforces proper format with 4-digit years or complete date parts
     const validDatePattern = /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4}|\d{2}\/\d{2}\/\d{4}|\d{2}-\d{2}-\d{4})$/;
     if (!validDatePattern.test(trimmedValue)) {
         return null;
@@ -74,18 +72,17 @@ const tryParseDate = (value: string): Date | null => {
         }
     }
 
-    // No JavaScript Date fallback - we only accept explicitly supported formats
     return null;
 };
 
-// Also update CalculationInput type to include splitPeriod if needed
+// Update CalculationInput type to include splitPeriod
 declare module '@/lib/calculations' {
     interface CalculationInput {
         splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
     }
 }
 
-// Updated Zod schema to include splitPeriod, removed default here
+// Schema for form validation
 const formSchema = (t: ReturnType<typeof useTranslation>['t']) => z
     .object({
         startDateString: z.string().optional(),
@@ -123,10 +120,10 @@ const formSchema = (t: ReturnType<typeof useTranslation>['t']) => z
         path: ["endDateString"],
     });
 
-// FormData type now includes splitPeriod implicitly from schema inference
+// Form data type
 type FormSchemaType = z.infer<ReturnType<typeof formSchema>>;
 
-// Updated CalculationCallbackData - includes splitPeriod
+// Data passed back to parent on calculation
 export type CalculationCallbackData = {
     startDate: Date;
     endDate: Date;
@@ -136,9 +133,7 @@ export type CalculationCallbackData = {
 } | null;
 
 interface InvoiceFormProps {
-    // Allow null for the first argument if validation/parsing fails before calculation
     onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: string) => void;
-    // Add demoData prop
     demoData?: {
         startDateString?: string;
         endDateString?: string;
@@ -149,45 +144,13 @@ interface InvoiceFormProps {
     } | null;
 }
 
-// Custom FormLabel that never turns red
-const FormLabel = ({ children, ...props }: React.ComponentProps<typeof BaseFormLabel>) => (
-    <BaseFormLabel {...props} style={{ color: 'var(--foreground)', fontWeight: 500 }}>
-        {children}
-    </BaseFormLabel>
-);
-
-// Custom FormMessage with improved error visibility and conditional rendering
-const FormMessage = ({ className, ...props }: React.ComponentProps<typeof import("@/components/ui/form").FormMessage>) => {
-    // Check if there is an actual error message
-    const hasError = props.children && typeof props.children === 'string' && props.children.length > 0;
-    
-    // If no error, render nothing
-    if (!hasError) {
-        return null;
-    }
-    
-    // If there is an error, render the message with styling
-    return (
-        <BaseFormMessage 
-            className={cn(
-                "pl-3 flex items-center", 
-                "py-1 px-2 rounded text-destructive font-medium", // Only apply error styles
-                className
-            )}
-            {...props} 
-        >
-            <AlertCircle className="h-3 w-3 mr-1 flex-shrink-0" />
-            <span>{props.children}</span>
-        </BaseFormMessage>
-    );
-};
-
 export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
     const { t, i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const [isCalculating, setIsCalculating] = useState(false);
     const [buttonText, setButtonText] = useState('');
     const [showSuccessGlow, setShowSuccessGlow] = useState(false);
+    const [shouldLoadFromCache, setShouldLoadFromCache] = useState(false);
 
     const currentLocale = i18n.language.startsWith('de') ? de : enUS;
     const displayDateFormat = i18n.language.startsWith('de') ? DATE_FORMAT_DE : DATE_FORMAT_ISO;
@@ -260,16 +223,17 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
         }
     }, [t, onCalculateAction, setIsCalculating, setButtonText, setShowSuccessGlow]);
 
-    // Effect for Initial Data Loading (URL Demo Data via Session > Session Storage > Defaults)
+    // Effect for Initial Data Loading
     useEffect(() => {
         if (typeof window === 'undefined' || mounted) {
             return; // Run only once on the client after initial mount
         }
 
-        let initialDataSet = false;
+        console.log("[InvoiceForm] useEffect for initial data load triggered. Mounted:", mounted, "DemoData prop:", demoData);
         
         // First check for demo data passed as prop
         if (demoData && demoData.isDemo) {
+            console.log("[InvoiceForm] Demo data detected via prop:", demoData);
             try {
                 const demoValuesForForm: Partial<FormSchemaType> = {
                     startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
@@ -287,35 +251,51 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     amounts: demoValuesForForm.amounts || [{value: ''}]
                 };
 
-                form.reset(fullDemoValues);
-                // Clear the demo data from sessionStorage to prevent reloading on refresh
-                sessionStorage.removeItem('billSplitterDemoData');
-                initialDataSet = true;
+                console.log("[InvoiceForm] Applying demo data to form:", fullDemoValues);
+                form.reset(fullDemoValues); // Populates the form with demo data
+                // Enable persisting to cache since this is demo data
+                setShouldLoadFromCache(true);
 
-                form.trigger().then((isValidAfterTrigger) => {
-                    if (isValidAfterTrigger) {
-                        setTimeout(() => {
-                            if (form.formState.isValid) form.handleSubmit(onSubmit)();
-                        }, 500);
+                // CRUCIAL: Clear the demo flag from session storage after applying it
+                const storedDemoDataString = sessionStorage.getItem('billSplitterDemoData');
+                console.log("[InvoiceForm] Checking sessionStorage for billSplitterDemoData before clear:", storedDemoDataString);
+                if (storedDemoDataString) {
+                    const storedDemoData = JSON.parse(storedDemoDataString);
+                    if (storedDemoData.isDemo) {
+                        console.log("[InvoiceForm] isDemo is true in sessionStorage. Removing billSplitterDemoData.");
+                        sessionStorage.removeItem('billSplitterDemoData');
+                        console.log("[InvoiceForm] billSplitterDemoData removed from sessionStorage. Current value:", sessionStorage.getItem('billSplitterDemoData'));
+                    } else {
+                        console.log("[InvoiceForm] isDemo is false or not present in sessionStorage item. Not removing.");
                     }
-                });
+                } else {
+                    console.log("[InvoiceForm] billSplitterDemoData not found in sessionStorage before clear attempt.");
+                }
+
+                console.log("[InvoiceForm] Scheduling auto-submit due to demo data.");
+                setTimeout(() => {
+                    console.log("[InvoiceForm] Auto-submitting form with demo data.");
+                    form.handleSubmit(onSubmit)();
+                }, 100); 
+
             } catch (error) {
-                console.error("Error processing demo data:", error);
+                console.error("Error processing demo data in InvoiceForm:", error);
+                sessionStorage.removeItem('billSplitterDemoData');
+                console.warn("[InvoiceForm] Removed billSplitterDemoData from sessionStorage due to error during demo processing.");
             }
-        }
-        // Then check sessionStorage as fallback
-        else {
+        } else {
+            console.log("[InvoiceForm] No demoData prop or demoData.isDemo is false.");
             const demoDataString = sessionStorage.getItem('billSplitterDemoData');
             if (demoDataString) {
                 try {
-                    const demoData = JSON.parse(demoDataString);
-                    if (demoData.isDemo) { // Check the flag
+                    const parsedDemoData = JSON.parse(demoDataString);
+                    if (parsedDemoData.isDemo) { 
                         const demoValuesForForm: Partial<FormSchemaType> = {
-                            startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
-                            endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
-                            includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
-                            splitPeriod: demoData.splitPeriod || 'yearly',
-                            amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
+                            startDateString: parsedDemoData.startDateString ? format(tryParseDate(parsedDemoData.startDateString) || new Date(), displayDateFormat) : undefined,
+                            endDateString: parsedDemoData.endDateString ? format(tryParseDate(parsedDemoData.endDateString) || new Date(), displayDateFormat) : undefined,
+                            includeEndDate: parsedDemoData.includeEndDate !== undefined ? parsedDemoData.includeEndDate : true,
+                            splitPeriod: parsedDemoData.splitPeriod || 'yearly',
+                            amounts: parsedDemoData.amount ? [{ value: parsedDemoData.amount }] : [{ value: '' }]
                         };
                         
                         const fullDemoValues: FormSchemaType = {
@@ -327,9 +307,8 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                         };
 
                         form.reset(fullDemoValues);
-                        // Clear the demo data from sessionStorage to prevent reloading on refresh
                         sessionStorage.removeItem('billSplitterDemoData');
-                        initialDataSet = true;
+                        setShouldLoadFromCache(true);
 
                         form.trigger().then((isValidAfterTrigger) => {
                             if (isValidAfterTrigger) {
@@ -341,55 +320,65 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     }
                 } catch (error) {
                     console.error("Error parsing demo data from session storage:", error);
-                    sessionStorage.removeItem('billSplitterDemoData'); // Clear if corrupt
+                    sessionStorage.removeItem('billSplitterDemoData');
+                }
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                const forceClean = urlParams.get('clean') === 'true';
+                
+                if (forceClean) {
+                    console.log("[InvoiceForm] Detected clean=true URL param. Using empty form.");
+                    sessionStorage.removeItem(storageKey);
+                } else {
+                    const hasExistingFormData = !!sessionStorage.getItem(storageKey);
+                    setShouldLoadFromCache(hasExistingFormData);
+                    
+                    if (hasExistingFormData) {
+                        console.log("[InvoiceForm] Loading form data from cache:", sessionStorage.getItem(storageKey));
+                        try {
+                            const savedData = sessionStorage.getItem(storageKey);
+                            if (savedData) {
+                                const parsedData = JSON.parse(savedData) as FormSchemaType;
+                                form.reset(parsedData);
+                                console.log("[InvoiceForm] Successfully loaded cached form data");
+                            }
+                        } catch (error) {
+                            console.error("Failed to parse cached form data:", error);
+                            sessionStorage.removeItem(storageKey);
+                        }
+                    } else {
+                        console.log("[InvoiceForm] No existing form data in cache. Starting with empty form.");
+                    }
                 }
             }
         }
         
-        // If demo data wasn't used, try loading regular persisted form data
-        if (!initialDataSet) {
-            const savedData = sessionStorage.getItem(storageKey);
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData) as FormSchemaType;
-                    form.reset(parsedData);
-                    // initialDataSet = true; // Not strictly needed here anymore
-                } catch (error) {
-                    console.error("Failed to parse cached form data:", error);
-                    sessionStorage.removeItem(storageKey);
-                }
-            }
-        }
-        // If no data was applied from URL or session, useForm defaultValues are already in place.
         setMounted(true);
+        console.log("[InvoiceForm] Mounted state set to true. shouldLoadFromCache:", shouldLoadFromCache);
         setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
+    }, [demoData, mounted, form, t, displayDateFormat, onSubmit, storageKey, shouldLoadFromCache]);
 
-    }, [form, displayDateFormat, onSubmit, t, storageKey, mounted, demoData]);
-
-    // Debounced function to save data to sessionStorage upon user changes
-    // Use useMemo to create a stable debounced function instance
+    // Debounced function to save data to sessionStorage
     const debouncedSaveFunction = useMemo(
         () => debounce((dataToSave: FormSchemaType) => {
-            // Dependencies: mounted, storageKey
-            if (mounted) { 
+            if (mounted && shouldLoadFromCache) { // Only save to cache if we should be using the cache
                 try {
+                    console.log("[InvoiceForm] Saving form data to cache:", dataToSave);
                     sessionStorage.setItem(storageKey, JSON.stringify(dataToSave));
                 } catch (error) {
                     console.error("Failed to save form data to cache:", error);
                 }
             }
         }, 500),
-        [mounted, storageKey] // Dependencies for the useMemo hook
+        [mounted, storageKey, shouldLoadFromCache]
     );
 
-    // Effect to trigger debounced save when form values change by user interaction
-    const watchedFields = useWatch({ control: form.control }); // Watch all fields
+    // Effect to trigger debounced save when form values change
+    const watchedFields = useWatch({ control: form.control });
     useEffect(() => {
-        if (mounted) { // Ensure initial load doesn't immediately overwrite session from defaults if no demo/session data found
-            // Call the memoized debounced function
+        if (mounted) {
             debouncedSaveFunction(form.getValues());
         }
-    // Use the stable debouncedSaveFunction in the dependency array
     }, [watchedFields, debouncedSaveFunction, form, mounted]);
     
     // State for popover visibility
@@ -518,27 +507,251 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                 className={cn("space-y-6", mounted && "opacity-100 transition-opacity duration-500 ease-in-out", !mounted && "opacity-0")}
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="startDateString" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>{t('InvoiceForm.startDateLabel')}</FormLabel><Popover open={isStartDatePopoverOpen} onOpenChange={setIsStartDatePopoverOpen}><FormControl><div className="w-full relative"><Input value={field.value} onChange={(e) => { field.onChange(e); handleStartDateChange(e); }} onBlur={() => form.trigger("startDateString")} placeholder={dateExamplePlaceholder} className={`w-full pr-10 ${form.formState.errors.startDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} autoFocus />{field.value && !form.formState.errors.startDateString && (<div className="absolute inset-y-0 right-10 flex items-center"><CheckCircle className="h-4 w-4 text-green-500" /></div>)}{form.formState.errors.startDateString && (<div className="absolute inset-y-0 right-10 flex items-center"><AlertCircle className="h-4 w-4 text-destructive" /></div>)}<div className="absolute inset-y-0 right-0 pr-3 flex items-center"><PopoverTrigger asChild><Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date"><CalendarIcon className="h-4 w-4 text-muted-foreground" /></Button></PopoverTrigger></div></div></FormControl><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={tryParseDate(form.watch("startDateString") ?? '') || undefined} onSelect={onSelectStartDate} initialFocus locale={currentLocale} /></PopoverContent></Popover><FormMessage className="text-xs mt-1">{form.formState.errors.startDateString?.message}</FormMessage></FormItem>)} />
-                    <FormField control={form.control} name="endDateString" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>{t('InvoiceForm.endDateLabel')}</FormLabel><Popover open={isEndDatePopoverOpen} onOpenChange={setIsEndDatePopoverOpen}><FormControl><div className="w-full relative"><Input value={field.value} onChange={(e) => { field.onChange(e); handleEndDateChange(e); }} onBlur={() => form.trigger("endDateString")} placeholder={dateExamplePlaceholder} className={`w-full pr-10 ${form.formState.errors.endDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} />{field.value && !form.formState.errors.endDateString && (<div className="absolute inset-y-0 right-10 flex items-center"><CheckCircle className="h-4 w-4 text-green-500" /></div>)}{form.formState.errors.endDateString && (<div className="absolute inset-y-0 right-10 flex items-center"><AlertCircle className="h-4 w-4 text-destructive" /></div>)}<div className="absolute inset-y-0 right-0 pr-3 flex items-center"><PopoverTrigger asChild><Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date"><CalendarIcon className="h-4 w-4 text-muted-foreground" /></Button></PopoverTrigger></div></div></FormControl><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={tryParseDate(form.watch("endDateString") ?? '') || undefined} onSelect={onSelectEndDate} initialFocus locale={currentLocale} disabled={(date) => { const startDate = tryParseDate(form.watch("startDateString") ?? ''); return startDate ? date < startDate : false; }} /></PopoverContent></Popover><FormMessage className="text-xs mt-1">{form.formState.errors.endDateString?.message}</FormMessage></FormItem>)} />
+                    <FormField 
+                        control={form.control} 
+                        name="startDateString" 
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>{t('InvoiceForm.startDateLabel')}</FormLabel>
+                                <Popover open={isStartDatePopoverOpen} onOpenChange={setIsStartDatePopoverOpen}>
+                                    <FormControl>
+                                        <div className="w-full relative">
+                                            <Input 
+                                                value={field.value} 
+                                                onChange={(e) => { 
+                                                    field.onChange(e); 
+                                                    handleStartDateChange(e); 
+                                                }} 
+                                                onBlur={() => form.trigger("startDateString")} 
+                                                placeholder={dateExamplePlaceholder} 
+                                                className={`w-full pr-10 ${form.formState.errors.startDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
+                                                autoFocus 
+                                            />
+                                            {field.value && !form.formState.errors.startDateString && (
+                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                                </div>
+                                            )}
+                                            {form.formState.errors.startDateString && (
+                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                    <AlertCircle className="h-4 w-4 text-destructive" />
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center z-[1]">
+                                                <PopoverTrigger asChild>
+                                                    <Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date">
+                                                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar 
+                                            mode="single" 
+                                            selected={tryParseDate(form.watch("startDateString") ?? '') || undefined} 
+                                            onSelect={onSelectStartDate} 
+                                            initialFocus 
+                                            locale={currentLocale} 
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage className="text-xs mt-1">{form.formState.errors.startDateString?.message}</FormMessage>
+                            </FormItem>
+                        )} 
+                    />
+                    <FormField 
+                        control={form.control} 
+                        name="endDateString" 
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>{t('InvoiceForm.endDateLabel')}</FormLabel>
+                                <Popover open={isEndDatePopoverOpen} onOpenChange={setIsEndDatePopoverOpen}>
+                                    <FormControl>
+                                        <div className="w-full relative">
+                                            <Input 
+                                                value={field.value} 
+                                                onChange={(e) => { 
+                                                    field.onChange(e); 
+                                                    handleEndDateChange(e); 
+                                                }} 
+                                                onBlur={() => form.trigger("endDateString")} 
+                                                placeholder={dateExamplePlaceholder} 
+                                                className={`w-full pr-10 ${form.formState.errors.endDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
+                                            />
+                                            {field.value && !form.formState.errors.endDateString && (
+                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                                </div>
+                                            )}
+                                            {form.formState.errors.endDateString && (
+                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                    <AlertCircle className="h-4 w-4 text-destructive" />
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center z-[1]">
+                                                <PopoverTrigger asChild>
+                                                    <Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date">
+                                                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar 
+                                            mode="single" 
+                                            selected={tryParseDate(form.watch("endDateString") ?? '') || undefined} 
+                                            onSelect={onSelectEndDate} 
+                                            initialFocus 
+                                            locale={currentLocale} 
+                                            disabled={(date) => { 
+                                                const startDate = tryParseDate(form.watch("startDateString") ?? ''); 
+                                                return startDate ? date < startDate : false; 
+                                            }} 
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage className="text-xs mt-1">{form.formState.errors.endDateString?.message}</FormMessage>
+                            </FormItem>
+                        )} 
+                    />
                 </div>
-                <FormField control={form.control} name="includeEndDate" render={({ field }) => (<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4"><div className="space-y-0.5"><FormLabel className="text-base">{t('InvoiceForm.includeEndDateLabel')}</FormLabel><FormDescription>{t('InvoiceForm.includeEndDateDescription')}</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>)} />
-                <FormField control={form.control} name="splitPeriod" render={({ field }) => (<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4"><div className="space-y-0.5 pr-4"><FormLabel className="text-base">{t('InvoiceForm.splitPeriodLabel', { defaultValue: 'Split Period' })}</FormLabel><FormDescription>{t('InvoiceForm.splitPeriodDescription', { defaultValue: 'Choose how to split the invoice amounts.' })}</FormDescription></div><div className="min-w-[120px]"><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="w-full"><SelectValue placeholder={t('InvoiceForm.selectPeriodPlaceholder', { defaultValue: "Select..."})} /></SelectTrigger></FormControl><SelectContent><SelectItem value="yearly">{t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })}</SelectItem><SelectItem value="quarterly">{t('InvoiceForm.periodQuarterly', { defaultValue: 'Quarterly' })}</SelectItem><SelectItem value="monthly">{t('InvoiceForm.periodMonthly', { defaultValue: 'Monthly' })}</SelectItem></SelectContent></Select><FormMessage /></div></FormItem>)} />
+                <FormField 
+                    control={form.control} 
+                    name="includeEndDate" 
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">{t('InvoiceForm.includeEndDateLabel')}</FormLabel>
+                                <FormDescription>{t('InvoiceForm.includeEndDateDescription')}</FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                        </FormItem>
+                    )} 
+                />
+                <FormField 
+                    control={form.control} 
+                    name="splitPeriod" 
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5 pr-4">
+                                <FormLabel className="text-base">{t('InvoiceForm.splitPeriodLabel', { defaultValue: 'Split Period' })}</FormLabel>
+                                <FormDescription>{t('InvoiceForm.splitPeriodDescription', { defaultValue: 'Choose how to split the invoice amounts.' })}</FormDescription>
+                            </div>
+                            <div className="min-w-[120px]">
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder={t('InvoiceForm.selectPeriodPlaceholder', { defaultValue: "Select..." })} />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="yearly">{t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })}</SelectItem>
+                                        <SelectItem value="quarterly">{t('InvoiceForm.periodQuarterly', { defaultValue: 'Quarterly' })}</SelectItem>
+                                        <SelectItem value="monthly">{t('InvoiceForm.periodMonthly', { defaultValue: 'Monthly' })}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </div>
+                        </FormItem>
+                    )} 
+                />
                 <div className="space-y-5 rounded-lg border p-6 shadow-xs">
-                  <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
-                  <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
-                 {fields.map((item, index) => (<FormField control={form.control} key={item.id} name={`amounts.${index}.value`} render={({ field }) => (<FormItem className="mb-3"><div className="flex flex-col gap-1"><FormLabel className="text-sm font-medium">#{index + 1}</FormLabel><div className="flex items-center gap-2"><div className="relative flex-1"><FormControl><Input type="number" step="any" className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" {...field} /></FormControl><div className="absolute right-2 top-0 h-full flex items-center justify-center">{field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (<div className="flex items-center justify-center h-5 w-5"><CheckCircle className="h-4 w-4 text-green-500" /></div>)}{form.formState.errors.amounts?.[index]?.value && (<div className="flex items-center justify-center h-5 w-5"><AlertCircle className="h-4 w-4 text-destructive" /></div>)}</div></div>{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" aria-label="Remove amount"><XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" /></Button>)}</div></div><FormMessage /></FormItem>)} />))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => { append({ value: "" }); setTimeout(() => { const ni = document.querySelectorAll('input[type="number"]'); if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); }, 10); }} className="mt-4">
-                  <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
-              </Button>
-              {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (<p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>)}
-              {form.formState.errors.amounts?.root?.message && (<p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>)}
-            </div>
-            <Button type="submit" disabled={form.formState.isSubmitting || isCalculating} className={`w-full bg-primary text-white hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}>
-                {isCalculating ? (<span className="flex items-center justify-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />{buttonText}</span>) : (buttonText )}
-            </Button>
-        </form>
-    </FormProvider>
-);
+                    <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
+                    <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
+                    {fields.map((item, index) => (
+                        <FormField 
+                            control={form.control} 
+                            key={item.id} 
+                            name={`amounts.${index}.value`} 
+                            render={({ field }) => (
+                                <FormItem className="mb-3">
+                                    <div className="flex flex-col gap-1">
+                                        <FormLabel className="text-sm font-medium">#{index + 1}</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <div className="relative flex-1">
+                                                <FormControl>
+                                                    <Input 
+                                                        type="number" 
+                                                        step="any" 
+                                                        className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" 
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <div className="absolute right-2 top-0 h-full flex items-center justify-center z-[1]">
+                                                    {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
+                                                        <div className="flex items-center justify-center h-5 w-5">
+                                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        </div>
+                                                    )}
+                                                    {form.formState.errors.amounts?.[index]?.value && (
+                                                        <div className="flex items-center justify-center h-5 w-5">
+                                                            <AlertCircle className="h-4 w-4 text-destructive" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {fields.length > 1 && (
+                                                <Button 
+                                                    type="button" 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    onClick={() => remove(index)} 
+                                                    className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
+                                                    aria-label="Remove amount"
+                                                >
+                                                    <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )} 
+                        />
+                    ))}
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => { 
+                            append({ value: "" }); 
+                            setTimeout(() => { 
+                                const ni = document.querySelectorAll('input[type="number"]'); 
+                                if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); 
+                            }, 10); 
+                        }} 
+                        className="mt-4"
+                    >
+                        <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
+                    </Button>
+                    {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
+                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>
+                    )}
+                    {form.formState.errors.amounts?.root?.message && (
+                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>
+                    )}
+                </div>
+                <Button 
+                    type="submit" 
+                    disabled={form.formState.isSubmitting || isCalculating} 
+                    className={`w-full bg-primary text-white hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
+                >
+                    {isCalculating ? (
+                        <span className="flex items-center justify-center">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {buttonText}
+                        </span>
+                    ) : (
+                        buttonText
+                    )}
+                </Button>
+            </form>
+        </FormProvider>
+    );
 }
 
 // Need to wrap with TooltipProvider at a higher level if using tooltips inside 

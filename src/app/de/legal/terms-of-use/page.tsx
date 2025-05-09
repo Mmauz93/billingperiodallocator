@@ -104,19 +104,19 @@ export default function TermsOfUsePageDE() {
   // First effect to handle mounting only
   useEffect(() => {
     if (!isMounted) {
-      setIsMounted(true);
+    setIsMounted(true);
     } else {
-      // Set language prefix from URL
-      const urlLang = getUrlLanguage();
-      setLangPrefix(urlLang);
-      
-      // Sync i18n with URL language
-      if (i18n.language !== urlLang) {
-        i18n.changeLanguage(urlLang);
-      }
-      
-      // Load terms based on current language
-      loadTerms(urlLang);
+    // Set language prefix from URL
+    const urlLang = getUrlLanguage();
+    setLangPrefix(urlLang);
+    
+    // Sync i18n with URL language
+    if (i18n.language !== urlLang) {
+      i18n.changeLanguage(urlLang);
+    }
+    
+    // Load terms based on current language
+    loadTerms(urlLang);
     }
     // Set title after i18n might have changed language
     document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
@@ -169,7 +169,7 @@ export default function TermsOfUsePageDE() {
 
   // Determine H1 title based on mount state to avoid hydration mismatch
   const h1Title = isMounted ? t("Legal.termsOfUseTitle", "Nutzungsbedingungen") : "Terms of Use";
-
+  
   return (
     <main className="container mx-auto max-w-3xl px-6 py-16">
       <div className="mb-10 text-center">

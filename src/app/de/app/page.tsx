@@ -2,7 +2,7 @@
 
 import { Suspense, lazy, useEffect } from 'react';
 
-import Loading from '../../app/loading';
+import Loading from '@/components/loading';
 import { useTranslation } from 'react-i18next';
 
 // Lazy load the main component
@@ -15,7 +15,7 @@ export default function AppPageDE() {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    document.title = t("AppPage.title", "Rechnungsdetails eingeben") + " | BillSplitter";
+    document.title = t("AppPage.title", "Rechner") + " | BillSplitter";
   }, [t, i18n.language]);
 
   return (

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Application | BillSplitter',
+  title: 'Calculator | BillSplitter',
   description: "Use the BillSplitter tool to upload and split invoices. Free for private use.",
 };
 

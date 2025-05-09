@@ -77,6 +77,7 @@ export default function InvoiceCalculatorClient() {
     setMounted(true);
     setDynamicTitle(t('InvoiceForm.title'));
     
+    console.log("[InvoiceCalculatorClient] useEffect for initial mount. Reading sessionStorage for demo data.");
     // Check consent cookie
     const consentGiven = Cookies.get(consentCookieName) === "true";
     setHasConsent(consentGiven);
@@ -84,16 +85,22 @@ export default function InvoiceCalculatorClient() {
     // Read demo data before lazy loading InvoiceForm
     if (typeof window !== 'undefined') {
       const demoDataString = sessionStorage.getItem('billSplitterDemoData');
+      console.log("[InvoiceCalculatorClient] sessionStorage billSplitterDemoData:", demoDataString);
       if (demoDataString) {
         try {
           const parsedDemoData = JSON.parse(demoDataString);
+          console.log("[InvoiceCalculatorClient] Parsed demo data from sessionStorage:", parsedDemoData);
           if (parsedDemoData.isDemo) {
+            console.log("[InvoiceCalculatorClient] isDemo is true. Setting demoData state.");
             setDemoData(parsedDemoData);
             // Don't remove it yet - we'll pass it to InvoiceForm and let it handle removal
+          } else {
+            console.log("[InvoiceCalculatorClient] isDemo is false or not present in parsedDemoData. Not setting demoData state.");
           }
         } catch (error) {
-          console.error("Error parsing demo data from session storage:", error);
+          console.error("Error parsing demo data from session storage in InvoiceCalculatorClient:", error);
           sessionStorage.removeItem('billSplitterDemoData');
+          console.warn("[InvoiceCalculatorClient] Removed billSplitterDemoData from sessionStorage due to parsing error.");
         }
       }
     }

@@ -86,7 +86,7 @@ export default function ImprintPage() {
     }
     document.title = t("General.impressum") + " | BillSplitter";
   }, [i18n, getUrlLanguage, t]); // getUrlLanguage is memoized, added t to dependencies
-
+  
   if (!mounted) {
     return (
       <div className="flex justify-center items-center py-16 min-h-[500px]">

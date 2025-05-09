@@ -18,11 +18,14 @@ export default function EnglishLandingPage() {
       i18n.changeLanguage('en');
     }
     
+    // Set document title
+    document.title = t("LandingPage.title", "Home") + " | BillSplitter";
+    
     // Force scroll to top when component mounts
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }
-  }, [i18n]);
+  }, [i18n, t]);
 
   // Define default texts for translation keys
   const heroTitle = "Automated Invoice Split Calculator";

@@ -77,7 +77,7 @@ export default function RootLayout({
     }
     // Avoid double slash if original path was empty and slash was added
     if (currentPath === '//') currentPath = '/'; 
-
+      
     return `https://billsplitter.siempi.ch${currentPath}`;
   };
 

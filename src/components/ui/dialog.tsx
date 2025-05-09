@@ -10,51 +10,7 @@ import { cn } from "@/lib/utils";
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  React.useEffect(() => {
-    const onOpenChange = (open: boolean) => {
-      if (open) {
-        // Save current scrollbar width to use as padding
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        
-        // Add padding to prevent layout shift when scrollbar disappears
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-        document.body.style.overflow = 'hidden';
-      } else {
-        // Restore scrolling and remove padding
-        document.body.style.paddingRight = '';
-        document.body.style.overflow = '';
-      }
-    };
-
-    // Listen for state changes
-    const handleOpenChange = (event: Event) => {
-      const customEvent = event as CustomEvent<{ open: boolean }>;
-      onOpenChange(customEvent.detail.open);
-    };
-
-    // Add event listener for dialog state changes
-    document.addEventListener('dialogStateChange', handleOpenChange);
-
-    return () => {
-      // Clean up
-      document.removeEventListener('dialogStateChange', handleOpenChange);
-      document.body.style.paddingRight = '';
-      document.body.style.overflow = '';
-    };
-  }, []);
-
-  return <DialogPrimitive.Root 
-    onOpenChange={(open) => {
-      // Dispatch custom event when dialog state changes
-      document.dispatchEvent(
-        new CustomEvent('dialogStateChange', { detail: { open } })
-      );
-      // Call original onOpenChange if provided
-      props.onOpenChange?.(open);
-    }}
-    {...props} 
-    data-slot="dialog" 
-  />;
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
 function DialogTrigger({

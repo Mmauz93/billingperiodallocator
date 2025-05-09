@@ -40,14 +40,30 @@ export function roundValue(value: number, precision: number): number {
 }
 
 /**
- * Formats a date string (YYYY-MM-DD) according to locale.
- * @param dateString Date in 'yyyy-MM-dd' format.
+ * Formats a date according to locale. Accepts either a Date object or a string in YYYY-MM-DD format.
+ * @param dateInput Date as a string in 'yyyy-MM-dd' format or as a Date object.
  * @param locale Locale string (e.g., 'en', 'de').
  * @returns Formatted date string.
  */
-export function formatDateLocale(dateString: string, locale: string): string {
+export function formatDateLocale(dateInput: string | Date | undefined, locale: string): string {
+  if (!dateInput) return 'N/A';
+  
   try {
-    const date = new Date(dateString + "T00:00:00Z"); // Assume UTC
+    let date: Date;
+    
+    if (typeof dateInput === 'string') {
+      // If it's already in ISO format with time, use it directly
+      if (dateInput.includes('T')) {
+        date = new Date(dateInput);
+      } else {
+        // Add UTC time for date-only strings
+        date = new Date(dateInput + 'T00:00:00Z');
+      }
+    } else {
+      // It's already a Date
+      date = dateInput;
+    }
+    
     return new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
@@ -55,7 +71,7 @@ export function formatDateLocale(dateString: string, locale: string): string {
     }).format(date);
   } catch (error) {
     console.error("Error formatting date:", error);
-    return dateString; // Fallback to original string
+    return typeof dateInput === 'string' ? dateInput : dateInput.toISOString().split('T')[0]; // Fallback
   }
 }
 
