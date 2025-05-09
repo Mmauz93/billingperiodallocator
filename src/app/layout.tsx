@@ -27,46 +27,81 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         
-        {/* Script to inject hreflang tags into every page - Updated to match SEO requirements exactly */}
+        {/* Script to inject hreflang tags into every page - Updated to fix remaining SEO issues */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                const siteUrl = 'https://billsplitter.siempi.ch';
+                const supportedLanguages = ['en', 'de'];
+                
                 function injectHreflangTags() {
-                  const siteUrl = 'https://billsplitter.siempi.ch';
-                  const supportedLanguages = ['en', 'de'];
+                  // Remove all existing hreflang and canonical tags to avoid duplication
+                  clearExistingTags();
                   
-                  // Get current path and language
+                  // Determine current page type and add appropriate tags
                   const path = window.location.pathname;
                   
-                  // Special handling for the exact URLs required by SEO tool
-                  if (path === '/') {
-                    // Root page (/) requires special hreflang setup
-                    addHreflangForRootPage();
-                  } else if (path === '/en/' || path === '/en') {
-                    // English page (/en/) requires specific format
-                    addHreflangForEnglishPage();
-                  } else if (path === '/de/' || path === '/de') {
-                    // German page (/de/) requires specific format
-                    addHreflangForGermanPage();
+                  if (path === '/' || path === '') {
+                    // Root page (/) special case
+                    addTagsForRootPage();
                   } else {
-                    // For other subpages, use standard format
-                    addHreflangForSubpages();
-                  }
-                }
-
-                // Clear existing hreflang tags to prevent duplicates
-                function clearExistingHreflangTags() {
-                  const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
-                  existingTags.forEach(tag => tag.parentNode.removeChild(tag));
-                  
-                  const canonicalTag = document.querySelector('link[rel="canonical"]');
-                  if (canonicalTag) {
-                    canonicalTag.parentNode.removeChild(canonicalTag);
+                    // Language pages and subpages
+                    addTagsForLanguagePage(path);
                   }
                 }
                 
-                // Function to add link tags
+                function clearExistingTags() {
+                  // Remove all alternate/hreflang and canonical tags
+                  const tagsToRemove = document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]');
+                  tagsToRemove.forEach(tag => {
+                    if (tag.parentNode) {
+                      tag.parentNode.removeChild(tag);
+                    }
+                  });
+                }
+                
+                function addTagsForRootPage() {
+                  // Root page should have itself as canonical (SINGLE SOURCE OF TRUTH)
+                  addLinkTag('canonical', null, siteUrl + '/');
+                  
+                  // Root page hreflang tags - in exact order required by SEO tool
+                  addLinkTag('alternate', 'x-default', siteUrl + '/');
+                  addLinkTag('alternate', 'de', siteUrl + '/de/');
+                  addLinkTag('alternate', 'en', siteUrl + '/en/');
+                }
+                
+                function addTagsForLanguagePage(path) {
+                  // Determine current language from path
+                  const pathSegments = path.split('/').filter(Boolean);
+                  const currentLang = pathSegments[0] && supportedLanguages.includes(pathSegments[0]) 
+                    ? pathSegments[0] 
+                    : 'en';
+                  
+                  // Get path without language prefix
+                  let pathWithoutLang = '';
+                  if (pathSegments.length > 1 && supportedLanguages.includes(pathSegments[0])) {
+                    pathWithoutLang = '/' + pathSegments.slice(1).join('/');
+                  }
+                  
+                  // Canonical should always point to current page (SINGLE SOURCE OF TRUTH)
+                  const currentPageUrl = siteUrl + '/' + currentLang + (pathWithoutLang || '/');
+                  addLinkTag('canonical', null, currentPageUrl);
+                  
+                  // First add self-reference (current language)
+                  addLinkTag('alternate', currentLang, currentPageUrl);
+                  
+                  // Then add references to other language versions
+                  supportedLanguages.forEach(lang => {
+                    if (lang !== currentLang) {
+                      addLinkTag('alternate', lang, siteUrl + '/' + lang + (pathWithoutLang || '/'));
+                    }
+                  });
+                  
+                  // Always add x-default pointing to the root
+                  addLinkTag('alternate', 'x-default', siteUrl + '/');
+                }
+                
                 function addLinkTag(rel, hreflang, href) {
                   const link = document.createElement('link');
                   link.rel = rel;
@@ -77,93 +112,22 @@ export default function RootLayout({
                   document.head.appendChild(link);
                 }
                 
-                // Root page (/) specific implementation - matches SEO tool requirements exactly
-                function addHreflangForRootPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to root
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                }
-                
-                // English page (/en/) specific implementation
-                function addHreflangForEnglishPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to English
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/en/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                }
-                
-                // German page (/de/) specific implementation
-                function addHreflangForGermanPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to German
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/de/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                }
-                
-                // Handle all other subpages
-                function addHreflangForSubpages() {
-                  const siteUrl = 'https://billsplitter.siempi.ch';
-                  const supportedLanguages = ['en', 'de'];
-                  const path = window.location.pathname;
-                  const pathSegments = path.split('/').filter(Boolean);
-                  
-                  // Extract current language and path
-                  let currentLang = pathSegments[0] || 'en';
-                  if (!supportedLanguages.includes(currentLang)) {
-                    currentLang = 'en';
-                  }
-                  
-                  // Extract path without language prefix
-                  let pathWithoutLang = '';
-                  if (pathSegments.length > 1 && supportedLanguages.includes(pathSegments[0])) {
-                    pathWithoutLang = '/' + pathSegments.slice(1).join('/');
-                  }
-                  
-                  clearExistingHreflangTags();
-                  
-                  // Set canonical URL for current page
-                  const canonicalUrl = \`\${siteUrl}/\${currentLang}\${pathWithoutLang}/\`;
-                  addLinkTag('canonical', null, canonicalUrl);
-                  
-                  // Add hreflang for current language (self-reference)
-                  addLinkTag('alternate', currentLang, canonicalUrl);
-                  
-                  // Add hreflang for other languages
-                  supportedLanguages.forEach(lang => {
-                    if (lang !== currentLang) {
-                      addLinkTag('alternate', lang, \`\${siteUrl}/\${lang}\${pathWithoutLang}/\`);
-                    }
-                  });
-                  
-                  // Add x-default (pointing to root)
-                  addLinkTag('alternate', 'x-default', \`\${siteUrl}/\`);
-                }
-                
-                // Run on page load
+                // Execute on page load
                 if (document.readyState === 'loading') {
                   document.addEventListener('DOMContentLoaded', injectHreflangTags);
                 } else {
                   injectHreflangTags();
                 }
                 
-                // Run again after any navigation (for SPA behavior)
+                // Also execute on navigation (for SPA behavior)
                 window.addEventListener('popstate', injectHreflangTags);
+                
+                // For frameworks that use history.pushState
+                const originalPushState = history.pushState;
+                history.pushState = function() {
+                  originalPushState.apply(this, arguments);
+                  injectHreflangTags();
+                };
               })();
             `,
           }}

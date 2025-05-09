@@ -12,43 +12,78 @@ d:I[59665,[],"OutletBoundary"]
 14:I[26614,[],""]
 :HL["/_next/static/css/022446bc798da55d.css","style"]
 :HL["/_next/static/css/1018df78a05ccae4.css","style"]
-2:T19a9,
+2:T11ff,
               (function() {
+                const siteUrl = 'https://billsplitter.siempi.ch';
+                const supportedLanguages = ['en', 'de'];
+                
                 function injectHreflangTags() {
-                  const siteUrl = 'https://billsplitter.siempi.ch';
-                  const supportedLanguages = ['en', 'de'];
+                  // Remove all existing hreflang and canonical tags to avoid duplication
+                  clearExistingTags();
                   
-                  // Get current path and language
+                  // Determine current page type and add appropriate tags
                   const path = window.location.pathname;
                   
-                  // Special handling for the exact URLs required by SEO tool
-                  if (path === '/') {
-                    // Root page (/) requires special hreflang setup
-                    addHreflangForRootPage();
-                  } else if (path === '/en/' || path === '/en') {
-                    // English page (/en/) requires specific format
-                    addHreflangForEnglishPage();
-                  } else if (path === '/de/' || path === '/de') {
-                    // German page (/de/) requires specific format
-                    addHreflangForGermanPage();
+                  if (path === '/' || path === '') {
+                    // Root page (/) special case
+                    addTagsForRootPage();
                   } else {
-                    // For other subpages, use standard format
-                    addHreflangForSubpages();
-                  }
-                }
-
-                // Clear existing hreflang tags to prevent duplicates
-                function clearExistingHreflangTags() {
-                  const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
-                  existingTags.forEach(tag => tag.parentNode.removeChild(tag));
-                  
-                  const canonicalTag = document.querySelector('link[rel="canonical"]');
-                  if (canonicalTag) {
-                    canonicalTag.parentNode.removeChild(canonicalTag);
+                    // Language pages and subpages
+                    addTagsForLanguagePage(path);
                   }
                 }
                 
-                // Function to add link tags
+                function clearExistingTags() {
+                  // Remove all alternate/hreflang and canonical tags
+                  const tagsToRemove = document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]');
+                  tagsToRemove.forEach(tag => {
+                    if (tag.parentNode) {
+                      tag.parentNode.removeChild(tag);
+                    }
+                  });
+                }
+                
+                function addTagsForRootPage() {
+                  // Root page should have itself as canonical (SINGLE SOURCE OF TRUTH)
+                  addLinkTag('canonical', null, siteUrl + '/');
+                  
+                  // Root page hreflang tags - in exact order required by SEO tool
+                  addLinkTag('alternate', 'x-default', siteUrl + '/');
+                  addLinkTag('alternate', 'de', siteUrl + '/de/');
+                  addLinkTag('alternate', 'en', siteUrl + '/en/');
+                }
+                
+                function addTagsForLanguagePage(path) {
+                  // Determine current language from path
+                  const pathSegments = path.split('/').filter(Boolean);
+                  const currentLang = pathSegments[0] && supportedLanguages.includes(pathSegments[0]) 
+                    ? pathSegments[0] 
+                    : 'en';
+                  
+                  // Get path without language prefix
+                  let pathWithoutLang = '';
+                  if (pathSegments.length > 1 && supportedLanguages.includes(pathSegments[0])) {
+                    pathWithoutLang = '/' + pathSegments.slice(1).join('/');
+                  }
+                  
+                  // Canonical should always point to current page (SINGLE SOURCE OF TRUTH)
+                  const currentPageUrl = siteUrl + '/' + currentLang + (pathWithoutLang || '/');
+                  addLinkTag('canonical', null, currentPageUrl);
+                  
+                  // First add self-reference (current language)
+                  addLinkTag('alternate', currentLang, currentPageUrl);
+                  
+                  // Then add references to other language versions
+                  supportedLanguages.forEach(lang => {
+                    if (lang !== currentLang) {
+                      addLinkTag('alternate', lang, siteUrl + '/' + lang + (pathWithoutLang || '/'));
+                    }
+                  });
+                  
+                  // Always add x-default pointing to the root
+                  addLinkTag('alternate', 'x-default', siteUrl + '/');
+                }
+                
                 function addLinkTag(rel, hreflang, href) {
                   const link = document.createElement('link');
                   link.rel = rel;
@@ -59,95 +94,24 @@ d:I[59665,[],"OutletBoundary"]
                   document.head.appendChild(link);
                 }
                 
-                // Root page (/) specific implementation - matches SEO tool requirements exactly
-                function addHreflangForRootPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to root
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                }
-                
-                // English page (/en/) specific implementation
-                function addHreflangForEnglishPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to English
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/en/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                }
-                
-                // German page (/de/) specific implementation
-                function addHreflangForGermanPage() {
-                  clearExistingHreflangTags();
-                  
-                  // Canonical points to German
-                  addLinkTag('canonical', null, 'https://billsplitter.siempi.ch/de/');
-                  
-                  // Exactly match the SEO tool requirements
-                  addLinkTag('alternate', 'de', 'https://billsplitter.siempi.ch/de/');
-                  addLinkTag('alternate', 'en', 'https://billsplitter.siempi.ch/en/');
-                  addLinkTag('alternate', 'x-default', 'https://billsplitter.siempi.ch/');
-                }
-                
-                // Handle all other subpages
-                function addHreflangForSubpages() {
-                  const siteUrl = 'https://billsplitter.siempi.ch';
-                  const supportedLanguages = ['en', 'de'];
-                  const path = window.location.pathname;
-                  const pathSegments = path.split('/').filter(Boolean);
-                  
-                  // Extract current language and path
-                  let currentLang = pathSegments[0] || 'en';
-                  if (!supportedLanguages.includes(currentLang)) {
-                    currentLang = 'en';
-                  }
-                  
-                  // Extract path without language prefix
-                  let pathWithoutLang = '';
-                  if (pathSegments.length > 1 && supportedLanguages.includes(pathSegments[0])) {
-                    pathWithoutLang = '/' + pathSegments.slice(1).join('/');
-                  }
-                  
-                  clearExistingHreflangTags();
-                  
-                  // Set canonical URL for current page
-                  const canonicalUrl = `${siteUrl}/${currentLang}${pathWithoutLang}/`;
-                  addLinkTag('canonical', null, canonicalUrl);
-                  
-                  // Add hreflang for current language (self-reference)
-                  addLinkTag('alternate', currentLang, canonicalUrl);
-                  
-                  // Add hreflang for other languages
-                  supportedLanguages.forEach(lang => {
-                    if (lang !== currentLang) {
-                      addLinkTag('alternate', lang, `${siteUrl}/${lang}${pathWithoutLang}/`);
-                    }
-                  });
-                  
-                  // Add x-default (pointing to root)
-                  addLinkTag('alternate', 'x-default', `${siteUrl}/`);
-                }
-                
-                // Run on page load
+                // Execute on page load
                 if (document.readyState === 'loading') {
                   document.addEventListener('DOMContentLoaded', injectHreflangTags);
                 } else {
                   injectHreflangTags();
                 }
                 
-                // Run again after any navigation (for SPA behavior)
+                // Also execute on navigation (for SPA behavior)
                 window.addEventListener('popstate', injectHreflangTags);
+                
+                // For frameworks that use history.pushState
+                const originalPushState = history.pushState;
+                history.pushState = function() {
+                  originalPushState.apply(this, arguments);
+                  injectHreflangTags();
+                };
               })();
-            0:{"P":null,"b":"UKhU-2NRw8PyMxuVNqTri","p":"","c":["","en","legal","privacy-policy",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["privacy-policy",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/022446bc798da55d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/1018df78a05ccae4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"__className_22ceb1 bg-background antialiased","suppressHydrationWarning":true,"children":["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["privacy-policy",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],["$","$Lb",null,{"children":"$Lc"}],null,["$","$Ld",null,{"children":["$Le","$Lf",["$","$L10",null,{"promise":"$@11"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","CzvphPbkiT8gV2ufyHq0U",{"children":[["$","$L12",null,{"children":"$L13"}],null]}],null]}],false]],"m":"$undefined","G":["$14","$undefined"],"s":false,"S":true}
+            0:{"P":null,"b":"hGE0XnD7Aubc6ftT4-PN7","p":"","c":["","en","legal","privacy-policy",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["privacy-policy",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/022446bc798da55d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/1018df78a05ccae4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"__className_22ceb1 bg-background antialiased","suppressHydrationWarning":true,"children":["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["privacy-policy",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],["$","$Lb",null,{"children":"$Lc"}],null,["$","$Ld",null,{"children":["$Le","$Lf",["$","$L10",null,{"promise":"$@11"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","MDHk0okjxYDeRQKub6RSV",{"children":[["$","$L12",null,{"children":"$L13"}],null]}],null]}],false]],"m":"$undefined","G":["$14","$undefined"],"s":false,"S":true}
 15:"$Sreact.suspense"
 16:I[74911,[],"AsyncMetadata"]
 9:{}
