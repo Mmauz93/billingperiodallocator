@@ -7,7 +7,8 @@
     "build": "next build && node scripts/prepare-static-export.js",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "prod-test": "next build && next start"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.8",

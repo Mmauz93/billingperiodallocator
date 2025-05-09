@@ -138,6 +138,15 @@ export type CalculationCallbackData = {
 interface InvoiceFormProps {
     // Allow null for the first argument if validation/parsing fails before calculation
     onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: string) => void;
+    // Add demoData prop
+    demoData?: {
+        startDateString?: string;
+        endDateString?: string;
+        amount?: string;
+        includeEndDate?: boolean;
+        splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
+        isDemo?: boolean;
+    } | null;
 }
 
 // Custom FormLabel that never turns red
@@ -173,7 +182,7 @@ const FormMessage = ({ className, ...props }: React.ComponentProps<typeof import
     );
 };
 
-export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
+export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
     const { t, i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const [isCalculating, setIsCalculating] = useState(false);
@@ -258,45 +267,82 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
         }
 
         let initialDataSet = false;
-        const demoDataString = sessionStorage.getItem('billSplitterDemoData');
-
-        if (demoDataString) {
+        
+        // First check for demo data passed as prop
+        if (demoData && demoData.isDemo) {
             try {
-                const demoData = JSON.parse(demoDataString);
-                if (demoData.isDemo) { // Check the flag
-                    const demoValuesForForm: Partial<FormSchemaType> = {
-                        startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
-                        endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
-                        includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
-                        splitPeriod: demoData.splitPeriod || 'yearly',
-                        amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
-                    };
-                    
-                    const fullDemoValues: FormSchemaType = {
-                        startDateString: demoValuesForForm.startDateString || '',
-                        endDateString: demoValuesForForm.endDateString || '',
-                        includeEndDate: demoValuesForForm.includeEndDate !== undefined ? demoValuesForForm.includeEndDate : true,
-                        splitPeriod: demoValuesForForm.splitPeriod || 'yearly',
-                        amounts: demoValuesForForm.amounts || [{value: ''}]
-                    };
+                const demoValuesForForm: Partial<FormSchemaType> = {
+                    startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
+                    endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
+                    includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
+                    splitPeriod: demoData.splitPeriod || 'yearly',
+                    amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
+                };
+                
+                const fullDemoValues: FormSchemaType = {
+                    startDateString: demoValuesForForm.startDateString || '',
+                    endDateString: demoValuesForForm.endDateString || '',
+                    includeEndDate: demoValuesForForm.includeEndDate !== undefined ? demoValuesForForm.includeEndDate : true,
+                    splitPeriod: demoValuesForForm.splitPeriod || 'yearly',
+                    amounts: demoValuesForForm.amounts || [{value: ''}]
+                };
 
-                    form.reset(fullDemoValues);
-                    // No need to save back to session storage if it was just for demo init
-                    // sessionStorage.setItem(storageKey, JSON.stringify(fullDemoValues)); 
-                    sessionStorage.removeItem('billSplitterDemoData'); // Clear the demo flag/data
-                    initialDataSet = true;
+                form.reset(fullDemoValues);
+                // Clear the demo data from sessionStorage to prevent reloading on refresh
+                sessionStorage.removeItem('billSplitterDemoData');
+                initialDataSet = true;
 
-                    form.trigger().then((isValidAfterTrigger) => {
-                        if (isValidAfterTrigger) {
-                            setTimeout(() => {
-                                if (form.formState.isValid) form.handleSubmit(onSubmit)();
-                            }, 500);
-                        }
-                    });
-                }
+                form.trigger().then((isValidAfterTrigger) => {
+                    if (isValidAfterTrigger) {
+                        setTimeout(() => {
+                            if (form.formState.isValid) form.handleSubmit(onSubmit)();
+                        }, 500);
+                    }
+                });
             } catch (error) {
-                console.error("Error parsing demo data from session storage:", error);
-                sessionStorage.removeItem('billSplitterDemoData'); // Clear if corrupt
+                console.error("Error processing demo data:", error);
+            }
+        }
+        // Then check sessionStorage as fallback
+        else {
+            const demoDataString = sessionStorage.getItem('billSplitterDemoData');
+            if (demoDataString) {
+                try {
+                    const demoData = JSON.parse(demoDataString);
+                    if (demoData.isDemo) { // Check the flag
+                        const demoValuesForForm: Partial<FormSchemaType> = {
+                            startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
+                            endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
+                            includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
+                            splitPeriod: demoData.splitPeriod || 'yearly',
+                            amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
+                        };
+                        
+                        const fullDemoValues: FormSchemaType = {
+                            startDateString: demoValuesForForm.startDateString || '',
+                            endDateString: demoValuesForForm.endDateString || '',
+                            includeEndDate: demoValuesForForm.includeEndDate !== undefined ? demoValuesForForm.includeEndDate : true,
+                            splitPeriod: demoValuesForForm.splitPeriod || 'yearly',
+                            amounts: demoValuesForForm.amounts || [{value: ''}]
+                        };
+
+                        form.reset(fullDemoValues);
+                        // Clear the demo data from sessionStorage to prevent reloading on refresh
+                        sessionStorage.removeItem('billSplitterDemoData');
+                        initialDataSet = true;
+
+                        form.trigger().then((isValidAfterTrigger) => {
+                            if (isValidAfterTrigger) {
+                                setTimeout(() => {
+                                    if (form.formState.isValid) form.handleSubmit(onSubmit)();
+                                }, 500);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error parsing demo data from session storage:", error);
+                    sessionStorage.removeItem('billSplitterDemoData'); // Clear if corrupt
+                }
             }
         }
         
@@ -318,7 +364,7 @@ export function InvoiceForm({ onCalculateAction }: InvoiceFormProps) {
         setMounted(true);
         setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
 
-    }, [form, displayDateFormat, onSubmit, t, storageKey, mounted]);
+    }, [form, displayDateFormat, onSubmit, t, storageKey, mounted, demoData]);
 
     // Debounced function to save data to sessionStorage upon user changes
     // Use useMemo to create a stable debounced function instance

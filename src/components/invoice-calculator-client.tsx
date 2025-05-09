@@ -3,18 +3,47 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 // Import the CalculationCallbackData type from InvoiceForm
 import { CalculationCallbackData } from "@/components/invoice-form";
 import Cookies from 'js-cookie';
 import { GoogleAnalytics } from '@next/third-parties/google';
-import { InvoiceForm } from "@/components/invoice-form";
 import { Loader2 } from "lucide-react";
 import { ResultsDisplay } from "@/components/results-display";
 import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
+import dynamic from 'next/dynamic';
 import { useTranslation } from 'react-i18next';
+
+// Define a type for the demo data that matches the one in InvoiceForm
+type DemoDataType = {
+  startDateString?: string;
+  endDateString?: string;
+  amount?: string;
+  includeEndDate?: boolean;
+  splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
+  isDemo?: boolean;
+} | null;
+
+// Dynamic import of the InvoiceForm component with SSR disabled for faster loading
+const InvoiceForm = dynamic(
+  () => import('@/components/invoice-form').then(mod => ({ default: mod.InvoiceForm })),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="space-y-6 animate-pulse">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-24 bg-muted/60 rounded-lg"></div>
+          <div className="h-24 bg-muted/60 rounded-lg"></div>
+        </div>
+        <div className="h-20 bg-muted/60 rounded-lg"></div>
+        <div className="h-48 bg-muted/60 rounded-lg"></div>
+        <div className="h-10 bg-muted/60 rounded-lg"></div>
+      </div>
+    )
+  }
+);
 
 // Define a type alias that matches ResultsDisplay's expected inputData type
 type InputDataForDisplay = Pick<
@@ -35,12 +64,15 @@ export default function InvoiceCalculatorClient() {
   // Add ref for the results section
   const resultsSectionRef = useRef<HTMLDivElement>(null);
 
+  // State to store demo data to pass to InvoiceForm
+  const [demoData, setDemoData] = useState<DemoDataType>(null);
+
   // --- Consent Management State and Logic --- 
   const gaMeasurementId = "G-9H2KTHX5YK"; 
   const consentCookieName = "siempiBillSplitterConsent";
   const [hasConsent, setHasConsent] = useState(false);
 
-  // Effect to check for existing consent cookie on mount
+  // Effect to check for existing consent cookie on mount and handle demo data
   useEffect(() => {
     setMounted(true);
     setDynamicTitle(t('InvoiceForm.title'));
@@ -48,6 +80,23 @@ export default function InvoiceCalculatorClient() {
     // Check consent cookie
     const consentGiven = Cookies.get(consentCookieName) === "true";
     setHasConsent(consentGiven);
+    
+    // Read demo data before lazy loading InvoiceForm
+    if (typeof window !== 'undefined') {
+      const demoDataString = sessionStorage.getItem('billSplitterDemoData');
+      if (demoDataString) {
+        try {
+          const parsedDemoData = JSON.parse(demoDataString);
+          if (parsedDemoData.isDemo) {
+            setDemoData(parsedDemoData);
+            // Don't remove it yet - we'll pass it to InvoiceForm and let it handle removal
+          }
+        } catch (error) {
+          console.error("Error parsing demo data from session storage:", error);
+          sessionStorage.removeItem('billSplitterDemoData');
+        }
+      }
+    }
   }, [t]);
 
   const handleCalculation = (
@@ -125,7 +174,22 @@ export default function InvoiceCalculatorClient() {
                 style={{ opacity: mounted ? 1 : 0.85 }}>
             <CardContent className="pt-6">
               <div className="w-full">
-                <InvoiceForm onCalculateAction={handleCalculation} />
+                <Suspense fallback={
+                  <div className="space-y-6 animate-pulse">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="h-24 bg-muted/60 rounded-lg"></div>
+                      <div className="h-24 bg-muted/60 rounded-lg"></div>
+                    </div>
+                    <div className="h-20 bg-muted/60 rounded-lg"></div>
+                    <div className="h-48 bg-muted/60 rounded-lg"></div>
+                    <div className="h-10 bg-muted/60 rounded-lg"></div>
+                  </div>
+                }>
+                  <InvoiceForm 
+                    onCalculateAction={handleCalculation} 
+                    demoData={demoData} 
+                  />
+                </Suspense>
               </div>
             </CardContent>
           </Card>

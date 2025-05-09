@@ -52,7 +52,7 @@ export default function RootLayout({
     <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* <link rel="icon" href="/favicon.ico" /> */}{/* Commented out to prefer src/app/icon.svg */}
+        <link rel="icon" href="/favicon.ico" />
         <link
           rel="alternate"
           hrefLang="de"
@@ -62,6 +62,24 @@ export default function RootLayout({
           rel="alternate"
           hrefLang="en"
           href="https://billsplitter.siempi.ch/en/"
+        />
+        {/* Prevent theme flickering */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // On page load or when changing themes, best to add inline in \`head\` to avoid FOUC
+                if (localStorage.getItem('theme') === 'dark' || 
+                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.style.colorScheme = 'light';
+                }
+              })();
+            `,
+          }}
         />
       </head>
       <body className={cn(roboto.className, "bg-background antialiased")} suppressHydrationWarning>
