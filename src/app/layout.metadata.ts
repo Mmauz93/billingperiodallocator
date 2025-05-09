@@ -8,14 +8,6 @@ export const metadata: Metadata = {
     default: 'BillSplitter',
   },
   description: 'Invoice period allocation calculator for finance professionals',
-  alternates: {
-    canonical: '/en/',
-    languages: {
-      'en': '/en/',
-      'de': '/de/',
-      'x-default': '/en/'
-    }
-  },
   robots: {
     index: true,
     follow: true,

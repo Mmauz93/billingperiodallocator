@@ -3,17 +3,22 @@ import { MetadataRoute } from 'next';
 // Configure for static export
 export const dynamic = 'force-static';
 
-// Modern Next.js robots.ts generator that allows indexing of all important content
+/**
+ * Robots.txt configuration following best practices for multilingual SEO:
+ * - Allows crawling of language-specific paths
+ * - Allows crawling of the root URL (which redirects to the correct language)
+ * - Prevents crawling of admin/internal routes
+ */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: '/',          // Allow all paths by default
+        allow: '/',                  // Allow crawling of all public content
         disallow: [
-          '/api/',           // Disallow API routes
-          '/_next/',         // Disallow Next.js internal files
-          '/static/',        // Disallow static files
+          '/api/',                   // Prevent crawling of API routes
+          '/_next/',                 // Prevent crawling of Next.js internals
+          '/static/',                // Prevent crawling of static assets directory
         ],
       },
     ],

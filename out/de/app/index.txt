@@ -12,106 +12,114 @@ d:I[59665,[],"OutletBoundary"]
 14:I[26614,[],""]
 :HL["/_next/static/css/022446bc798da55d.css","style"]
 :HL["/_next/static/css/1018df78a05ccae4.css","style"]
-2:T11ff,
+2:T13db,
               (function() {
+                // Configuration
                 const siteUrl = 'https://billsplitter.siempi.ch';
                 const supportedLanguages = ['en', 'de'];
+                const defaultLanguage = 'en';
                 
-                function injectHreflangTags() {
-                  // Remove all existing hreflang and canonical tags to avoid duplication
-                  clearExistingTags();
+                function setupHreflangTags() {
+                  // First remove any existing hreflang/canonical tags to avoid duplicates
+                  removeExistingTags();
                   
-                  // Determine current page type and add appropriate tags
-                  const path = window.location.pathname;
+                  // Get current path and determine page type
+                  const { pathname } = window.location;
+                  const pathSegments = pathname.split('/').filter(Boolean);
                   
-                  if (path === '/' || path === '') {
-                    // Root page (/) special case
-                    addTagsForRootPage();
-                  } else {
-                    // Language pages and subpages
-                    addTagsForLanguagePage(path);
-                  }
-                }
-                
-                function clearExistingTags() {
-                  // Remove all alternate/hreflang and canonical tags
-                  const tagsToRemove = document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]');
-                  tagsToRemove.forEach(tag => {
-                    if (tag.parentNode) {
-                      tag.parentNode.removeChild(tag);
-                    }
-                  });
-                }
-                
-                function addTagsForRootPage() {
-                  // Root page should have itself as canonical (SINGLE SOURCE OF TRUTH)
-                  addLinkTag('canonical', null, siteUrl + '/');
+                  // Determine current language from URL path
+                  const currentLang = getLanguageFromPath(pathSegments);
                   
-                  // Root page hreflang tags - in exact order required by SEO tool
-                  addLinkTag('alternate', 'x-default', siteUrl + '/');
-                  addLinkTag('alternate', 'de', siteUrl + '/de/');
-                  addLinkTag('alternate', 'en', siteUrl + '/en/');
-                }
-                
-                function addTagsForLanguagePage(path) {
-                  // Determine current language from path
-                  const pathSegments = path.split('/').filter(Boolean);
-                  const currentLang = pathSegments[0] && supportedLanguages.includes(pathSegments[0]) 
-                    ? pathSegments[0] 
-                    : 'en';
+                  // Get clean path without language prefix for generating alternates
+                  const pathWithoutLang = getPathWithoutLanguage(pathSegments, currentLang);
                   
-                  // Get path without language prefix
-                  let pathWithoutLang = '';
-                  if (pathSegments.length > 1 && supportedLanguages.includes(pathSegments[0])) {
-                    pathWithoutLang = '/' + pathSegments.slice(1).join('/');
+                  // Handle root page specially (/), as it redirects to language pages
+                  if (pathname === '/' || pathname === '') {
+                    // Root page should redirect to default language, so we don't add hreflang tags
+                    return;
                   }
                   
-                  // Canonical should always point to current page (SINGLE SOURCE OF TRUTH)
-                  const currentPageUrl = siteUrl + '/' + currentLang + (pathWithoutLang || '/');
-                  addLinkTag('canonical', null, currentPageUrl);
+                  // For language pages, we set the correct hreflang implementation
+                  // Set canonical to current URL (eliminate canonicalization conflicts)
+                  addCanonicalTag(siteUrl + pathname);
                   
-                  // First add self-reference (current language)
-                  addLinkTag('alternate', currentLang, currentPageUrl);
+                  // Add self-reference in hreflang
+                  addHreflangTag(currentLang, siteUrl + pathname);
                   
-                  // Then add references to other language versions
+                  // Add references to other language versions
                   supportedLanguages.forEach(lang => {
                     if (lang !== currentLang) {
-                      addLinkTag('alternate', lang, siteUrl + '/' + lang + (pathWithoutLang || '/'));
+                      const alternateUrl = buildAlternateUrl(lang, pathWithoutLang);
+                      addHreflangTag(lang, alternateUrl);
                     }
                   });
                   
-                  // Always add x-default pointing to the root
-                  addLinkTag('alternate', 'x-default', siteUrl + '/');
+                  // Add x-default (points to default language version)
+                  const xDefaultUrl = buildAlternateUrl(defaultLanguage, pathWithoutLang);
+                  addHreflangTag('x-default', xDefaultUrl);
                 }
                 
-                function addLinkTag(rel, hreflang, href) {
-                  const link = document.createElement('link');
-                  link.rel = rel;
-                  if (hreflang) {
-                    link.hreflang = hreflang;
+                function getLanguageFromPath(pathSegments) {
+                  // Extract language from path or use default
+                  const firstSegment = pathSegments[0] || '';
+                  return supportedLanguages.includes(firstSegment) ? firstSegment : defaultLanguage;
+                }
+                
+                function getPathWithoutLanguage(pathSegments, currentLang) {
+                  // If first segment is a language code, remove it to get the rest of the path
+                  if (pathSegments.length > 0 && pathSegments[0] === currentLang) {
+                    return '/' + pathSegments.slice(1).join('/');
                   }
-                  link.href = href;
+                  return '/' + pathSegments.join('/');
+                }
+                
+                function buildAlternateUrl(lang, path) {
+                  // Handle paths correctly - avoid double slashes
+                  if (path === '/') {
+                    return siteUrl + '/' + lang + '/';
+                  }
+                  return siteUrl + '/' + lang + path;
+                }
+                
+                function removeExistingTags() {
+                  // Remove all hreflang and canonical tags
+                  document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]')
+                    .forEach(el => el.parentNode?.removeChild(el));
+                }
+                
+                function addHreflangTag(lang, url) {
+                  const link = document.createElement('link');
+                  link.rel = 'alternate';
+                  link.hreflang = lang;
+                  link.href = url;
                   document.head.appendChild(link);
                 }
                 
-                // Execute on page load
-                if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', injectHreflangTags);
-                } else {
-                  injectHreflangTags();
+                function addCanonicalTag(url) {
+                  const link = document.createElement('link');
+                  link.rel = 'canonical';
+                  link.href = url;
+                  document.head.appendChild(link);
                 }
                 
-                // Also execute on navigation (for SPA behavior)
-                window.addEventListener('popstate', injectHreflangTags);
+                // Execute on page load and navigation
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', setupHreflangTags);
+                } else {
+                  setupHreflangTags();
+                }
                 
-                // For frameworks that use history.pushState
+                // Handle SPA navigation
+                window.addEventListener('popstate', setupHreflangTags);
+                
+                // Also handle programmatic navigation via history API
                 const originalPushState = history.pushState;
                 history.pushState = function() {
                   originalPushState.apply(this, arguments);
-                  injectHreflangTags();
+                  setupHreflangTags();
                 };
               })();
-            0:{"P":null,"b":"hGE0XnD7Aubc6ftT4-PN7","p":"","c":["","de","app",""],"i":false,"f":[[["",{"children":["de",{"children":["app",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/022446bc798da55d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/1018df78a05ccae4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"__className_22ceb1 bg-background antialiased","suppressHydrationWarning":true,"children":["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["de",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["app",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],["$","$Lb",null,{"children":"$Lc"}],null,["$","$Ld",null,{"children":["$Le","$Lf",["$","$L10",null,{"promise":"$@11"}]]}]]}],{},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","o4Z65UDB-w2VjnEfrF0lb",{"children":[["$","$L12",null,{"children":"$L13"}],null]}],null]}],false]],"m":"$undefined","G":["$14","$undefined"],"s":false,"S":true}
+            0:{"P":null,"b":"r2gRrBmXIk9PXmc9KPPWT","p":"","c":["","de","app",""],"i":false,"f":[[["",{"children":["de",{"children":["app",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/022446bc798da55d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/1018df78a05ccae4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"__className_22ceb1 bg-background antialiased","suppressHydrationWarning":true,"children":["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["de",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["app",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],["$","$Lb",null,{"children":"$Lc"}],null,["$","$Ld",null,{"children":["$Le","$Lf",["$","$L10",null,{"promise":"$@11"}]]}]]}],{},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","BzG8QzCTINA8ahY2d-PST",{"children":[["$","$L12",null,{"children":"$L13"}],null]}],null]}],false]],"m":"$undefined","G":["$14","$undefined"],"s":false,"S":true}
 15:"$Sreact.suspense"
 16:I[74911,[],"AsyncMetadata"]
 9:{}

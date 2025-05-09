@@ -9,24 +9,23 @@ const defaultLanguage = 'en';
 
 /**
  * Middleware that handles language routing according to SEO best practices:
- * 1. Root URL permanently redirects to language-specific URL to prevent duplicate content
+ * 1. Root URL permanently redirects to language-specific URL (properly signaling search engines)
  * 2. Non-language paths get redirected to language-specific paths
- * 3. Respects user language preferences from browser
- * 4. Preserves direct access to all language versions for SEO
+ * 3. Respects user language preferences from browser when possible
+ * 4. Uses 301 redirects for root path to ensure search engines understand our URL structure
  */
 export function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Check if the pathname already includes a language prefix
+  // Skip middleware for paths that already have language prefix
   const pathnameHasLanguage = supportedLanguages.some(
     (language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
   );
 
-  // If the pathname already has a language prefix, we don't need to do anything
   if (pathnameHasLanguage) return;
 
-  // If the user is accessing static files or API routes, skip language handling
+  // Skip middleware for static files, API routes, etc.
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -36,7 +35,7 @@ export function middleware(request: NextRequest) {
     return;
   }
 
-  // Get preferred language from Accept-Language header or use default
+  // Determine preferred language - respect browser settings when possible
   let language = defaultLanguage;
   
   const acceptLanguage = request.headers.get('accept-language');
@@ -51,19 +50,18 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // For the root path (/), permanently redirect to language-specific URL to avoid duplicate content
+  // Root path uses 301 (permanent) redirect for proper SEO signaling
   if (pathname === '/') {
     const url = new URL(`/${language}/`, request.url);
-    return NextResponse.redirect(url, 301); // 301 = permanent redirect
+    return NextResponse.redirect(url, 301);
   }
   
-  // Handle legal pages and all other non-language paths
-  // Always redirect to language-specific versions to ensure consistent URLs
+  // All other paths use 302 redirects (temporary) to preserve SEO equity
   const url = new URL(`/${language}${pathname}`, request.url);
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, 302);
 }
 
-// Configure the middleware to run only on specific paths
+// Configure middleware to run only on specific paths
 export const config = {
   matcher: [
     // Skip all internal paths (_next, images, files with extension)
