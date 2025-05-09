@@ -33,7 +33,7 @@ export function Footer() {
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Brand section - fixed width to maintain consistent positioning */}
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer">
             <Image
               src="/images/icon.svg" 
               alt="BillSplitter Logo Icon"
@@ -42,7 +42,8 @@ export function Footer() {
               className="w-6 h-6"
               priority
             />
-            <div className="relative h-7" style={{ width: '130px' }}>
+            {/* Use a styled span as the relative container for the logo image */}
+            <span className="relative block h-7 w-[130px] cursor-pointer" /* style={{ width: '130px' }} */ >
               <Image 
                 src="/images/logo.svg" 
                 alt="BillSplitter Logo" 
@@ -50,7 +51,7 @@ export function Footer() {
                 className="object-contain"
                 priority
               />
-            </div>
+            </span>
             <span className="text-gray-500 text-xs ml-0">by {companyLabel}</span>
           </Link>
         </div>

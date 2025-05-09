@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { InvoiceCalculatorClient } from "@/components/invoice-calculator-client";
+import InvoiceCalculatorClient from "@/components/invoice-calculator-client";
 import { useTranslation } from "react-i18next";
 
 export function AppPageClient() {
@@ -26,7 +26,7 @@ export function AppPageClient() {
           {mounted ? t('AppPage.description', { defaultValue: defaultDescription }) : defaultDescription}
         </p>
       </div>
-      <InvoiceCalculatorClient pageTitle={mounted ? t('AppPage.title', { defaultValue: defaultTitle }) : defaultTitle} />
+      <InvoiceCalculatorClient />
     </div>
   );
 } 

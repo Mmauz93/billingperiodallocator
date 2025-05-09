@@ -16,22 +16,17 @@ import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-// Define props interface
-interface InvoiceCalculatorClientProps {
-  pageTitle: string;
-}
-
 // Define a type alias that matches ResultsDisplay's expected inputData type
 type InputDataForDisplay = Pick<
   CalculationInput,
   "startDate" | "endDate" | "includeEndDate" | "amounts" | "splitPeriod"
 >;
 
-export function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientProps) {
+export default function InvoiceCalculatorClient() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   // Add state specifically for the dynamic title, initialized with the prop
-  const [dynamicTitle, setDynamicTitle] = useState<string>(pageTitle);
+  const [dynamicTitle, setDynamicTitle] = useState<string>('');
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [calculationError, setCalculationError] = useState<string | null>(null);
   // Update storedInputData to use CalculationCallbackData type

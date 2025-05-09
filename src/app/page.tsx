@@ -183,8 +183,8 @@ export default function NewLandingPage() {
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
                 onClick={handleTestWithDemoData}
               > 
-                {t('Landing.ctaButton', { defaultValue: ctaButton })}
-                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  {t('Landing.ctaButton', { defaultValue: ctaButton })}
+                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Button>
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">

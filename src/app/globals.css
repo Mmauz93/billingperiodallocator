@@ -116,8 +116,8 @@ html.prevent-scrollbar-shift {
 
 /* For browsers that don't support scrollbar-gutter */
 @supports not (scrollbar-gutter: stable) {
-  html {
-    overflow-y: scroll;
+html {
+  overflow-y: scroll;
     overflow-x: hidden; /* Added to prevent horizontal scrolling */
   }
   

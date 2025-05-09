@@ -26,7 +26,7 @@ export function ThemeToggle() {
   // Add effect to detect system preference on first load
   React.useEffect(() => {
     setIsMounted(true);
-    
+
     // Add a class when transitioning to prevent multiple layout shifts
     if (theme !== undefined) {
       document.documentElement.classList.add('transitioning');
@@ -77,10 +77,10 @@ export function ThemeToggle() {
           }}
         >
           <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center">
-            <AccessibleIcon label={toggleLabel}>
+          <AccessibleIcon label={toggleLabel}>
               <Sun className="h-[1.2rem] w-[1.2rem] absolute rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0" />
               <Moon className="h-[1.2rem] w-[1.2rem] absolute rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100" />
-            </AccessibleIcon>
+          </AccessibleIcon>
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -100,26 +100,26 @@ export function ThemeToggle() {
               exit={{ opacity: 0, y: 5 }}
               transition={{ duration: 0.15 }}
             >
-              <DropdownMenuItem
-                onClick={() => handleThemeChange("light")}
-                className={`cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
-              >
-                {t("ThemeToggle.light")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleThemeChange("dark")}
-                className={`cursor-pointer hover:text-primary ${theme === "dark" ? "font-medium" : ""}`}
-              >
-                {t("ThemeToggle.dark")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleThemeChange("system")}
-                className={`cursor-pointer hover:text-primary ${theme === "system" ? "font-medium" : ""}`}
-              >
-                {t("ThemeToggle.system")}
-              </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("light")}
+          className={`cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
+        >
+          {t("ThemeToggle.light")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("dark")}
+          className={`cursor-pointer hover:text-primary ${theme === "dark" ? "font-medium" : ""}`}
+        >
+          {t("ThemeToggle.dark")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("system")}
+          className={`cursor-pointer hover:text-primary ${theme === "system" ? "font-medium" : ""}`}
+        >
+          {t("ThemeToggle.system")}
+        </DropdownMenuItem>
             </motion.div>
-          </DropdownMenuContent>
+      </DropdownMenuContent>
         )}
       </AnimatePresence>
     </DropdownMenu>

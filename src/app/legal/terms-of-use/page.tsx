@@ -28,14 +28,14 @@ const TermsOfUseContent = dynamic<TermsOfUseContentProps>(() =>
       <article className="prose prose-lg dark:prose-invert">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-            {!isLoading ? (langPrefix === 'de' ? 'Nutzungsbedingungen' : 'Terms of Use') : 'Terms of Use'}
-          </h1>
+          {!isLoading ? (langPrefix === 'de' ? 'Nutzungsbedingungen' : 'Terms of Use') : 'Terms of Use'}
+        </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            {t('Legal.lastUpdated', 'Last updated on')} {new Date().toLocaleDateString(
-              langPrefix === 'de' ? 'de-DE' : 'en-US',
-              { year: 'numeric', month: 'long', day: 'numeric' }
-            )}
-          </p>
+          {t('Legal.lastUpdated', 'Last updated on')} {new Date().toLocaleDateString(
+            langPrefix === 'de' ? 'de-DE' : 'en-US',
+            { year: 'numeric', month: 'long', day: 'numeric' }
+          )}
+        </p>
         </div>
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
