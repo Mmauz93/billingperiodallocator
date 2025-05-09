@@ -2,6 +2,7 @@
 
 import { CustomCookieConsentBanner } from "@/components/custom-cookie-banner";
 import { Footer } from "@/components/footer";
+import HeadWithHreflang from "@/components/head-with-hreflang";
 import { Header } from "@/components/header";
 import I18nProvider from "@/components/i18n-provider";
 import { SettingsProvider } from "@/context/settings-context";
@@ -14,8 +15,8 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const path = usePathname();
-  const lang = path?.split('/')[1] === 'de' ? 'de' : 'en';
+  const path = usePathname() || '';
+  const lang = path.split('/')[1] === 'de' ? 'de' : 'en';
   
   return (
     <SettingsProvider>
@@ -27,6 +28,8 @@ export default function ClientLayout({
       >
         <TooltipProvider>
           <I18nProvider>
+            <HeadWithHreflang currentPath={path} currentLanguage={lang} />
+            
             <div className="flex flex-col min-h-screen w-full">
               <Header />
               <main className="flex-grow w-full pt-16">{children}</main>
