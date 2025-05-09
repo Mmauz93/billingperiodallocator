@@ -108,13 +108,21 @@ export default function RootLayout({
     // Construct the part of the URL that comes after the language code, ensuring trailing slash for root
     const effectivePathSuffix = pageSpecificPath === '/' ? '/' : pageSpecificPath;
 
-    alternateLinks = supportedLanguages.map(lang => ({
-      href: `${siteUrl}/${lang}${effectivePathSuffix}`.replace(/\/\//g, '/'),
-      hrefLang: lang,
-    }));
+    alternateLinks = supportedLanguages.map(lang => {
+      // Create the URL without running the risk of replacing protocol slashes
+      let url = `${siteUrl}/${lang}${effectivePathSuffix}`;
+      // Only fix double slashes in the path part, not the protocol
+      url = url.replace(/:\/\//, '___PROTOCOL___').replace(/\/\//g, '/').replace(/___PROTOCOL___/, '://');
+      return {
+        href: url,
+        hrefLang: lang,
+      };
+    });
     
     // xDefaultHref should consistently point to the English version of the current path.
-    xDefaultHref = `${siteUrl}/en${effectivePathSuffix}`.replace(/\/\//g, '/');
+    const url = `${siteUrl}/en${effectivePathSuffix}`;
+    // Only fix double slashes in the path part, not the protocol
+    xDefaultHref = url.replace(/:\/\//, '___PROTOCOL___').replace(/\/\//g, '/').replace(/___PROTOCOL___/, '://');
 
   }
 

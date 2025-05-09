@@ -34,15 +34,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Generate entries for each language
     languages.forEach(lang => {
-      const url = `${siteUrl}/${lang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/'); // Avoid double slashes
+      // Safely replace double slashes only in the path, not in the protocol
+      const fixUrlSlashes = (url: string) => {
+        return url.replace(/:\/\//, '___PROTOCOL___')
+                 .replace(/\/\//g, '/')
+                 .replace(/___PROTOCOL___/, '://');
+      };
+      
+      const url = fixUrlSlashes(`${siteUrl}/${lang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
       
       const alternates: { [key: string]: string } = {};
       languages.forEach(altLang => {
-        alternates[altLang] = `${siteUrl}/${altLang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/');
+        alternates[altLang] = fixUrlSlashes(`${siteUrl}/${altLang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
       });
       // x-default should point to the default language version of the current path
       // Assuming 'en' is the default language for x-default determination here for simplicity, can be refined
-      alternates['x-default'] = `${siteUrl}/en${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/');
+      alternates['x-default'] = fixUrlSlashes(`${siteUrl}/en${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
 
       sitemapEntries.push({
         url,
