@@ -46,7 +46,7 @@ export function Footer() {
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Brand section - fixed width to maintain consistent positioning */}
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href={`/${currentLang}`} className="flex items-center gap-2 cursor-pointer">
+          <Link href={`/${currentLang}/`} className="flex items-center gap-2 cursor-pointer">
             <Image
               src="/images/icon.svg" 
               alt="BillSplitter Logo Icon"
@@ -73,19 +73,19 @@ export function Footer() {
         {/* Navigation Links - fixed width to maintain consistent positioning */}
         <nav className="flex flex-wrap justify-center gap-4 text-sm md:w-1/3 md:justify-center">
           <Link
-            href={`/${currentLang}/legal/privacy-policy`}
+            href={`/${currentLang}/legal/privacy-policy/`}
             className="hover:underline transition-colors duration-200"
           >
             {privacyLabel}
           </Link>
           <Link
-            href={`/${currentLang}/legal/terms-of-use`}
+            href={`/${currentLang}/legal/terms-of-use/`}
             className="hover:underline transition-colors duration-200"
           >
             {termsLabel}
           </Link>
           <Link
-            href={`/${currentLang}/legal/impressum`}
+            href={`/${currentLang}/legal/impressum/`}
             className="hover:underline transition-colors duration-200"
           >
             {impressumLabel}

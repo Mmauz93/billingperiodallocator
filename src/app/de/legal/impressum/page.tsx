@@ -28,15 +28,15 @@ const ImpressumContent = dynamic<ImpressumContentProps>(() =>
     return (
       <article className="prose prose-lg dark:prose-invert" aria-label="Legal information">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-            {titleText} 
+          <h1 className="text-3xl font-bold text-[#0284C7]">
+            {titleText}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">{lastUpdated}</p>
         </div>
         
         <div className="space-y-8">
           <section>
-            <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent">
+            <h2 className="text-xl font-semibold mb-2 text-[#0284C7]">
               {lang === 'de' ? 'Verantwortlich für diese Website' : 'Responsible for this website'}
             </h2>
             <p className="mb-6 text-sm leading-relaxed">
@@ -45,12 +45,12 @@ const ImpressumContent = dynamic<ImpressumContentProps>(() =>
               Birkenstrasse 47<br />
               CH-6343 Rotkreuz<br />
               Switzerland<br />
-              Email: <a href="mailto:info@siempi.ch" className="text-primary hover:underline">info@siempi.ch</a>
+              Email: <a href="mailto:info@siempi.ch" className="text-[#0284C7] hover:underline">info@siempi.ch</a>
             </p>
           </section>
           
           <section className="border-t border-muted pt-6">
-            <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent">
+            <h2 className="text-xl font-semibold mb-2 text-[#0284C7]">
               {lang === 'de' ? 'Handelsregister' : 'Commercial Register'}
             </h2>
             <p className="text-sm leading-relaxed">
@@ -84,7 +84,8 @@ export default function ImprintPage() {
     if (i18n.language !== urlLang) {
       i18n.changeLanguage(urlLang);
     }
-  }, [i18n, getUrlLanguage]); // getUrlLanguage is memoized
+    document.title = t("General.impressum") + " | BillSplitter";
+  }, [i18n, getUrlLanguage, t]); // getUrlLanguage is memoized, added t to dependencies
 
   if (!mounted) {
     return (

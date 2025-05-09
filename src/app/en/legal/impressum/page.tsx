@@ -84,7 +84,8 @@ export default function ImprintPage() {
     if (i18n.language !== urlLang) {
       i18n.changeLanguage(urlLang);
     }
-  }, [i18n, getUrlLanguage]); // getUrlLanguage is now memoized
+    document.title = t("General.impressum") + " | BillSplitter";
+  }, [i18n, getUrlLanguage, t]); // getUrlLanguage is now memoized, added t
 
   if (!mounted) {
     return (

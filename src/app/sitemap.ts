@@ -19,37 +19,45 @@ const routes = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const sitemap: MetadataRoute.Sitemap = [];
-  
-  // Add routes for each language
-  languages.forEach(lang => {
-    routes.forEach(route => {
-      // Skip root route as it redirects to language route
-      if (route === '/' && lang === 'de') {
-        sitemap.push({
-          url: `${siteUrl}/${lang}`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly',
-          priority: 1.0,
-        });
-      } else if (route !== '/') {
-        sitemap.push({
-          url: `${siteUrl}/${lang}${route}`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly',
-          priority: route === '/app' ? 1.0 : 0.8,
-        });
-      }
+  const sitemapEntries: MetadataRoute.Sitemap = [];
+
+  routes.forEach(route => {
+    // Determine the page-specific path (e.g., /app/ or /legal/impressum/)
+    // For the root route '/', pageSpecificPath will be effectively empty or handled by being just the language code.
+    let pageSpecificPath = route;
+    if (route !== '/' && !route.endsWith('/')) {
+      pageSpecificPath = `${route}/`;
+    }
+    if (route === '/') { // For the site's conceptual root, which maps to language roots
+        pageSpecificPath = '/'; // Represents the part after the language code, which is nothing for /en/ or /de/
+    }
+
+    // Generate entries for each language
+    languages.forEach(lang => {
+      const url = `${siteUrl}/${lang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/'); // Avoid double slashes
+      
+      const alternates: { [key: string]: string } = {};
+      languages.forEach(altLang => {
+        alternates[altLang] = `${siteUrl}/${altLang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/');
+      });
+      // x-default should point to the default language version of the current path
+      // Assuming 'en' is the default language for x-default determination here for simplicity, can be refined
+      alternates['x-default'] = `${siteUrl}/en${pageSpecificPath === '/' ? '/' : pageSpecificPath}`.replace(/\/\//g, '/');
+
+      sitemapEntries.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: (route === '/' || route === '/app') ? 1.0 : 0.8,
+        alternates: {
+          languages: alternates,
+        },
+      });
     });
   });
-  
-  // Add English root as default
-  sitemap.push({
-    url: `${siteUrl}/en`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 1.0,
-  });
 
-  return sitemap;
+  // Deduplicate entries based on URL (though logic should ideally produce unique URLs per language variant)
+  const uniqueSitemap = Array.from(new Map(sitemapEntries.map(item => [item.url, item])).values());
+
+  return uniqueSitemap;
 } 

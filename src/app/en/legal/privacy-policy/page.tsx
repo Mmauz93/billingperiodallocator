@@ -87,12 +87,14 @@ export default function PrivacyPolicyPageEN() {
     if (pathLanguage && pathLanguage !== i18n.language) {
       i18n.changeLanguage(pathLanguage).then(() => {
         setTranslationsReady(true);
+        document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
       });
       setPageLanguage(pathLanguage);
     } else {
       setTranslationsReady(true);
+      document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
     }
-  }, [pathname, isMounted, i18n]);
+  }, [pathname, isMounted, i18n, t]);
 
   // Third effect listens for language change events from language toggle
   useEffect(() => {

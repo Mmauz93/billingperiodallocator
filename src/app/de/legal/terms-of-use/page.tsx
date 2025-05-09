@@ -34,14 +34,14 @@ const TermsOfUseContent = dynamic<TermsOfUseContentProps>(() =>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                h1: ({ ...props }) => <h1 {...props} className="text-2xl font-bold mt-12 mb-4 text-primary" />,
-                h2: ({ ...props }) => <h2 {...props} className="text-xl font-semibold mt-12 mb-4 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" />,
-                h3: ({ ...props }) => <h3 {...props} className="text-lg font-medium mt-10 mb-3 text-primary" />,
+                h1: ({ ...props }) => <h1 {...props} className="text-2xl font-bold mt-12 mb-4 text-[#0284C7]" />,
+                h2: ({ ...props }) => <h2 {...props} className="text-xl font-semibold mt-12 mb-4 text-[#0284C7]" />,
+                h3: ({ ...props }) => <h3 {...props} className="text-lg font-medium mt-10 mb-3 text-[#0284C7]" />,
                 p: ({ ...props }) => <p {...props} className="text-sm leading-relaxed text-muted-foreground mb-6" />,
                 ul: ({ ...props }) => <ul {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-disc" />,
                 ol: ({ ...props }) => <ol {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-decimal" />,
                 li: ({ ...props }) => <li {...props} className="mb-2" />,
-                a: ({ ...props }) => <a {...props} className="text-primary hover:underline" />,
+                a: ({ ...props }) => <a {...props} className="text-[#0284C7] hover:underline" />,
                 strong: ({ ...props }) => <strong {...props} className="font-semibold" />,
               }}
             >  
@@ -118,7 +118,9 @@ export default function TermsOfUsePageDE() {
       // Load terms based on current language
       loadTerms(urlLang);
     }
-  }, [isMounted, getUrlLanguage, i18n, loadTerms]); // Adjusted dependencies
+    // Set title after i18n might have changed language
+    document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
+  }, [isMounted, getUrlLanguage, i18n, loadTerms, t]); // Adjusted dependencies, added t
   
   // Listen for language change events from the language toggler
   useEffect(() => {
@@ -165,11 +167,14 @@ export default function TermsOfUsePageDE() {
     day: 'numeric',
   });
 
+  // Determine H1 title based on mount state to avoid hydration mismatch
+  const h1Title = isMounted ? t("Legal.termsOfUseTitle", "Nutzungsbedingungen") : "Terms of Use";
+
   return (
     <main className="container mx-auto max-w-3xl px-6 py-16">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.termsOfUseTitle", "Nutzungsbedingungen")}
+        <h1 className="text-3xl font-bold text-[#0284C7]">
+          {h1Title}
         </h1>
         {isMounted && (
           <p className="text-sm text-muted-foreground mt-2">

@@ -125,7 +125,9 @@ export default function TermsOfUsePageEN() {
 
     // Load terms based on current language
     loadTerms(urlLang);
-  }, [getUrlLanguage, i18n, loadTerms, isMounted]); // Added isMounted as loadTerms is now stable
+    // Set title after i18n might have changed language
+    document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
+  }, [getUrlLanguage, i18n, loadTerms, isMounted, t]); // Added isMounted as loadTerms is now stable, added t
 
   // Listen for language change events from the language toggler
   useEffect(() => {
