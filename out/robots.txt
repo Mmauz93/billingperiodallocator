@@ -1,8 +1,8 @@
 User-Agent: *
-Allow: /en/
-Allow: /de/
-Disallow: /$
+Allow: /
 Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
 
 Host: https://billsplitter.siempi.ch
 Sitemap: https://billsplitter.siempi.ch/sitemap.xml

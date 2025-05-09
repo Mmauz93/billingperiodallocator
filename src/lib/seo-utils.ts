@@ -24,7 +24,16 @@ export function generateHreflangMetadata(currentLanguage: string) {
   return {
     // Use absolute URL for canonical
     canonical: `${siteUrl}/${currentLanguage}/`,
-    languages: languageMap
+    languages: languageMap,
+    // Explicitly allow indexing
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      }
+    }
   };
 }
 
@@ -63,6 +72,15 @@ export function generateSubpageHreflangMetadata(currentLanguage: string, path: s
   return {
     // Use absolute URL for canonical
     canonical: `${siteUrl}/${currentLanguage}/${normalizedPath}/`,
-    languages: languageMap
+    languages: languageMap,
+    // Explicitly allow indexing
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      }
+    }
   };
 } 

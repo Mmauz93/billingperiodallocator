@@ -2,6 +2,11 @@
 User-agent: *
 Allow: /
 
+# Disallow crawling of non-public paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
 # Point crawlers to the sitemap
 Sitemap: https://billsplitter.siempi.ch/sitemap.xml
 
