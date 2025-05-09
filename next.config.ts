@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Configure Next.js to output static files
   output: "export",
+  // Add trailingSlash option for directory-based HTML files
+  trailingSlash: true,
   images: {
     // Optional: Configure device sizes for responsive images
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

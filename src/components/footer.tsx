@@ -42,8 +42,8 @@ export function Footer() {
               className="w-6 h-6"
               priority
             />
-            {/* Use a styled span as the relative container for the logo image */}
-            <span className="relative block h-7 w-[130px] cursor-pointer" /* style={{ width: '130px' }} */ >
+            {/* Styled span as the relative container for the logo image */}
+            <span className="relative block h-7 w-[130px] cursor-pointer">
               <Image 
                 src="/images/logo.svg" 
                 alt="BillSplitter Logo" 
@@ -52,8 +52,9 @@ export function Footer() {
                 priority
               />
             </span>
-            <span className="text-gray-500 text-xs ml-0">by {companyLabel}</span>
           </Link>
+          {/* "by Siempi AG" is now a sibling to the Link, not a child */}
+          <span className="text-gray-500 text-xs">by {companyLabel}</span>
         </div>
 
         {/* Navigation Links - fixed width to maintain consistent positioning */}
