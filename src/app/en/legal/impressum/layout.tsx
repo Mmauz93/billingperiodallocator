@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
-import { generateHreflangMetadata } from '@/lib/seo-utils';
+import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
 
-// Generate alternates for this page
-const alternates = generateHreflangMetadata('en/legal/impressum');
+// Generate alternates for English impressum page
+const alternates = generateSubpageHreflangMetadata('en', 'legal/impressum');
 
 export const metadata: Metadata = {
-  title: 'Legal Notice | BillSplitter',
-  description: "Legal notice and publisher information for BillSplitter.",
+  title: 'Imprint | BillSplitter',
+  description: 'Legal information about the operator of BillSplitter, company details, and contact information.',
   alternates
 };
 
-export default function LegalImpressumLayoutEN({
+export default function ImpressumLayoutEN({
   children,
 }: {
   children: React.ReactNode;

@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
-import { generateHreflangMetadata } from '@/lib/seo-utils';
+import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
 
 // Generate alternates for German app page
-const alternates = generateHreflangMetadata('de/app');
+const alternates = generateSubpageHreflangMetadata('de', 'app');
 
 export const metadata: Metadata = {
   title: 'Rechner | BillSplitter',

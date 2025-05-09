@@ -1,67 +1,68 @@
 // Utility function to generate consistent hreflang metadata for Next.js metadata
-export function generateHreflangMetadata(path: string) {
+export function generateHreflangMetadata(currentLanguage: string) {
   // Site URL and supported languages
   const siteUrl = 'https://billsplitter.siempi.ch';
   const supportedLanguages = ['en', 'de'];
   
-  // Process path to ensure it's in the correct format
-  // Remove leading slash if present
-  const processedPath = path.startsWith('/') ? path.substring(1) : path;
+  // Ensure currentLanguage is one of the supported languages
+  if (!supportedLanguages.includes(currentLanguage)) {
+    currentLanguage = 'en'; // Default to English if invalid
+  }
   
   // Create language map for alternates
   const languageMap: Record<string, string> = {};
   
-  // Extract language code if present in the path
-  let currentLang = 'en'; // Default language
-  let pathWithoutLang = processedPath;
-  
-  const pathSegments = processedPath.split('/');
-  if (pathSegments.length > 0 && supportedLanguages.includes(pathSegments[0])) {
-    currentLang = pathSegments[0];
-    pathWithoutLang = pathSegments.slice(1).join('/');
-  }
-  
-  // Handle different cases for language-specific paths
+  // Generate absolute URLs for all language versions
   supportedLanguages.forEach(lang => {
-    if (pathWithoutLang) {
-      // For pages with content after the language code
-      languageMap[lang] = formatUrl(`${siteUrl}/${lang}/${pathWithoutLang}/`);
-    } else {
-      // For language root pages like /en/ or /de/
-      languageMap[lang] = formatUrl(`${siteUrl}/${lang}/`);
-    }
+    // Always use absolute URLs for hreflang tags
+    languageMap[lang] = `${siteUrl}/${lang}/`;
   });
   
-  // Add x-default (always pointing to English version of the same content)
-  if (pathWithoutLang) {
-    languageMap['x-default'] = formatUrl(`${siteUrl}/en/${pathWithoutLang}/`);
-  } else {
-    languageMap['x-default'] = formatUrl(`${siteUrl}/en/`);
-  }
-  
-  // Generate canonical URL based on whether this is a language path or not
-  let canonicalUrl;
-  
-  if (processedPath === '') {
-    // Special case for site root
-    canonicalUrl = formatUrl(`${siteUrl}/`);
-  } else if (supportedLanguages.includes(pathSegments[0])) {
-    // If path starts with language code, use full path as canonical
-    canonicalUrl = formatUrl(`${siteUrl}/${processedPath}${processedPath.endsWith('/') ? '' : '/'}`);
-  } else {
-    // For non-language paths, prepend with current language
-    canonicalUrl = formatUrl(`${siteUrl}/${currentLang}/${processedPath}${processedPath.endsWith('/') ? '' : '/'}`);
-  }
+  // Add x-default (pointing to English version)
+  languageMap['x-default'] = `${siteUrl}/en/`;
   
   return {
-    canonical: canonicalUrl,
+    // Use absolute URL for canonical
+    canonical: `${siteUrl}/${currentLanguage}/`,
     languages: languageMap
   };
 }
 
-// Helper function to ensure URL is properly formatted with no double slashes
-function formatUrl(url: string): string {
-  return url.replace(/:\/\//, '___PROTOCOL___')
-          .replace(/\/\//g, '/')
-          .replace(/___PROTOCOL___/, '://');
+// This version is for subpages
+export function generateSubpageHreflangMetadata(currentLanguage: string, path: string) {
+  // Site URL and supported languages
+  const siteUrl = 'https://billsplitter.siempi.ch';
+  const supportedLanguages = ['en', 'de'];
+  
+  // Ensure currentLanguage is one of the supported languages
+  if (!supportedLanguages.includes(currentLanguage)) {
+    currentLanguage = 'en'; // Default to English if invalid
+  }
+  
+  // Normalize path - remove leading and trailing slashes
+  let normalizedPath = path;
+  if (normalizedPath.startsWith('/')) {
+    normalizedPath = normalizedPath.substring(1);
+  }
+  if (normalizedPath.endsWith('/')) {
+    normalizedPath = normalizedPath.substring(0, normalizedPath.length - 1);
+  }
+  
+  // Create language map for alternates
+  const languageMap: Record<string, string> = {};
+  
+  // Generate absolute URLs for all language versions
+  supportedLanguages.forEach(lang => {
+    // Always use absolute URLs for hreflang tags
+    languageMap[lang] = `${siteUrl}/${lang}/${normalizedPath}/`;
+  });
+  
+  // Add x-default (pointing to English version)
+  languageMap['x-default'] = `${siteUrl}/en/${normalizedPath}/`;
+  
+  return {
+    // Use absolute URL for canonical
+    canonical: `${siteUrl}/${currentLanguage}/${normalizedPath}/`,
+    languages: languageMap
+  };
 } 

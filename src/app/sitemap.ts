@@ -21,40 +21,14 @@ const routes = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
-  // First, add the site root URL (no language prefix)
-  const rootAlternates: Record<string, string> = {};
-  languages.forEach(lang => {
-    rootAlternates[lang] = formatUrl(`${siteUrl}/${lang}/`);
-  });
-  rootAlternates['x-default'] = formatUrl(`${siteUrl}/en/`);
-
-  sitemapEntries.push({
-    url: formatUrl(`${siteUrl}/`),
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 1.0,
-    alternates: {
-      languages: rootAlternates,
-    },
-  });
-
-  // Then generate entries for all language+route combinations
+  // Only generate entries for all language+route combinations
+  // We're removing the root URL entry to prevent duplicate content issues
   routes.forEach(route => {
-    // Skip the root route as we've already added it
-    if (route === '/') return;
-
     // Process path to ensure proper formatting
     const processedRoute = route.startsWith('/') ? route.substring(1) : route;
     
     // Generate entries for each language
     languages.forEach(lang => {
-      // Helper function to ensure URL is properly formatted with no double slashes
-      const formatUrl = (url: string) => {
-        return url.replace(/:\/\//, '___PROTOCOL___')
-                 .replace(/\/\//g, '/')
-                 .replace(/___PROTOCOL___/, '://');
-      };
-      
       // Build the URL for this language+route combination
       const url = formatUrl(`${siteUrl}/${lang}/${processedRoute}/`);
       
@@ -73,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url,
         lastModified: new Date(),
         changeFrequency: 'monthly',
-        priority: route === '/app' ? 1.0 : 0.8,
+        priority: route === '/app' || route === '/' ? 1.0 : 0.8,
         alternates: {
           languages: langAlternates,
         },

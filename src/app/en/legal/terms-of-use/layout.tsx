@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
-import { generateHreflangMetadata } from '@/lib/seo-utils';
+import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
 
-// Generate alternates for this page
-const alternates = generateHreflangMetadata('en/legal/terms-of-use');
+// Generate alternates for English terms of use page
+const alternates = generateSubpageHreflangMetadata('en', 'legal/terms-of-use');
 
 export const metadata: Metadata = {
   title: 'Terms of Use | BillSplitter',
-  description: "Terms of use for the BillSplitter service.",
+  description: 'Terms and conditions for using the BillSplitter service. Please read these terms carefully before using our platform.',
   alternates
 };
 
-export default function LegalTermsLayoutEN({
+export default function TermsOfUseLayoutEN({
   children,
 }: {
   children: React.ReactNode;

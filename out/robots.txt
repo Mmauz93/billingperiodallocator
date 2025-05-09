@@ -1,9 +1,8 @@
-# Allow all crawlers full access
-User-agent: *
-Allow: /
+User-Agent: *
+Allow: /en/
+Allow: /de/
+Disallow: /$
+Disallow: /api/
 
-# Point crawlers to the sitemap
+Host: https://billsplitter.siempi.ch
 Sitemap: https://billsplitter.siempi.ch/sitemap.xml
-
-# Prefer HTTPS version
-Host: https://billsplitter.siempi.ch 

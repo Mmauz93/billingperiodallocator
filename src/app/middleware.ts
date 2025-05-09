@@ -9,7 +9,7 @@ const defaultLanguage = 'en';
 
 /**
  * Middleware that handles language routing according to SEO best practices:
- * 1. Root URL serves the default language content without redirect
+ * 1. Root URL permanently redirects to language-specific URL to prevent duplicate content
  * 2. Non-language paths get redirected to language-specific paths
  * 3. Respects user language preferences from browser
  * 4. Preserves direct access to all language versions for SEO
@@ -51,9 +51,10 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // For the root path (/), rewrite to default language without redirect
+  // For the root path (/), permanently redirect to language-specific URL to avoid duplicate content
   if (pathname === '/') {
-    return NextResponse.rewrite(new URL(`/${language}`, request.url));
+    const url = new URL(`/${language}/`, request.url);
+    return NextResponse.redirect(url, 301); // 301 = permanent redirect
   }
   
   // Handle legal pages and all other non-language paths

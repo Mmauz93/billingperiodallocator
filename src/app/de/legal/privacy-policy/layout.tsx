@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import { generateHreflangMetadata } from '@/lib/seo-utils';
+import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
 
-// Generate alternates for this page
-const alternates = generateHreflangMetadata('de/legal/privacy-policy');
+// Generate alternates for German privacy policy page
+const alternates = generateSubpageHreflangMetadata('de', 'legal/privacy-policy');
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung | BillSplitter',
-  description: "Wie wir Ihre Daten schützen – Datenschutzerklärung der BillSplitter-Plattform.",
+  description: 'Unsere Datenschutzerklärung erläutert, wie wir Ihre persönlichen Daten bei der Nutzung von BillSplitter erfassen, verwenden und schützen.',
   alternates
 };
 
