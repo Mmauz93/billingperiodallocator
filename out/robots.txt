@@ -3,4 +3,7 @@ User-agent: *
 Allow: /
 
 # Point crawlers to the sitemap
-Sitemap: https://billsplitter.siempi.ch/sitemap.xml 
+Sitemap: https://billsplitter.siempi.ch/sitemap.xml
+
+# Prefer HTTPS version
+Host: https://billsplitter.siempi.ch 

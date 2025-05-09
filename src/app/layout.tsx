@@ -12,6 +12,7 @@ import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 const roboto = Roboto({
@@ -22,13 +23,12 @@ const roboto = Roboto({
 
 export default function RootLayout({
   children,
-  params: { locale = "en" }, // Still keep locale for potential future use, though i18next handles detection
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
   const { t } = useTranslation();
   const consentCookieName = "siempiBillSplitterConsent";
+  const pathname = usePathname();
   
   // Functions for the cookie banner
   const handleGlobalAcceptAction = () => {
@@ -45,11 +45,49 @@ export default function RootLayout({
   // Simple privacy policy link handler
   const handleOpenPrivacyAction = () => {
     console.log(t("ConsentBanner.learnMoreButton"));
-    window.location.href = "/legal/privacy-policy";
+    window.location.href = `/${currentLang}/legal/privacy-policy`;
+  };
+
+  // Get current language from URL or use default
+  const getCurrentLanguage = () => {
+    if (!pathname) return 'en';
+    
+    const segments = pathname.split('/');
+    if (segments.length > 1 && ['en', 'de'].includes(segments[1])) {
+      return segments[1];
+    }
+    
+    return 'en'; // Default language
+  };
+  
+  const currentLang = getCurrentLanguage();
+
+  // Get the current URL for canonical link - using absolute URL with language prefix
+  const getCanonicalUrl = () => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      // Remove trailing slash if present
+      const path = url.pathname.endsWith('/') && url.pathname.length > 1 
+        ? url.pathname.slice(0, -1) 
+        : url.pathname;
+      
+      return `https://billsplitter.siempi.ch${path}`;
+    }
+    
+    if (pathname) {
+      // Remove trailing slash if present
+      const path = pathname.endsWith('/') && pathname.length > 1 
+        ? pathname.slice(0, -1) 
+        : pathname;
+      
+      return `https://billsplitter.siempi.ch${path}`;
+    }
+    
+    return `https://billsplitter.siempi.ch/${currentLang}`;
   };
 
   return (
-    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
+    <html lang={currentLang} className="scroll-smooth" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -62,6 +100,16 @@ export default function RootLayout({
           rel="alternate"
           hrefLang="en"
           href="https://billsplitter.siempi.ch/en/"
+        />
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href="https://billsplitter.siempi.ch/en/"
+        />
+        {/* Canonical link to prevent duplicate HTTP/HTTPS indexing */}
+        <link
+          rel="canonical"
+          href={getCanonicalUrl()}
         />
         {/* Prevent theme flickering */}
         <script

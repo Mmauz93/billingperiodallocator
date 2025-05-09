@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
+import { redirect } from 'next/navigation';
 import { useTranslation } from "react-i18next";
 
 // Create a NoSSR wrapper component with proper typing
@@ -65,7 +66,13 @@ const ImpressumContent = dynamic<ImpressumContentProps>(() =>
   { ssr: false }
 );
 
-export default function ImprintPage() {
+// Server component that redirects to language-specific version
+export default function ImpressumRedirect() {
+  // Redirects to default language version (English)
+  redirect('/en/legal/impressum');
+}
+
+export function ImprintPage() {
   const { t, i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [lastUpdatedText, setLastUpdatedText] = useState("");

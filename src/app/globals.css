@@ -46,18 +46,18 @@
 /* Updated color palette based on the branding guide */
 :root {
   --radius: 0.5rem; /* 8px border-radius as per design style */
-  --background: #f9fafb; /* Light mode background */
-  --foreground: #111827; /* Heading text color */
-  --card: #ffffff; /* Card backgrounds */
-  --card-foreground: #374151; /* Body text */
-  --popover: #ffffff;
-  --popover-foreground: #374151;
-  --primary: #2e5a8c; /* Primary Blue (main brand) */
-  --primary-foreground: #ffffff;
-  --secondary: #f5a623; /* Accent Yellow (secondary brand) */
-  --secondary-foreground: #111827;
-  --muted: #f3f4f6; /* Input Field Background */
-  --muted-foreground: #5a6271; /* Adjusted Info/Hint Text for WCAG AA */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
   --accent: #2e5a8c; /* Primary Blue with reduced opacity for accents */
   --accent-foreground: #111827;
   --destructive: #ef4444; /* Error Red */
@@ -96,6 +96,9 @@
 
   /* Added scrollbar width variable */
   --scrollbar-width: 0px;
+
+  /* Custom primary color for legal pages */
+  --legal-primary: 201 98% 39%; /* #0284C7 */
 }
 
 /* Prevent layout shifts due to scrollbar appearing/disappearing */
@@ -722,4 +725,11 @@ html, body {
   z-index: 100; /* Higher z-index for popups/dropdowns */
   transform: translateZ(0);
   will-change: transform; /* Hint to browser about upcoming changes */
+}
+
+/* Attempt to hide the duplicated title and last updated text from PrivacyBee widget */
+/* This assumes the widget renders an h1 followed immediately by a p for these elements, possibly nested within a div. */
+privacybee-widget div > h1,
+privacybee-widget div > h1 + p {
+  display: none !important;
 }

@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 
 import ReactMarkdown from "react-markdown";
 import dynamic from "next/dynamic";
+import { redirect } from 'next/navigation';
 import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 
@@ -67,7 +68,13 @@ const TermsOfUseContent = dynamic<TermsOfUseContentProps>(() =>
   { ssr: false }
 );
 
-export default function TermsOfUsePage() {
+// Server component that redirects to language-specific version
+export default function TermsOfUseRedirect() {
+  // Redirects to default language version (English)
+  redirect('/en/legal/terms-of-use');
+}
+
+export function TermsOfUsePage() {
   const { i18n } = useTranslation();
   const [termsContent, setTermsContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);

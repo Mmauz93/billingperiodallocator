@@ -163,7 +163,12 @@
     "learnMoreButton": "Privacy Policy"
   },
   "Legal": {
-    "lastUpdated": "Last updated on"
+    "lastUpdated": "Last updated on",
+    "lastUpdatedPrefix": "Last updated on",
+    "privacyPolicy": "Privacy Policy",
+    "privacyPolicyTitle": "Privacy Policy",
+    "termsOfUse": "Terms of Use",
+    "termsOfUseTitle": "Terms of Use"
   },
   "Footer": {
     "privacyPolicy": "Privacy Policy",

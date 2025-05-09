@@ -5,13 +5,24 @@ import { useEffect, useState } from "react";
 import { FeedbackButton } from "@/components/feedback-button";
 import Image from "next/image";
 import Link from "next/link";
+import { getLanguageFromPath } from "@/i18n-client";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 // Improved footer component with cleaner visual hierarchy and fixed positioning
 export function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [mounted, setMounted] = useState(false);
+
+  // Get current language from URL or fall back to i18n.language (This is the local function)
+  const getCurrentLanguage = () => {
+    if (!pathname) return i18n.language || 'en';
+    
+    const pathLanguage = getLanguageFromPath(pathname);
+    return pathLanguage || i18n.language || 'en';
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -28,12 +39,14 @@ export function Footer() {
     : `© ${currentYear} Siempi AG — All rights reserved.`;
   const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG";
 
+  const currentLang = getCurrentLanguage();
+
   return (
     <footer className="w-full border-t border-border text-sm text-gray-600 dark:text-gray-400 py-6 px-4 transition-colors duration-300">
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Brand section - fixed width to maintain consistent positioning */}
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href="/" className="flex items-center gap-2 cursor-pointer">
+          <Link href={`/${currentLang}`} className="flex items-center gap-2 cursor-pointer">
             <Image
               src="/images/icon.svg" 
               alt="BillSplitter Logo Icon"
@@ -60,19 +73,19 @@ export function Footer() {
         {/* Navigation Links - fixed width to maintain consistent positioning */}
         <nav className="flex flex-wrap justify-center gap-4 text-sm md:w-1/3 md:justify-center">
           <Link
-            href="/legal/privacy-policy"
+            href={`/${currentLang}/legal/privacy-policy`}
             className="hover:underline transition-colors duration-200"
           >
             {privacyLabel}
           </Link>
           <Link
-            href="/legal/terms-of-use"
+            href={`/${currentLang}/legal/terms-of-use`}
             className="hover:underline transition-colors duration-200"
           >
             {termsLabel}
           </Link>
           <Link
-            href="/legal/impressum"
+            href={`/${currentLang}/legal/impressum`}
             className="hover:underline transition-colors duration-200"
           >
             {impressumLabel}

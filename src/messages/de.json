@@ -183,7 +183,12 @@
     "learnMoreButton": "Datenschutzerklärung"
   },
   "Legal": {
-    "lastUpdated": "Zuletzt aktualisiert am"
+    "lastUpdated": "Zuletzt aktualisiert am",
+    "lastUpdatedPrefix": "Zuletzt aktualisiert am",
+    "privacyPolicy": "Datenschutzerklärung",
+    "privacyPolicyTitle": "Datenschutzerklärung",
+    "termsOfUse": "Nutzungsbedingungen",
+    "termsOfUseTitle": "Nutzungsbedingungen"
   },
   "AppPage": {
     "title": "Rechnungsdetails eingeben",

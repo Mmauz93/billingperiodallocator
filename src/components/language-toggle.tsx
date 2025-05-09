@@ -9,18 +9,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n-client";
 import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
-import { changeLanguage } from "@/i18n-client";
 import { useTranslation } from "react-i18next";
 
 export default function LanguageToggle() {
   const { i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Ensure hydration works properly
   useEffect(() => {
@@ -28,8 +31,70 @@ export default function LanguageToggle() {
   }, []);
 
   const handleLanguageChange = (lng: string) => {
-    changeLanguage(lng);
+    // Don't do anything if the language is already set to the target language
+    if (i18n.language === lng) {
+      setOpen(false);
+      return;
+    }
+    
+    // First check if we're on a legal page that requires special handling
+    const isLegalPage = pathname && (
+      pathname.includes('/legal/privacy-policy') || 
+      pathname.includes('/legal/terms-of-use') ||
+      pathname.includes('/legal/impressum')
+    );
+    
+    // Save language in localStorage for persistence
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+    
+    // Close dropdown menu
     setOpen(false);
+
+    // Handle URL change and language update
+    if (pathname) {
+      // Get current language from URL
+      const pathSegments = pathname.split('/');
+      const currentLang = pathSegments.length > 1 && SUPPORTED_LANGUAGES.includes(pathSegments[1]) 
+                           ? pathSegments[1] 
+                           : null;
+      
+      let newPath;
+      
+      if (currentLang) {
+        // Replace language segment in path
+        newPath = pathname.replace(`/${currentLang}`, `/${lng}`);
+      } else {
+        // If no language in URL, add it
+        newPath = `/${lng}${pathname}`;
+      }
+      
+      // Different handling based on page type
+      if (isLegalPage) {
+        // For legal pages:
+        // 1. Update URL without a full page reload
+        window.history.pushState(null, '', newPath);
+        
+        // 2. Change the language after URL is updated
+        // This sequence is important to prevent the race condition
+        setTimeout(() => {
+          changeLanguage(lng);
+          
+          // 3. Dispatch event so other components know to update
+          document.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: lng, source: 'language-toggle' } 
+          }));
+        }, 0);
+      } else {
+        // For regular pages, use router navigation
+        // Change language first to avoid flashing
+        changeLanguage(lng).then(() => {
+          router.push(newPath);
+        });
+      }
+    } else {
+      // If no pathname available, just change the language
+      changeLanguage(lng);
+    }
   };
 
   if (!mounted) return null;

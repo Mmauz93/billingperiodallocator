@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 
@@ -27,29 +28,53 @@ const PrivacyWidget = dynamic<PrivacyWidgetProps>(() =>
   { ssr: false }
 );
 
-export default function PrivacyPolicyPage() {
+// Server component that redirects to language-specific version
+export default function PrivacyPolicyRedirect() {
+  // Redirects to default language version (English)
+  redirect('/en/legal/privacy-policy');
+}
+
+export function PrivacyPolicyPage() {
   const { i18n } = useTranslation();
   const { theme: currentTheme, setTheme } = useTheme(); // Get current theme and setTheme function
   const originalThemeRef = useRef<string | undefined>(undefined); // Ref to store original theme
+  const themeWasSetRef = useRef(false); // Track if we've already set the theme
   const [isMounted, setIsMounted] = useState(false);
   const [language, setLanguage] = useState('en');
 
-  // Effect to manage theme override
+  // First effect to handle mounting and language setup
   useEffect(() => {
     setIsMounted(true);
     setLanguage(i18n.language.startsWith('de') ? 'de' : 'en');
+  }, [i18n.language]);
 
-    // Store the original theme only once when the component mounts
+  // Separate effect to handle theme changes - only runs once
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    // Store the original theme only once
     if (originalThemeRef.current === undefined) {
       originalThemeRef.current = currentTheme;
     }
 
-    // Force DARK theme using next-themes
-    // Check if it's not already dark to avoid unnecessary calls
-    if (currentTheme !== 'dark') {
+    // Set dark theme once
+    if (!themeWasSetRef.current) {
       setTheme('dark');
+      themeWasSetRef.current = true;
     }
 
+    // Cleanup function to restore original theme
+    return () => {
+      if (originalThemeRef.current) {
+        setTheme(originalThemeRef.current);
+      }
+    };
+  }, [currentTheme, setTheme, isMounted]);
+
+  // Separate effect for script loading
+  useEffect(() => {
+    if (!isMounted) return;
+    
     // --- PrivacyBee script loading --- 
     let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://app.privacybee.io/widget.js"]',
@@ -61,16 +86,7 @@ export default function PrivacyPolicyPage() {
       document.head.appendChild(script);
     }
     // --- End script loading ---
-    
-    // Cleanup function to restore original theme
-    return () => {
-      // Restore the theme that was active when the component first mounted
-      if (originalThemeRef.current !== undefined) {
-        setTheme(originalThemeRef.current);
-      }
-    };
-    // Depend only on language for script loading, theme handled separately
-  }, [i18n.language, currentTheme, setTheme]); 
+  }, [isMounted]); // Only load script once mounted
 
   // Render loading indicator or null until mounted
   if (!isMounted) {
