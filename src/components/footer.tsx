@@ -30,6 +30,7 @@ export function Footer() {
 
   // Define all labels upfront to avoid conditional rendering
   // Only use translations after mounting to prevent hydration mismatch
+  const calculatorLabel = mounted ? t("General.calculator") : "Calculator";
   const privacyLabel = mounted ? t("General.privacyPolicy") : "Privacy Policy";
   const termsLabel = mounted ? t("General.termsOfUse") : "Terms of Use";
   const impressumLabel = mounted ? t("General.impressum") : "Imprint";
@@ -40,6 +41,9 @@ export function Footer() {
   const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG";
 
   const currentLang = getCurrentLanguage();
+  
+  // Check if we're already on the calculator page to avoid showing link to current page
+  const isOnCalculatorPage = pathname?.includes('/app');
 
   return (
     <footer className="w-full border-t border-border text-sm text-gray-600 dark:text-gray-400 py-6 px-4 transition-colors duration-300">
@@ -72,6 +76,15 @@ export function Footer() {
 
         {/* Navigation Links - fixed width to maintain consistent positioning */}
         <nav className="flex flex-wrap justify-center gap-4 text-sm md:w-1/3 md:justify-center">
+          {/* Add Calculator link if not on the calculator page */}
+          {!isOnCalculatorPage && (
+            <Link
+              href={`/${currentLang}/app/`}
+              className="hover:underline transition-colors duration-200"
+            >
+              {calculatorLabel}
+            </Link>
+          )}
           <Link
             href={`/${currentLang}/legal/privacy-policy/`}
             className="hover:underline transition-colors duration-200"

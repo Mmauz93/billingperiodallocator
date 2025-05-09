@@ -1,16 +1,13 @@
 import { Metadata } from 'next';
+import { generateHreflangMetadata } from '@/lib/seo-utils';
+
+// Generate alternates for this page
+const alternates = generateHreflangMetadata('en/legal/terms-of-use');
 
 export const metadata: Metadata = {
   title: 'Terms of Use | BillSplitter',
   description: "Terms of use for the BillSplitter service.",
-  alternates: {
-    canonical: 'https://billsplitter.siempi.ch/en/legal/terms-of-use/',
-    languages: {
-      'en': 'https://billsplitter.siempi.ch/en/legal/terms-of-use/',
-      'de': 'https://billsplitter.siempi.ch/de/legal/terms-of-use/',
-      'x-default': 'https://billsplitter.siempi.ch/en/legal/terms-of-use/'
-    }
-  }
+  alternates
 };
 
 export default function LegalTermsLayoutEN({

@@ -2,6 +2,8 @@
 
 import { Suspense, lazy, useEffect } from 'react';
 
+import AppSeoContent from '@/components/app-seo-content';
+import { Breadcrumb } from '@/components/breadcrumb';
 import Loading from '@/components/loading';
 import { useTranslation } from 'react-i18next';
 
@@ -15,14 +17,27 @@ export default function AppPageEN() {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
+    // Force English language
+    if (i18n.language !== 'en') {
+      i18n.changeLanguage('en');
+    }
+    
     document.title = t("AppPage.title", "Calculator") + " | BillSplitter";
-  }, [t, i18n.language]);
+  }, [t, i18n]);
 
   return (
-    // The surrounding layout.tsx provides structure, header, footer
-    // This page only needs to render the core calculator component with proper suspense
-    <Suspense fallback={<Loading />}>
-      <InvoiceCalculatorClient />
-    </Suspense>
+    <div className="container max-w-5xl mx-auto px-4 py-6">
+      {/* Add breadcrumb navigation for better SEO and user navigation */}
+      <Breadcrumb currentPage={t("AppPage.title", "Calculator")} lang="en" />
+      
+      {/* The surrounding layout.tsx provides structure, header, footer */}
+      {/* This page only needs to render the core calculator component with proper suspense */}
+      <Suspense fallback={<Loading />}>
+        <InvoiceCalculatorClient />
+      </Suspense>
+      
+      {/* Add SEO content for better discoverability and word count */}
+      <AppSeoContent />
+    </div>
   );
 } 

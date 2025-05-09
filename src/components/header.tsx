@@ -87,28 +87,18 @@ export function Header() {
   // Normalize pathname: remove trailing slash if it's not the root itself
   const normalizedPathname = rawPathname.length > 1 && rawPathname.endsWith('/') ? rawPathname.slice(0, -1) : rawPathname;
 
-  const langFromPath = getLanguageFromPath(rawPathname); // Use raw pathname for extraction
-  const defaultLang = getCurrentLanguage(); // Assuming this gives the default lang like 'en'
-
-  let isPathForGetStartedButton = false;
-  if (langFromPath) {
-    // Path has a language code like /en or /de
-    isPathForGetStartedButton = 
-      normalizedPathname === `/${langFromPath}`;
-  } else if (normalizedPathname === '') { 
-    // Path is the root (e.g., http://localhost:3000/ normalized to '')
-    // Show button, assuming it should use default language context
-    isPathForGetStartedButton = true;
-  }
-
-  const showGetStartedButton = isPathForGetStartedButton;
+  // Check if user is already on the app page to avoid showing the button if they're already there
+  const isOnAppPage = normalizedPathname.endsWith('/app');
+  
+  // Always show the get started button unless user is already on the app page
+  const showGetStartedButton = !isOnAppPage;
   const showThemeToggle = !rawPathname.includes('/legal/privacy-policy');
 
   // Don't render until we're mounted and currentLang state is set (for links etc.)
   if (!mounted || !currentLang) return null;
 
   // Ensure linkLang is valid for the Link href
-  const linkLangForButton = currentLang || defaultLang;
+  const linkLangForButton = currentLang || getCurrentLanguage();
 
   return (
     <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
@@ -147,8 +137,6 @@ export function Header() {
             >
               <Link 
                 href={`/${linkLangForButton}/app/`}
-                target="_blank" 
-                rel="noopener noreferrer"
                 onClick={() => {
                   // Clear all form data from sessionStorage to ensure a clean start
                   if (typeof window !== 'undefined') {
@@ -158,7 +146,7 @@ export function Header() {
                   }
                 }}
               >
-                {t("General.getStarted", { defaultValue: "Get Started" })}
+                {t("General.getStarted", { defaultValue: "Split Invoice" })}
               </Link>
             </Button>
           )}

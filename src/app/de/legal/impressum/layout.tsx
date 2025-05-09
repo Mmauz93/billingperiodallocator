@@ -1,16 +1,13 @@
 import { Metadata } from 'next';
+import { generateHreflangMetadata } from '@/lib/seo-utils';
+
+// Generate alternates for this page
+const alternates = generateHreflangMetadata('de/legal/impressum');
 
 export const metadata: Metadata = {
   title: 'Impressum | BillSplitter',
   description: "Impressum und rechtliche Angaben zur BillSplitter-Plattform.",
-  alternates: {
-    canonical: 'https://billsplitter.siempi.ch/de/legal/impressum/',
-    languages: {
-      'en': 'https://billsplitter.siempi.ch/en/legal/impressum/',
-      'de': 'https://billsplitter.siempi.ch/de/legal/impressum/',
-      'x-default': 'https://billsplitter.siempi.ch/en/legal/impressum/'
-    }
-  }
+  alternates
 };
 
 export default function LegalImpressumLayoutDE({

@@ -3,8 +3,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 export default function GermanLandingPage() {
@@ -82,8 +82,8 @@ export default function GermanLandingPage() {
         isDemo: true
       };
       sessionStorage.setItem('billSplitterDemoData', JSON.stringify(demoDataForForm));
-      // Navigate to language-specific app route
-      window.open('/de/app', '_blank');
+      // Navigate to language-specific app route - use internal link instead of window.open
+      // window.open('/de/app', '_blank');
     }
   };
   
@@ -179,14 +179,14 @@ export default function GermanLandingPage() {
               <p className="text-lg mb-6 text-muted-foreground">
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
+              <Link 
+                href="/de/app/" 
                 onClick={handleTestWithDemoData}
+                className="inline-flex items-center gap-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
               > 
-                  {t('Landing.ctaButton', { defaultValue: ctaButton })}
-                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </Button>
+                {t('Landing.ctaButton', { defaultValue: ctaButton })}
+                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </Link>
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
               <Image 

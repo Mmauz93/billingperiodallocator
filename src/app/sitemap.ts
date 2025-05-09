@@ -21,50 +21,72 @@ const routes = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
-  routes.forEach(route => {
-    // Determine the page-specific path (e.g., /app/ or /legal/impressum/)
-    // For the root route '/', pageSpecificPath will be effectively empty or handled by being just the language code.
-    let pageSpecificPath = route;
-    if (route !== '/' && !route.endsWith('/')) {
-      pageSpecificPath = `${route}/`;
-    }
-    if (route === '/') { // For the site's conceptual root, which maps to language roots
-        pageSpecificPath = '/'; // Represents the part after the language code, which is nothing for /en/ or /de/
-    }
+  // First, add the site root URL (no language prefix)
+  const rootAlternates: Record<string, string> = {};
+  languages.forEach(lang => {
+    rootAlternates[lang] = formatUrl(`${siteUrl}/${lang}/`);
+  });
+  rootAlternates['x-default'] = formatUrl(`${siteUrl}/en/`);
 
+  sitemapEntries.push({
+    url: formatUrl(`${siteUrl}/`),
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 1.0,
+    alternates: {
+      languages: rootAlternates,
+    },
+  });
+
+  // Then generate entries for all language+route combinations
+  routes.forEach(route => {
+    // Skip the root route as we've already added it
+    if (route === '/') return;
+
+    // Process path to ensure proper formatting
+    const processedRoute = route.startsWith('/') ? route.substring(1) : route;
+    
     // Generate entries for each language
     languages.forEach(lang => {
-      // Safely replace double slashes only in the path, not in the protocol
-      const fixUrlSlashes = (url: string) => {
+      // Helper function to ensure URL is properly formatted with no double slashes
+      const formatUrl = (url: string) => {
         return url.replace(/:\/\//, '___PROTOCOL___')
                  .replace(/\/\//g, '/')
                  .replace(/___PROTOCOL___/, '://');
       };
       
-      const url = fixUrlSlashes(`${siteUrl}/${lang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
+      // Build the URL for this language+route combination
+      const url = formatUrl(`${siteUrl}/${lang}/${processedRoute}/`);
       
-      const alternates: { [key: string]: string } = {};
+      // Build language alternates map for hreflang tags
+      const langAlternates: Record<string, string> = {};
+      
+      // Add entry for each language, ensuring each page references ALL language variants
       languages.forEach(altLang => {
-        alternates[altLang] = fixUrlSlashes(`${siteUrl}/${altLang}${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
+        langAlternates[altLang] = formatUrl(`${siteUrl}/${altLang}/${processedRoute}/`);
       });
-      // x-default should point to the default language version of the current path
-      // Assuming 'en' is the default language for x-default determination here for simplicity, can be refined
-      alternates['x-default'] = fixUrlSlashes(`${siteUrl}/en${pageSpecificPath === '/' ? '/' : pageSpecificPath}`);
+      
+      // Add x-default, pointing to English version
+      langAlternates['x-default'] = formatUrl(`${siteUrl}/en/${processedRoute}/`);
 
       sitemapEntries.push({
         url,
         lastModified: new Date(),
         changeFrequency: 'monthly',
-        priority: (route === '/' || route === '/app') ? 1.0 : 0.8,
+        priority: route === '/app' ? 1.0 : 0.8,
         alternates: {
-          languages: alternates,
+          languages: langAlternates,
         },
       });
     });
   });
 
-  // Deduplicate entries based on URL (though logic should ideally produce unique URLs per language variant)
-  const uniqueSitemap = Array.from(new Map(sitemapEntries.map(item => [item.url, item])).values());
+  return sitemapEntries;
+}
 
-  return uniqueSitemap;
+// Helper function to ensure URL is properly formatted with no double slashes
+function formatUrl(url: string): string {
+  return url.replace(/:\/\//, '___PROTOCOL___')
+          .replace(/\/\//g, '/')
+          .replace(/___PROTOCOL___/, '://');
 } 

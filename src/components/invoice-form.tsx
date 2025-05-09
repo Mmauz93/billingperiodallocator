@@ -263,7 +263,7 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     const storedDemoData = JSON.parse(storedDemoDataString);
                     if (storedDemoData.isDemo) {
                         console.log("[InvoiceForm] isDemo is true in sessionStorage. Removing billSplitterDemoData.");
-                        sessionStorage.removeItem('billSplitterDemoData');
+                sessionStorage.removeItem('billSplitterDemoData');
                         console.log("[InvoiceForm] billSplitterDemoData removed from sessionStorage. Current value:", sessionStorage.getItem('billSplitterDemoData'));
                     } else {
                         console.log("[InvoiceForm] isDemo is false or not present in sessionStorage item. Not removing.");
@@ -336,15 +336,15 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     if (hasExistingFormData) {
                         console.log("[InvoiceForm] Loading form data from cache:", sessionStorage.getItem(storageKey));
                         try {
-                            const savedData = sessionStorage.getItem(storageKey);
-                            if (savedData) {
-                                const parsedData = JSON.parse(savedData) as FormSchemaType;
-                                form.reset(parsedData);
+            const savedData = sessionStorage.getItem(storageKey);
+            if (savedData) {
+                    const parsedData = JSON.parse(savedData) as FormSchemaType;
+                    form.reset(parsedData);
                                 console.log("[InvoiceForm] Successfully loaded cached form data");
                             }
-                        } catch (error) {
-                            console.error("Failed to parse cached form data:", error);
-                            sessionStorage.removeItem(storageKey);
+                } catch (error) {
+                    console.error("Failed to parse cached form data:", error);
+                    sessionStorage.removeItem(storageKey);
                         }
                     } else {
                         console.log("[InvoiceForm] No existing form data in cache. Starting with empty form.");
