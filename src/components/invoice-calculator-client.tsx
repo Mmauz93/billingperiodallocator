@@ -14,7 +14,7 @@ import { ResultsDisplay } from "@/components/results-display";
 import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
 import dynamic from 'next/dynamic';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/translations';
 
 // Define a type for the demo data that matches the one in InvoiceForm
 type DemoDataType = {
@@ -71,6 +71,30 @@ export default function InvoiceCalculatorClient() {
   const gaMeasurementId = "G-9H2KTHX5YK"; 
   const consentCookieName = "siempiBillSplitterConsent";
   const [hasConsent, setHasConsent] = useState(false);
+
+  // Add cleanup effect that runs on component unmount
+  useEffect(() => {
+    // This cleanup will run when the component unmounts
+    return () => {
+      if (typeof window !== 'undefined') {
+        // Safely capture current values for logging (useful for debugging)
+        const hasDemoData = sessionStorage.getItem('billSplitterDemoData') !== null;
+        const hasFormCache = sessionStorage.getItem('invoiceFormDataCache') !== null;
+        
+        // Safely remove items
+        try {
+          sessionStorage.removeItem('billSplitterDemoData');
+          sessionStorage.removeItem('invoiceFormDataCache');
+          console.log('[InvoiceCalculatorClient] Cleaned up sessionStorage on unmount', { 
+            hadDemoData: hasDemoData, 
+            hadFormCache: hasFormCache 
+          });
+        } catch (error) {
+          console.error('[InvoiceCalculatorClient] Error clearing sessionStorage on unmount:', error);
+        }
+      }
+    };
+  }, []); // Empty dependency array means this runs only on mount/unmount
 
   // Effect to check for existing consent cookie on mount and handle demo data
   useEffect(() => {

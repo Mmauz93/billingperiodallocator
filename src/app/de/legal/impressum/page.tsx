@@ -2,9 +2,11 @@
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
 
+import React from "react";
+// import ReactCountryFlag from "react-country-flag"; // Unused import
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 // Create a NoSSR wrapper component with proper typing
 const NoSSR = ({ children }: { children: ReactNode }) => {

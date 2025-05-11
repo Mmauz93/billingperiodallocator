@@ -1,13 +1,13 @@
 "use client";
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { SUPPORTED_LANGUAGES, getLanguageFromPath } from "@/i18n-client";
+import { SUPPORTED_LANGUAGES, getLanguageFromPath } from "@/translations";
 
 import ReactMarkdown from "react-markdown";
 import dynamic from "next/dynamic";
 import remarkGfm from "remark-gfm";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 // Create a NoSSR wrapper component with proper typing
 const NoSSR = ({ children }: { children: ReactNode }) => {

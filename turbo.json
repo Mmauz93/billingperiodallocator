@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDotEnv": [".env.local", ".env"],
+  "globalEnv": ["NODE_ENV"],
+  "globalPassThroughEnv": ["NEXT_PUBLIC_*"],
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+} 

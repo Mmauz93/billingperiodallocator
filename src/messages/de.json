@@ -125,7 +125,9 @@
     "tagline": "Entwickelt für Finanzfachleute. Vertraut von KMUs und Buchhaltern.",
     "getStarted": "Rechnung aufteilen",
     "feedback": "Feedback geben",
-    "loading": "Rechner lädt..."
+    "loading": "Rechner lädt...",
+    "home": "Startseite",
+    "calculator": "Rechner"
   },
   "App": {
     "title": "Automatisierter Rechnungsperioden-Rechner — Präzise. Schnell. Einfach.",

@@ -21,9 +21,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  console.log(`[Layout.tsx] NODE_ENV: ${process.env.NODE_ENV}, isDevelopment: ${isDevelopment}`);
+
+  // Strict CSP with no unsafe-eval
+  const cspContent = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws: localhost:* http://localhost:*; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';";
+  
+  console.log("[Layout.tsx] Applying strict CSP (no unsafe-eval):");
+  console.log(cspContent);
+
   return (
     <html className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <meta httpEquiv="Content-Security-Policy" content={cspContent} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         
@@ -109,9 +119,17 @@ export default function RootLayout({
                 }
                 
                 function removeExistingTags() {
-                  // Remove all hreflang and canonical tags
+                  // Instead of removing tags, which can conflict with React,
+                  // mark existing ones as disabled so we can replace them
                   document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]')
-                    .forEach(el => el.parentNode?.removeChild(el));
+                    .forEach(el => {
+                      if (el.parentNode) {
+                        // Mark as disabled instead of removing
+                        el.setAttribute('disabled', 'true');
+                        // Move out of normal flow
+                        el.setAttribute('data-replaced', 'true');
+                      }
+                    });
                 }
                 
                 function addHreflangTag(lang, url) {

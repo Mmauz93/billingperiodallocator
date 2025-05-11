@@ -15,7 +15,7 @@ import { AccessibleIcon } from "@/components/ui/accessible-icon";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 export function ThemeToggle() {
   const { setTheme, theme, resolvedTheme } = useTheme();

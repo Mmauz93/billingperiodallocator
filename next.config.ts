@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const nextConfig: NextConfig = {
   // Configure Next.js to output static files
-  output: "export",
+  output: isDevelopment ? undefined : "export",
   // Add trailingSlash option for directory-based HTML files
   trailingSlash: true,
   images: {
@@ -16,11 +18,14 @@ const nextConfig: NextConfig = {
     loader: "default",
     path: "/_next/image",
   },
-  reactStrictMode: true,
+  // In development, allow React to catch and display errors
+  reactStrictMode: !isDevelopment,
   experimental: {
+    // Add experimental features as needed
     scrollRestoration: false,
   },
-  /* config options here */
+  // Don't expose the Next.js version in headers
+  poweredByHeader: false,
 };
 
 export default nextConfig;

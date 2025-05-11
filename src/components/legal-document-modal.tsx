@@ -10,7 +10,7 @@ import { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 interface LegalDocumentModalProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ export function LegalDocumentModal({
           <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
         </DialogHeader>
         <div className="text-sm text-muted-foreground mb-2">
-          {t("General.lastUpdated", { date: "April 25, 2025" })}
+          {t("General.lastUpdated", { values: { date: "April 25, 2025" } })}
         </div>
         <div className="overflow-y-auto pr-6 -mr-6 pb-4 text-sm">
           <div className="space-y-4">

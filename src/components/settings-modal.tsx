@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Settings } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useSettings } from "@/context/settings-context";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Define a simpler form schema without transforms to avoid type issues
@@ -63,7 +63,7 @@ export function SettingsModal({
   className
 }: SettingsModalProps) {
   const { settings, saveSettings } = useSettings();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -84,7 +84,7 @@ export function SettingsModal({
       decimalPlaces: settings.decimalPlaces?.toString() || "",
       roundingPrecision: settings.roundingPrecision?.toString() || "0.01",
       thousandsSeparator: settings.thousandsSeparator || defaultSeparator,
-      locale: i18n.language || "en-US",
+      locale: "en-US",
     },
     mode: "onChange", // Validate on every change
   });
@@ -97,10 +97,10 @@ export function SettingsModal({
         decimalPlaces: settings.decimalPlaces?.toString() || "",
         roundingPrecision: settings.roundingPrecision?.toString() || "0.01",
         thousandsSeparator: settings.thousandsSeparator || defaultSeparator,
-        locale: i18n.language || "en-US",
+        locale: "en-US",
       });
     }
-  }, [isOpen, settings, i18n.language, form, defaultSeparator]);
+  }, [isOpen, settings, form, defaultSeparator]);
 
   // Update isValid when form state changes
   useEffect(() => {
@@ -127,7 +127,7 @@ export function SettingsModal({
         decimalPlaces: settings.decimalPlaces?.toString() || "",
         roundingPrecision: settings.roundingPrecision?.toString() || "0.01",
         thousandsSeparator: settings.thousandsSeparator || defaultSeparator,
-        locale: i18n.language || "en-US",
+        locale: "en-US",
       });
     }
     onOpenChange(open);
@@ -169,8 +169,8 @@ export function SettingsModal({
 
     // Handle the locale/language change
     const newLocale = data.locale;
-    if (newLocale && i18n.language !== newLocale) {
-      i18n.changeLanguage(newLocale);
+    if (newLocale && "en-US" !== newLocale) {
+      // Implement language change logic here
     }
 
     // Save all settings at once after form submission

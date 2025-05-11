@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import Cookies from 'js-cookie';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/translations';
 
 // import Link from 'next/link'; // Not used in the provided snippet for the banner itself
 
@@ -126,7 +126,7 @@ export function CustomCookieConsentBanner({
   const getPositionClass = () => {
     // Use responsive positioning for better mobile view
     // Removed the invalid !important modifier
-    return "fixed bottom-6 right-6 left-6 sm:left-auto sm:right-6 z-[2000] w-full max-w-sm pointer-events-none";
+    return "fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[2000] w-full max-w-sm pointer-events-none";
   };
 
   return (

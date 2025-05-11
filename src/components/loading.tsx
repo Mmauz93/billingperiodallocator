@@ -1,7 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTranslation } from "@/translations";
 
 export default function Loading() {
   const { t } = useTranslation();

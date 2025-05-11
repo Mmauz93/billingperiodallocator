@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,46 @@ function PopoverContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+  const [isMounted, setIsMounted] = React.useState(false);
+  const isMountedRef = React.useRef(true);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    const mountTimer = setTimeout(() => {
+      if (isMountedRef.current) {
+        setIsMounted(true);
+      }
+    }, 10); // Small delay for mount animation
+
+    return () => {
+      isMountedRef.current = false;
+      clearTimeout(mountTimer);
+      // Immediately set isMounted to false to trigger clean removal
+      setIsMounted(false);
+      
+      // Make sure we clean up any portals that might still be in the DOM
+      if (typeof document !== 'undefined') {
+        // Give React a chance to unmount naturally before we force cleanup
+        setTimeout(() => {
+          // Find any orphaned popover elements and remove them
+          document.querySelectorAll('[data-radix-popover-content]').forEach(element => {
+            try {
+              if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+              }
+            } catch /* (error) */ {
+              // Silently handle any errors during forced cleanup
+            }
+          });
+        }, 0);
+      }
+    };
+  }, []);
+
+  if (!isMounted) {
+    return null; // Render nothing until mounted or after unmount
+  }
+
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content

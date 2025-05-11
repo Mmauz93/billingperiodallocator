@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next"; // Import hook
+import { useTranslation } from "@/translations"; // Import hook
 
 // TODO: Define API endpoint for feedback submission
 // const FEEDBACK_API_ENDPOINT = "/api/feedback";

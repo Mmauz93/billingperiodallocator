@@ -1,15 +1,17 @@
 "use client";
 
-import { SUPPORTED_LANGUAGES, getCurrentLanguage, getLanguageFromPath } from "@/i18n-client";
+import { SUPPORTED_LANGUAGES, getCurrentLanguage, getLanguageFromPath } from "@/translations";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import LanguageToggle from "@/components/language-toggle";
 import Link from "next/link";
+// import { MainNav } from "@/components/main-nav"; // TODO: Resolve path or remove if not used
+// import { MobileNav } from "@/components/mobile-nav"; // TODO: Resolve path or remove if not used
 import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 export function Header() {
   const { t, i18n } = useTranslation();
@@ -99,22 +101,19 @@ export function Header() {
 
   // Ensure linkLang is valid for the Link href
   const linkLangForButton = currentLang || getCurrentLanguage();
+  
+  // Compute paths once
+  const homePath = `/${linkLangForButton}/`;
+  const appPath = `/${linkLangForButton}/app/`;
 
   return (
     <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
+          {/* Simple Link for logo navigation */}
           <Link 
-            href={`/${linkLangForButton}/`} 
-            className="flex items-center"
-            onClick={() => {
-              // Clear all form data from sessionStorage when navigating to home
-              if (typeof window !== 'undefined') {
-                sessionStorage.removeItem('billSplitterDemoData');
-                sessionStorage.removeItem('invoiceFormDataCache');
-                console.log("Cleared form data from sessionStorage when navigating to home");
-              }
-            }}
+            href={homePath}
+            className="flex items-center cursor-pointer"
           >
             <Image
               src="/images/logo.svg"
@@ -127,25 +126,21 @@ export function Header() {
           </Link>
         </div>
         
-        <nav className="flex items-center gap-3">
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            {/* <CommandMenu /> */}
+          </div>
+          {/* <MainNav /> */}
+          {/* <MobileNav /> */}
+          <nav className="flex items-center space-x-2">
           {showGetStartedButton && (
             <Button 
-              asChild 
+              asChild
               variant="outline" 
               size="sm" 
-              className="hidden sm:flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
             >
-              <Link 
-                href={`/${linkLangForButton}/app/`}
-                onClick={() => {
-                  // Clear all form data from sessionStorage to ensure a clean start
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('billSplitterDemoData');
-                    sessionStorage.removeItem('invoiceFormDataCache');
-                    console.log("Cleared form data from sessionStorage for clean start");
-                  }
-                }}
-              >
+              <Link href={appPath}>
                 {t("General.getStarted", { defaultValue: "Split Invoice" })}
               </Link>
             </Button>
@@ -153,6 +148,7 @@ export function Header() {
           <LanguageToggle />
           {showThemeToggle && <ThemeToggle />}
         </nav>
+        </div>
       </div>
     </header>
   );

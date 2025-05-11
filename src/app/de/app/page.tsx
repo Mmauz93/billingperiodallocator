@@ -5,7 +5,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import AppSeoContent from '@/components/app-seo-content';
 import { Breadcrumb } from '@/components/breadcrumb';
 import Loading from '@/components/loading';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/translations';
 
 // Lazy load the main component
 const InvoiceCalculatorClient = lazy(() => 

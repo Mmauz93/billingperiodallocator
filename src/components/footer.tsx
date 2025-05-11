@@ -1,13 +1,15 @@
 "use client"; // Keep client-side for useTranslation
 
+// import { Github, Linkedin, Twitter } from "lucide-react"; // Unused imports
+
 import { useEffect, useState } from "react";
 
 import { FeedbackButton } from "@/components/feedback-button";
 import Image from "next/image";
 import Link from "next/link";
-import { getLanguageFromPath } from "@/i18n-client";
+import { getLanguageFromPath } from "@/translations";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 // Improved footer component with cleaner visual hierarchy and fixed positioning
 export function Footer() {
@@ -36,7 +38,7 @@ export function Footer() {
   const impressumLabel = mounted ? t("General.impressum") : "Imprint";
   const feedbackLabel = mounted ? t("General.feedback") : "Feedback";
   const copyrightLabel = mounted 
-    ? t("Footer.copyright", { year: currentYear }) 
+    ? t("Footer.copyright", { values: { year: currentYear } })
     : `© ${currentYear} Siempi AG — All rights reserved.`;
   const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG";
 

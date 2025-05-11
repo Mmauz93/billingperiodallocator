@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/translations';
 
 interface BreadcrumbProps {
   currentPage: string;
@@ -8,9 +10,32 @@ interface BreadcrumbProps {
 
 export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
   
-  const homeLabel = t('General.home', 'Home');
-  const currentPageLabel = currentPage || t('General.calculator', 'Calculator');
+  // Get correct language-specific default labels to avoid hydration mismatch
+  const getDefaultHomeLabel = () => {
+    if (lang === 'de') return 'Startseite';
+    return 'Home';
+  };
+  
+  const getDefaultCalculatorLabel = () => {
+    if (lang === 'de') return 'Rechner';
+    return 'Calculator';
+  };
+  
+  // Use static default text for initial render to avoid hydration mismatch
+  const homeLabel = mounted 
+    ? t('General.home', { defaultValue: getDefaultHomeLabel() })
+    : getDefaultHomeLabel();
+    
+  const currentPageLabel = currentPage || (mounted 
+    ? t('General.calculator', { defaultValue: getDefaultCalculatorLabel() })
+    : getDefaultCalculatorLabel());
+  
+  // After mount, allow React to handle the component normally
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   return (
     <nav className="flex mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">

@@ -4,10 +4,10 @@ import { CustomCookieConsentBanner } from "@/components/custom-cookie-banner";
 import { Footer } from "@/components/footer";
 import HeadWithHreflang from "@/components/head-with-hreflang";
 import { Header } from "@/components/header";
-import I18nProvider from "@/components/i18n-provider";
 import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import TranslationProvider from "@/components/translation-provider";
 import { usePathname } from "next/navigation";
 
 export default function ClientLayout({
@@ -27,7 +27,7 @@ export default function ClientLayout({
         disableTransitionOnChange
       >
         <TooltipProvider>
-          <I18nProvider>
+          <TranslationProvider>
             <HeadWithHreflang currentPath={path} currentLanguage={lang} />
             
             <div className="flex flex-col min-h-screen w-full">
@@ -48,7 +48,7 @@ export default function ClientLayout({
                 window.location.href = `/${lang}/legal/privacy-policy`;
               }}
             />
-          </I18nProvider>
+          </TranslationProvider>
         </TooltipProvider>
       </ThemeProvider>
     </SettingsProvider>

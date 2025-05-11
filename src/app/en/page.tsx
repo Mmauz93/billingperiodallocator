@@ -1,11 +1,13 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { FaqSection } from "@/components/faq-section";
 import Image from "next/image";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+import React /*, { Suspense } */ from "react";
+import { useTranslation } from "@/translations";
 
 export default function EnglishLandingPage() {
   const { t, i18n } = useTranslation();
@@ -203,46 +205,7 @@ export default function EnglishLandingPage() {
       </section>
       
       {/* FAQ/Q&A Section for SEO */}
-      <section className="py-16 px-6 max-w-3xl mx-auto bg-background mt-24 sm:mt-32">
-        <h2 className="text-3xl font-bold mb-10 text-center text-foreground">
-          {t('Landing.faqTitle', { defaultValue: 'Frequently Asked Questions' })}
-        </h2>
-        <Accordion type="single" collapsible className="space-y-4">
-          {faqData.map((faq, index) => (
-            <AccordionItem 
-              key={index} 
-              value={`item-${index}`}
-              className="bg-muted/30 rounded-xl px-6 py-2 border border-border cursor-default"
-            >
-              <AccordionTrigger className="text-xl font-semibold text-foreground hover:no-underline cursor-pointer">
-                {t(`Landing.faqQuestion${index + 1}`, { defaultValue: faq.question })}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                {t(`Landing.faqAnswer${index + 1}`, { defaultValue: faq.answer })}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        
-        {/* Structured data for SEO */}
-        <script 
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": faqData.map((item, index) => ({
-                "@type": "Question",
-                "name": t(`Landing.faqQuestion${index + 1}`, { defaultValue: item.question }),
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": t(`Landing.faqAnswer${index + 1}`, { defaultValue: item.answer })
-                }
-              }))
-            })
-          }}
-        />
-      </section>
+      <FaqSection faqData={faqData} />
     </>
   );
 } 

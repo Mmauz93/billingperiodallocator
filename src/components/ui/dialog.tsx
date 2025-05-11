@@ -53,14 +53,27 @@ function DialogContent({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
   const [isMounted, setIsMounted] = React.useState(false);
+  const isMountedRef = React.useRef(true);
 
   React.useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    isMountedRef.current = true;
+    const mountTimer = setTimeout(() => {
+      if (isMountedRef.current) {
+        setIsMounted(true);
+      }
+    }, 10); // Small delay to ensure DOM is ready for animations
+
+    return () => {
+      isMountedRef.current = false;
+      clearTimeout(mountTimer);
+      // No need to call setIsMounted(false) here.
+      // React will unmount the component and its contents naturally.
+      // The isMounted state is primarily for the initial mount animation.
+    };
   }, []);
 
   if (!isMounted) {
-    return null;
+    return null; // Render nothing until mounted (for entry animation)
   }
 
   return (

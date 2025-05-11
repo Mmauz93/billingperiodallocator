@@ -36,7 +36,7 @@ import { SettingsModal } from "@/components/settings-modal";
 import { format } from "date-fns";
 import type { jsPDF } from 'jspdf';
 import { useSettings } from "@/context/settings-context";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 // Define a type for the jsPDF internal object with just the properties we need
 type JsPDFWithInternal = jsPDF & {

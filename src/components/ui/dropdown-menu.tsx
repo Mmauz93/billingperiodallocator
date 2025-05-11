@@ -13,49 +13,57 @@ function getScrollbarWidth() {
   return window.innerWidth - document.documentElement.clientWidth;
 }
 
-// Add this useEffect to set a CSS variable for the scrollbar width on mount
-function useScrollbarSize() {
+// Modified useScrollbarSize hook
+function useScrollbarSize(isOpen: boolean) { 
   React.useEffect(() => {
     if (typeof document !== 'undefined') {
-      // Add a class to html that will maintain scrollbar width
-      document.documentElement.classList.add('prevent-scrollbar-shift');
-      
-      // Set the scrollbar width as a CSS variable
-      const scrollbarWidth = getScrollbarWidth();
-      document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-      
-      // Clean up on unmount
-      return () => {
-        document.documentElement.classList.remove('prevent-scrollbar-shift');
-      };
+      if (isOpen) {
+        document.documentElement.classList.add('prevent-scrollbar-shift');
+        const scrollbarWidth = getScrollbarWidth();
+        document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+        
+        // Return a cleanup function that will run when isOpen becomes false or component unmounts
+        return () => {
+          document.documentElement.classList.remove('prevent-scrollbar-shift');
+          // Consider if removing the variable is safe or if other components might rely on it.
+          // For now, let's remove it to be clean, assuming one active scroll-sensitive component at a time.
+          document.documentElement.style.removeProperty('--scrollbar-width'); 
+        };
+      } else {
+        // If called with isOpen = false, and the class is present (e.g. from a previous true state that didn't cleanup yet)
+        // ensure it's removed. This handles transitions from true to false gracefully.
+        if (document.documentElement.classList.contains('prevent-scrollbar-shift')) {
+          document.documentElement.classList.remove('prevent-scrollbar-shift');
+          document.documentElement.style.removeProperty('--scrollbar-width');
+        }
+      }
     }
-  }, []);
+  }, [isOpen]); // Re-run when isOpen changes
 }
 
 function DropdownMenu({
-  onOpenChange, // Capture the original onOpenChange prop
-  open: controlledOpen, // Allow controlled open state
+  onOpenChange, 
+  open: controlledOpen,
   defaultOpen,
-  modal = false, // Set default modal to false to prevent scroll lock
+  modal = false, 
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  const [isOpen, setIsOpen] = React.useState(defaultOpen ?? false);
+  const [isInternalOpen, setIsInternalOpen] = React.useState(defaultOpen ?? false);
   
-  // Call the hook to set up scrollbar size
-  useScrollbarSize();
+  // Determine the actual open state (controlled or internal)
+  const isActuallyOpen = controlledOpen !== undefined ? controlledOpen : isInternalOpen;
 
-  // Use controlled state if provided, otherwise internal state
-  const isActuallyOpen = controlledOpen !== undefined ? controlledOpen : isOpen;
+  // Call the hook with the actual open state
+  useScrollbarSize(isActuallyOpen);
 
-  const handleOpenChange = React.useCallback((open: boolean) => {
-    setIsOpen(open);
-    if (onOpenChange) {
-      onOpenChange(open);
+  const handleOpenChange = React.useCallback((openParam: boolean) => {
+    if (controlledOpen === undefined) { // Only update internal state if not controlled
+      setIsInternalOpen(openParam);
     }
-    
-    // IMPORTANT: Do not modify body styles (overflow or padding) 
-    // to prevent layout shifts
-  }, [onOpenChange]);
+    if (onOpenChange) {
+      onOpenChange(openParam);
+    }
+  }, [onOpenChange, controlledOpen]);
 
   return (
       <DropdownMenuPrimitive.Root 
@@ -87,25 +95,50 @@ function DropdownMenuTrigger({
   );
 }
 
-function DropdownMenuContent({
-  className,
-  sideOffset = 4,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+>(({ className, sideOffset = 4, children, ...props }, ref) => {
+  // Smoothly handle mounting and unmounting
+  /* React.useEffect(() => {
+    // Ensure clean unmounting
+    return () => {
+      // Force cleanup any orphaned portal elements
+      if (typeof document !== 'undefined') {
+        // Ensure this cleanup happens after React's normal cleanup attempt
+        setTimeout(() => {
+          try {
+            document.querySelectorAll('[data-radix-dropdown-menu-content]').forEach(element => {
+              if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+              }
+            });
+          } catch (e) {
+            // Silently fail if cleanup causes any issues
+            console.debug("Error during dropdown cleanup:", e);
+          }
+        }, 0);
+      }
+    };
+  }, []); */
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
-        data-slot="dropdown-menu-content"
+        ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
-          className,
+          "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className
         )}
         {...props}
-      />
+      >
+        {children}
+      </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
   );
-}
+});
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 function DropdownMenuGroup({
   ...props
@@ -278,21 +311,27 @@ function DropdownMenuSubTrigger({
   );
 }
 
-function DropdownMenuSubContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+const DropdownMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
+>(({ className, ...props }, ref) => {
+  // Simplified: Radix handles its own animation states.
+  // We don't need the complex isMounted logic for SubContent if not adding custom animations.
+  // If custom mount/unmount animations controlled by isMounted were desired here,
+  // a similar pattern to DropdownMenuContent (non-prop controlled part) would be used.
+
   return (
     <DropdownMenuPrimitive.SubContent
-      data-slot="dropdown-menu-sub-content"
+      ref={ref}
       className={cn(
-        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg",
-        className,
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className
       )}
       {...props}
     />
   );
-}
+});
+DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
 
 export {
   DropdownMenu,

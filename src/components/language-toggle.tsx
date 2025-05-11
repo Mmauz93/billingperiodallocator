@@ -9,14 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n-client";
+import { LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES, changeLanguage } from "@/translations";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/translations";
 
 export default function LanguageToggle() {
   const { i18n } = useTranslation();
@@ -87,9 +87,8 @@ export default function LanguageToggle() {
       } else {
         // For regular pages, use router navigation
         // Change language first to avoid flashing
-        changeLanguage(lng).then(() => {
-          router.push(newPath);
-        });
+        changeLanguage(lng);
+        router.push(newPath);
       }
     } else {
       // If no pathname available, just change the language

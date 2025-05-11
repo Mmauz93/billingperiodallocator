@@ -1,12 +1,12 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/i18n-client';
+import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/translations';
 
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/translations';
 
 // Create a NoSSR wrapper component with proper typing
 const NoSSR = ({ children }: { children: ReactNode }) => {
@@ -85,10 +85,10 @@ export default function PrivacyPolicyPageEN() {
     const pathLanguage = getLanguageFromPath(pathname || '');
     
     if (pathLanguage && pathLanguage !== i18n.language) {
-      i18n.changeLanguage(pathLanguage).then(() => {
-        setTranslationsReady(true);
-        document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
-      });
+      i18n.changeLanguage(pathLanguage);
+      // Since our changeLanguage is synchronous, we can update state directly after
+      setTranslationsReady(true);
+      document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
       setPageLanguage(pathLanguage);
     } else {
       setTranslationsReady(true);
@@ -107,16 +107,16 @@ export default function PrivacyPolicyPageEN() {
       if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
         // Update component language state to trigger widget re-render
         setPageLanguage(newLang);
-        setTranslationsReady(false);
+        // setTranslationsReady(false); // No longer needed to set to false here
         
         // Ensure i18n is in sync
         if (i18n.language !== newLang) {
-          i18n.changeLanguage(newLang).then(() => {
-            setTranslationsReady(true);
-          });
-        } else {
-          setTranslationsReady(true);
-        }
+          i18n.changeLanguage(newLang);
+          // setTranslationsReady(true); // changeLanguage will trigger re-render via context/state if t or i18n.language changes
+        } // else {
+          // setTranslationsReady(true);
+        //}
+        // Title and translations will update via the main effect that depends on i18n.language or t
       }
     };
     
