@@ -21,66 +21,66 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  console.log(`[Layout.tsx] NODE_ENV: ${process.env.NODE_ENV}, isDevelopment: ${isDevelopment}`);
+  // const isDevelopment = process.env.NODE_ENV === 'development'; // Removed
+  // console.log(`[Layout.tsx] NODE_ENV: ${process.env.NODE_ENV}, isDevelopment: ${isDevelopment}`); // Removed
 
-  // Base CSP directives
-  let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io https://www.googletagmanager.com";
+  // Base CSP directives - Removed
+  // let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io https://www.googletagmanager.com"; // Removed
   
-  /**
-   * Content Security Policy (CSP) Configuration
-   * 
-   * This is the single source of truth for the application's CSP.
-   * - 'unsafe-eval' is added *unconditionally* due to webpack runtime needs.
-   * - In production, we maintain strict CSP for security
-   * - Each external domain has a clear purpose commented
-   */
-  // Add 'unsafe-eval' unconditionally for webpack runtime (`new Function('return this')()`).
-  scriptSrc += " 'unsafe-eval'"; 
+  // /** // Removed block comment
+  //  * Content Security Policy (CSP) Configuration
+  //  * 
+  //  * This is the single source of truth for the application's CSP.
+  //  * - 'unsafe-eval' is added *unconditionally* due to webpack runtime needs.
+  //  * - In production, we maintain strict CSP for security
+  //  * - Each external domain has a clear purpose commented
+  //  */
+  // // Add 'unsafe-eval' unconditionally for webpack runtime (`new Function('return this')()`). // Removed
+  // scriptSrc += " 'unsafe-eval'";  // Removed
   
-  // Log the reason for adding unsafe-eval
-  if (isDevelopment) {
-    console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP (HMR/Fast Refresh/Webpack Runtime).");
-  } else {
-    // Production maintains strict CSP except for the required 'unsafe-eval'.
-    console.log("[Layout.tsx] Production mode: 'unsafe-eval' added to script-src for CSP (Required for Webpack Runtime).");
-  }
+  // // Log the reason for adding unsafe-eval - Removed
+  // if (isDevelopment) { // Removed
+  //   console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP (HMR/Fast Refresh/Webpack Runtime)."); // Removed
+  // } else { // Removed
+  //   // Production maintains strict CSP except for the required 'unsafe-eval'. // Removed
+  //   console.log("[Layout.tsx] Production mode: 'unsafe-eval' added to script-src for CSP (Required for Webpack Runtime)."); // Removed
+  // } // Removed
 
-  // Define img-src including the flag CDN and any analytics pixels
-  const imgSrc = "'self' data: blob: https://cdn.jsdelivr.net"; 
+  // // Define img-src including the flag CDN and any analytics pixels // Removed
+  // const imgSrc = "'self' data: blob: https://cdn.jsdelivr.net";  // Removed
 
-  // Define connect-src with all necessary API endpoints
-  const connectSrc = [
-    "'self'",                        // Main application
-    "ws: localhost:*",               // WebSocket for development
-    "http://localhost:*",            // Local development
-    "https://app.privacybee.io",     // Privacy management
-    "https://www.google-analytics.com" // Analytics
-  ].join(" ");
+  // // Define connect-src with all necessary API endpoints // Removed
+  // const connectSrc = [ // Removed
+  //   "'self'",                        // Main application // Removed
+  //   "ws: localhost:*",               // WebSocket for development // Removed
+  //   "http://localhost:*",            // Local development // Removed
+  //   "https://app.privacybee.io",     // Privacy management // Removed
+  //   "https://www.google-analytics.com" // Analytics // Removed
+  // ].join(" "); // Removed
 
-  // Build the final CSP as a single string with clear formatting
-  const cspContent = [
-    "default-src 'self'", 
-    `script-src ${scriptSrc}`,
-    "style-src 'self' 'unsafe-inline' https://app.privacybee.io",
-    `img-src ${imgSrc}`,
-    "font-src 'self' data:",
-    `connect-src ${connectSrc}`,
-    "worker-src 'self' blob:",
-    "frame-src 'self'",
-    "manifest-src 'self'",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'"
-  ].join("; ");
+  // // Build the final CSP as a single string with clear formatting // Removed
+  // const cspContent = [ // Removed
+  //   "default-src 'self'",  // Removed
+  //   `script-src ${scriptSrc}`, // Removed
+  //   "style-src 'self' 'unsafe-inline' https://app.privacybee.io", // Removed
+  //   `img-src ${imgSrc}`, // Removed
+  //   "font-src 'self' data:", // Removed
+  //   `connect-src ${connectSrc}`, // Removed
+  //   "worker-src 'self' blob:", // Removed
+  //   "frame-src 'self'", // Removed
+  //   "manifest-src 'self'", // Removed
+  //   "object-src 'none'", // Removed
+  //   "base-uri 'self'", // Removed
+  //   "form-action 'self'" // Removed
+  // ].join("; "); // Removed
   
-  // console.log("[Layout.tsx] Applying CSP:"); // Combined logging above
-  // console.log(cspContent);
+  // // console.log("[Layout.tsx] Applying CSP:"); // Combined logging above // Removed
+  // // console.log(cspContent); // Removed
 
   return (
     <html className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <meta httpEquiv="Content-Security-Policy" content={cspContent} />
+        {/* Removed meta tag for CSP - Now handled in next.config.mjs */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         

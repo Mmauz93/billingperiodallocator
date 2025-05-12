@@ -1,9 +1,8 @@
+// Import the new client component
+import TermsOfUseClient from './terms-of-use-client';
 import fs from 'fs/promises';
 import path from 'path';
 import process from 'process';
-
-// Import the new client component
-import TermsOfUseClient from './terms-of-use-client';
 
 // Server Component: Fetches data and passes it to the Client Component
 export default async function TermsOfUsePageEN() {
@@ -16,10 +15,10 @@ export default async function TermsOfUsePageEN() {
     const content = await fs.readFile(filePath, 'utf-8');
 
     termsContent = content
-      .replace(/^# .*$/m, '') // Remove the first heading
-      .replace(/^Last updated on.*$/m, '') // Remove the date line for English
-      .trim();
-  } catch (error) {
+        .replace(/^# .*$/m, '') // Remove the first heading
+        .replace(/^Last updated on.*$/m, '') // Remove the date line for English
+        .trim();
+    } catch (error) {
     console.error('Error loading terms of use server-side:', error);
     termsContent = 'Failed to load terms of use. Please try again later.';
   }

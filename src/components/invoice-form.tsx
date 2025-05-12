@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn, safeText } from "@/lib/utils";
 import { de, enUS } from 'date-fns/locale';
 import { format, isValid, parse, startOfDay } from "date-fns";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -136,31 +136,43 @@ export type CalculationCallbackData = {
     amounts: number[];
 } | null;
 
+// Type definition for demo data
+type DemoDataType = {
+  startDateString?: string;
+  endDateString?: string;
+  amount?: string;
+  includeEndDate?: boolean;
+  splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
+  isDemo?: boolean;
+} | null;
+
 interface InvoiceFormProps {
     onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: CalculationErrorType) => void;
-    demoData?: {
-        startDateString?: string;
-        endDateString?: string;
-        amount?: string;
-        includeEndDate?: boolean;
-        splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
-        isDemo?: boolean;
-    } | null;
+    initialDemoData?: DemoDataType | null;
+    onDemoDataApplied?: () => void;
 }
 
-export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
+export function InvoiceForm({ 
+    onCalculateAction, 
+    initialDemoData,
+    onDemoDataApplied 
+}: InvoiceFormProps) {
     const { t, i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const [isCalculating, setIsCalculating] = useState(false);
     const [buttonText, setButtonText] = useState('');
     const [showSuccessGlow, setShowSuccessGlow] = useState(false);
-    const [shouldLoadFromCache, setShouldLoadFromCache] = useState(false);
+    const initRef = useRef(false);
 
     const currentLocale = i18n.language.startsWith('de') ? de : enUS;
     const displayDateFormat = i18n.language.startsWith('de') ? DATE_FORMAT_DE : DATE_FORMAT_ISO;
     const dateExamplePlaceholder = i18n.language.startsWith('de') ? 'z.B. 31.12.2023' : 'e.g. 2023-12-31';
     const storageKey = 'invoiceFormDataCache';
     
+    // State for popover visibility
+    const [isStartDatePopoverOpen, setIsStartDatePopoverOpen] = useState(false);
+    const [isEndDatePopoverOpen, setIsEndDatePopoverOpen] = useState(false);
+
     const currentFormSchema = formSchema(t);
     const form = useForm<FormSchemaType>({
         resolver: zodResolver(currentFormSchema),
@@ -178,6 +190,50 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
         control: form.control,
         name: "amounts"
     });
+
+    // MOVED: Debounced function to save data to localStorage (BEFORE the effects that use it)
+    const debouncedSaveFunction = useMemo(
+        () => debounce((dataToSave: FormSchemaType) => {
+            if (mounted) {
+                try {
+                    // Don't save during initial load or auto-submit
+                    if (initRef.current) {
+                        const amountsToSave = dataToSave.amounts?.length > 0
+                            ? dataToSave.amounts
+                            : [{ value: '' }];
+                        const saveData = { ...dataToSave, amounts: amountsToSave };
+                        
+                        console.log("[InvoiceForm] Saving form data to localStorage:", saveData);
+                        localStorage.setItem(storageKey, JSON.stringify(saveData));
+                    }
+                } catch (error) {
+                    console.error("[InvoiceForm] Failed to save form data to localStorage:", error);
+                }
+            }
+        }, 500),
+        [mounted] // Only depends on mounted state
+    );
+    
+    // Effect to trigger debounced save when form values change
+    const watchedFields = useWatch({ control: form.control });
+    useEffect(() => {
+        if (mounted) {
+            debouncedSaveFunction(form.getValues());
+        }
+    }, [watchedFields, debouncedSaveFunction, form, mounted]);
+    
+    // Cleanup function in a separate effect
+    useEffect(() => {
+        return () => {
+            debouncedSaveFunction.cancel();
+            // Close any open popovers to ensure proper cleanup
+            setIsStartDatePopoverOpen(false);
+            setIsEndDatePopoverOpen(false);
+            
+            console.log("[InvoiceForm] Component unmounting, cancelled pending save operations.");
+            // DO NOT set mounted=false here, as it will cause re-renders in StrictMode
+        };
+    }, [debouncedSaveFunction]);
 
     const onSubmit = useCallback((values: FormSchemaType) => {
         setIsCalculating(true);
@@ -242,182 +298,125 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
         }
     }, [t, onCalculateAction, setIsCalculating, setButtonText, setShowSuccessGlow]);
 
-    // Effect for Initial Data Loading
+    // Effect for Initial Data Loading - ONE EFFECT TO RULE THEM ALL
     useEffect(() => {
-        if (typeof window === 'undefined') {
-            return; // Server-side, do nothing
-        }
-
-        // This effect should run once after initial client-side mount to setup the form.
-        if (mounted) {
-            // Update button text if language changes after initial mount
+        // Set mounted state and button text
+        if (!mounted) {
+            setMounted(true);
             setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-            return;
+            console.log("[InvoiceForm] Component mounted");
         }
 
-        console.log("[InvoiceForm] Initializing form data...");
-
-        let dataLoaded = false;
+        console.log("[InvoiceForm] Initializing form data...", { initialDemoData });
         let autoSubmit = false;
 
-        // 1. Process demoData prop (Primary source for demo data)
-        if (demoData && demoData.isDemo) {
-            console.log("[InvoiceForm] Applying demo data from prop:", demoData);
+        // 1. If initialDemoData is provided, use it with highest priority
+        if (initialDemoData) {
+            console.log("[InvoiceForm] Using demo data from prop:", initialDemoData);
+            
+            const demoFormData = {
+                startDateString: initialDemoData.startDateString || '',
+                endDateString: initialDemoData.endDateString || '',
+                includeEndDate: initialDemoData.includeEndDate === true,
+                splitPeriod: initialDemoData.splitPeriod || 'yearly',
+                amounts: [{ value: initialDemoData.amount ? String(initialDemoData.amount) : '' }]
+            };
+
+            // Apply demo data to form
+            form.reset(demoFormData);
+            
+            // Save demo data to localStorage
             try {
-                const valuesToSet: Partial<FormSchemaType> = {
-                    startDateString: demoData.startDateString ? format(tryParseDate(demoData.startDateString) || new Date(), displayDateFormat) : undefined,
-                    endDateString: demoData.endDateString ? format(tryParseDate(demoData.endDateString) || new Date(), displayDateFormat) : undefined,
-                    includeEndDate: demoData.includeEndDate !== undefined ? demoData.includeEndDate : true,
-                    splitPeriod: demoData.splitPeriod || 'yearly',
-                    amounts: demoData.amount ? [{ value: demoData.amount }] : [{ value: '' }]
-                };
-                form.reset(valuesToSet as FormSchemaType);
-                dataLoaded = true;
-                autoSubmit = true;
-                
-                // Demo data from prop has been processed, clear it from session storage
-                // to ensure it's not accidentally re-used and to respect the "single use" intent.
-                sessionStorage.removeItem('billSplitterDemoData');
-                console.log("[InvoiceForm] Cleared billSplitterDemoData from sessionStorage after processing from prop.");
-
+                console.log("[InvoiceForm] Saving demo data to localStorage:", demoFormData);
+                localStorage.setItem(storageKey, JSON.stringify(demoFormData));
             } catch (error) {
-                console.error("[InvoiceForm] Error processing demoData prop:", error);
-                // Also clear in case of error during processing, to prevent stale/bad demo data.
-                sessionStorage.removeItem('billSplitterDemoData');
+                console.error("[InvoiceForm] Error saving demo data to localStorage:", error);
             }
-        }
-
-        // 2. Check for URL param 'clean=true' - this takes precedence over cache
-        const urlParams = new URLSearchParams(window.location.search);
-        const forceClean = urlParams.get('clean') === 'true';
-
-        if (forceClean) {
-            console.log("[InvoiceForm] Detected clean=true URL param. Clearing cached form data.");
-            sessionStorage.removeItem(storageKey); // storageKey is 'invoiceFormDataCache'
-            // No need to set dataLoaded = true here, as we want to fall through to default if no other source.
-            // Form is already in default state from useForm.
-        }
-        
-        // 3. If not loaded from demoData prop and not a forced clean, try loading from 'invoiceFormDataCache'
-        if (!dataLoaded && !forceClean) {
-            const cachedDataString = sessionStorage.getItem(storageKey); // storageKey is 'invoiceFormDataCache'
-            if (cachedDataString) {
-                console.log("[InvoiceForm] Applying cached form data from 'invoiceFormDataCache':", cachedDataString);
-                try {
-                    const parsedCache = JSON.parse(cachedDataString) as FormSchemaType;
-                    // Ensure amounts array is not empty if cache had it as such, provide default if needed
-                    if (!parsedCache.amounts || parsedCache.amounts.length === 0) {
-                        parsedCache.amounts = [{ value: '' }];
+            
+            // Notify parent that demo data was processed
+            if (onDemoDataApplied) {
+                console.log("[InvoiceForm] Notifying parent that demo data was applied");
+                onDemoDataApplied();
+            }
+            
+            autoSubmit = true;
+            // Mark as initialized to prevent further loading from cache
+            initRef.current = true;
+        } 
+        // Only try to load from cache if we haven't loaded demo data
+        else if (!initRef.current) {
+            initRef.current = true; // Mark as initialized
+            
+            // 2. Check for clean URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const forceClean = urlParams.get('clean') === 'true';
+            
+            if (forceClean) {
+                console.log("[InvoiceForm] 'clean=true' parameter detected, clearing cache");
+                localStorage.removeItem(storageKey);
+                form.reset({
+                    startDateString: '',
+                    endDateString: '',
+                    includeEndDate: true,
+                    splitPeriod: 'yearly' as const,
+                    amounts: [{ value: '' }]
+                });
+            } 
+            // 3. Otherwise try loading from cache
+            else {
+                const cachedDataString = localStorage.getItem(storageKey);
+                if (cachedDataString) {
+                    console.log("[InvoiceForm] Loading data from localStorage cache:", cachedDataString);
+                    try {
+                        const parsedCache = JSON.parse(cachedDataString) as FormSchemaType;
+                        if (!parsedCache.amounts || parsedCache.amounts.length === 0) {
+                            parsedCache.amounts = [{ value: '' }];
+                        }
+                        form.reset(parsedCache);
+                    } catch (error) {
+                        console.error("[InvoiceForm] Error parsing cached data:", error);
+                        localStorage.removeItem(storageKey);
+                        form.reset({
+                            startDateString: '',
+                            endDateString: '',
+                            includeEndDate: true,
+                            splitPeriod: 'yearly' as const,
+                            amounts: [{ value: '' }]
+                        });
                     }
-                    form.reset(parsedCache);
-                    dataLoaded = true; // Data was successfully loaded from cache
-                } catch (error) {
-                    console.error("[InvoiceForm] Error parsing cached form data from 'invoiceFormDataCache':", error);
-                    sessionStorage.removeItem(storageKey); // Clear invalid cache
+                } else {
+                    console.log("[InvoiceForm] No cached data found, using defaults");
+                    form.reset({
+                        startDateString: '',
+                        endDateString: '',
+                        includeEndDate: true,
+                        splitPeriod: 'yearly' as const,
+                        amounts: [{ value: '' }]
+                    });
                 }
             }
         }
-
-        // 4. If no data has been loaded by this point (no demo prop, no clean, no valid cache),
-        // the form will use the default values provided in useForm.
-        if (!dataLoaded) {
-            console.log("[InvoiceForm] No data loaded (no demo prop, no cache, or cache was cleared/invalid). Using default empty form.");
-            // Reset to default values to ensure a clean state if previous steps didn't load anything.
-            // This handles cases where cache might have been invalid but didn't set dataLoaded.
-            form.reset({
-                startDateString: '',
-                endDateString: '',
-                includeEndDate: true,
-                splitPeriod: 'yearly' as const,
-                amounts: [{ value: '' }]
-            });
-        }
         
-        // Determine if future changes should be cached.
-        // Cache if we didn't start with a "clean=true" param.
-        // This means if we loaded from demo prop, cache, or started fresh (not clean), we enable caching.
-        setShouldLoadFromCache(!forceClean);
-
-        setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-        
-        if (autoSubmit) { // autoSubmit is true only if demoData prop was successfully processed
-            console.log("[InvoiceForm] Scheduling auto-submit for demo data from prop.");
-            setTimeout(() => {
-                 form.trigger().then((isValidAfterTrigger) => {
-                    if (isValidAfterTrigger) {
-                        console.log("[InvoiceForm] Auto-submitting form with demo data from prop.");
+        // Auto-submit if using demo data
+        if (autoSubmit) {
+            console.log("[InvoiceForm] Scheduling auto-submit");
+            const timer = setTimeout(() => {
+                form.trigger().then(isValid => {
+                    if (isValid) {
+                        console.log("[InvoiceForm] Form is valid, auto-submitting");
                         form.handleSubmit(onSubmit)();
                     } else {
-                        console.warn("[InvoiceForm] Auto-submit for demo data from prop skipped due to form validation errors.");
-                        // If auto-submit fails validation, ensure 'billSplitterDemoData' is still cleared
-                        // as it was processed.
-                        sessionStorage.removeItem('billSplitterDemoData');
-                         console.log("[InvoiceForm] Ensured billSplitterDemoData is cleared after failed auto-submit validation.");
+                        console.warn("[InvoiceForm] Auto-submit cancelled - validation failed:", form.formState.errors);
                     }
                 });
-            }, 150);
+            }, 350);
+            
+            return () => clearTimeout(timer);
         }
         
-        setMounted(true);
-        console.log("[InvoiceForm] Initial setup complete. Mounted: true, Caching enabled: " + !forceClean);
-
-    }, [demoData, form, t, displayDateFormat, onSubmit, storageKey, mounted]); // mounted controls single run
-
-    // Debounced function to save data to sessionStorage
-    const debouncedSaveFunction = useMemo(
-        () => debounce((dataToSave: FormSchemaType) => {
-            if (mounted && shouldLoadFromCache) { // Only save to cache if we should be using the cache
-                try {
-                    console.log("[InvoiceForm] Saving form data to cache:", dataToSave);
-                    sessionStorage.setItem(storageKey, JSON.stringify(dataToSave));
-                } catch (error) {
-                    console.error("Failed to save form data to cache:", error);
-                }
-            }
-        }, 500),
-        [mounted, storageKey, shouldLoadFromCache]
-    );
-
-    // Effect to trigger debounced save when form values change
-    const watchedFields = useWatch({ control: form.control });
-    useEffect(() => {
-        if (mounted) {
-            debouncedSaveFunction(form.getValues());
-        }
-    }, [watchedFields, debouncedSaveFunction, form, mounted]);
-
-    // Cleanup effect on unmount
-    useEffect(() => {
-        return () => {
-            // Cancel any pending debounced operations to prevent stale writes to sessionStorage
-            debouncedSaveFunction.cancel();
-            
-            // Force close any open popovers to ensure proper cleanup
-            setIsStartDatePopoverOpen(false);
-            setIsEndDatePopoverOpen(false);
-            
-            // Force unmount any active DOM references by clearing calendar elements
-            // This helps prevent the "Cannot read properties of null" errors during React teardown
-            const calendarElements = document.querySelectorAll('[role="dialog"]');
-            calendarElements.forEach(element => {
-                try {
-                    if (element && element.parentNode) {
-                        element.parentNode.removeChild(element);
-                    }
-                } catch (error) {
-                    console.warn("[InvoiceForm] Error cleaning up calendar element:", error);
-                }
-            });
-            
-            // Log the unmount for debugging
-            console.log("[InvoiceForm] Component unmounting, cancelled pending operations and closed popovers");
-        };
-    }, [debouncedSaveFunction]);
+    // Include initialDemoData in dependencies so this effect re-runs when it changes
+    }, [t, onSubmit, initialDemoData, onDemoDataApplied, form, mounted]);
     
-    // State for popover visibility
-    const [isStartDatePopoverOpen, setIsStartDatePopoverOpen] = useState(false);
-    const [isEndDatePopoverOpen, setIsEndDatePopoverOpen] = useState(false);
-
     const getDateHelpText = () => {
         if (i18n.language.startsWith('de')) {
             return t('InvoiceForm.supportedDateFormats', { defaultValue: 'Unterstützte Formate: TT.MM.JJJJ, JJJJ-MM-TT' });
@@ -686,11 +685,12 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                             <div className="min-w-[120px]">
                                 <Select 
                                     onValueChange={field.onChange} 
-                                    defaultValue={field.value || 'yearly'} 
-                                    value={field.value || 'yearly'}
+                                    defaultValue={field.value}
+                                    value={field.value}
+                                    name={field.name}
                                 >
                                     <FormControl>
-                                        <SelectTrigger className="w-full" id="splitPeriod" name="splitPeriod">
+                                        <SelectTrigger className="w-full" id="splitPeriod">
                                             <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -715,80 +715,80 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     <h3 className="text-base font-medium" id="amounts-section-label">{t('InvoiceForm.amountsLabel')}</h3>
                     <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
                     <div aria-labelledby="amounts-section-label" className="space-y-4 mt-4">
-                        {fields.map((item, index) => (
-                            <FormField 
-                                control={form.control} 
-                                key={item.id} 
-                                name={`amounts.${index}.value`} 
-                                render={({ field }) => (
-                                    <FormItem className="mb-3">
-                                        <div className="flex flex-col gap-1">
-                                            <FormLabel htmlFor={`amount-${index}`} className="text-sm font-medium">#{index + 1}</FormLabel>
-                                            <div className="flex items-center gap-2">
-                                                <div className="relative flex-1">
-                                                    <FormControl>
-                                                        <Input 
-                                                            type="number" 
-                                                            step="any" 
-                                                            className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" 
-                                                            {...field} 
-                                                            id={`amount-${index}`}
-                                                            name={`amounts.${index}.value`}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="absolute right-2 top-0 h-full flex items-center justify-center z-[1]">
-                                                        {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
-                                                            <div className="flex items-center justify-center h-5 w-5">
-                                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                            </div>
-                                                        )}
-                                                        {form.formState.errors.amounts?.[index]?.value && (
-                                                            <div className="flex items-center justify-center h-5 w-5">
-                                                                <AlertCircle className="h-4 w-4 text-destructive" />
-                                                            </div>
-                                                        )}
-                                                    </div>
+                    {fields.map((item, index) => (
+                        <FormField 
+                            control={form.control} 
+                            key={item.id} 
+                            name={`amounts.${index}.value`} 
+                            render={({ field }) => (
+                                <FormItem className="mb-3">
+                                    <div className="flex flex-col gap-1">
+                                        <FormLabel htmlFor={`amount-${index}`} className="text-sm font-medium">#{index + 1}</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <div className="relative flex-1">
+                                                <FormControl>
+                                                    <Input 
+                                                        type="number" 
+                                                        step="any" 
+                                                        className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" 
+                                                        {...field} 
+                                                        id={`amount-${index}`}
+                                                        name={`amounts.${index}.value`}
+                                                    />
+                                                </FormControl>
+                                                <div className="absolute right-2 top-0 h-full flex items-center justify-center z-[1]">
+                                                    {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
+                                                        <div className="flex items-center justify-center h-5 w-5">
+                                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        </div>
+                                                    )}
+                                                    {form.formState.errors.amounts?.[index]?.value && (
+                                                        <div className="flex items-center justify-center h-5 w-5">
+                                                            <AlertCircle className="h-4 w-4 text-destructive" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                {fields.length > 1 && (
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        onClick={() => remove(index)} 
-                                                        className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
-                                                        aria-label="Remove amount"
-                                                    >
-                                                        <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
-                                                    </Button>
-                                                )}
                                             </div>
+                                            {fields.length > 1 && (
+                                                <Button 
+                                                    type="button" 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    onClick={() => remove(index)} 
+                                                    className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
+                                                    aria-label="Remove amount"
+                                                >
+                                                    <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
+                                                </Button>
+                                            )}
                                         </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} 
-                            />
-                        ))}
-                        <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => { 
-                                append({ value: "" }); 
-                                setTimeout(() => { 
-                                    const ni = document.querySelectorAll('input[type="number"]'); 
-                                    if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); 
-                                }, 10); 
-                            }} 
-                            className="mt-4"
-                        >
-                            <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
-                        </Button>
-                        {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
-                            <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>
-                        )}
-                        {form.formState.errors.amounts?.root?.message && (
-                            <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>
-                        )}
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )} 
+                        />
+                    ))}
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => { 
+                            append({ value: "" }); 
+                            setTimeout(() => { 
+                                const ni = document.querySelectorAll('input[type="number"]'); 
+                                if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); 
+                            }, 10); 
+                        }} 
+                        className="mt-4"
+                    >
+                        <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
+                    </Button>
+                    {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
+                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>
+                    )}
+                    {form.formState.errors.amounts?.root?.message && (
+                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>
+                    )}
                     </div>
                 </div>
                 <Button 

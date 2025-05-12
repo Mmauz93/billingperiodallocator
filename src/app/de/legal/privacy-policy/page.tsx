@@ -1,32 +1,32 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from 'react';
 import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/translations';
+import { useEffect, useState } from 'react';
 
+import PrivacyWidgetSkeleton from '@/components/privacy-widget-skeleton';
 import { ThemeProvider } from "next-themes";
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/translations';
-
-// Create a NoSSR wrapper component with proper typing
-const NoSSR = ({ children }: { children: ReactNode }) => {
-  return <>{children}</>;
-};
 
 // Define interface for component props
 interface PrivacyWidgetProps {
   lang: string;
 }
 
-// Use dynamic import with ssr: false to prevent SSR
+// Use dynamic import with ssr: false and a loading skeleton
 const PrivacyWidget = dynamic<PrivacyWidgetProps>(() => 
   Promise.resolve(({ lang }: PrivacyWidgetProps) => {
-    // Construct the widget HTML string for dangerouslySetInnerHTML
-    const widgetHtml = `<privacybee-widget website-id="cma1q0yid003g14kfg78yzilb" type="dsgvo" lang="${lang}"></privacybee-widget>`;
-    
+    // Construct the widget HTML string
+    const widgetHtml = `<privacybee-widget website-id="cma1q0yid003g14kfg78yzilb" type="dsgvo" lang="${lang}" data-theme="dark"></privacybee-widget>`;
+
+    // Return only the div with innerHTML (no visibility logic)
     return <div dangerouslySetInnerHTML={{ __html: widgetHtml }} />;
   }), 
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <PrivacyWidgetSkeleton />
+  }
 );
 
 export default function PrivacyPolicyPageDE() {
@@ -39,25 +39,26 @@ export default function PrivacyPolicyPageDE() {
   const [pageLanguage, setPageLanguage] = useState(urlLanguage || 'de');
   const [translationsReady, setTranslationsReady] = useState(false);
 
-  // Effect for mounting, theme forcing, and script loading
+  // Effect for mounting and script loading (KEEP THIS)
   useEffect(() => {
     setIsMounted(true);
-
+    
     // Handle script loading only once (same script)
     let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://app.privacybee.io/widget.js"]'
     );
     if (!script) {
       script = document.createElement('script');
+      script.id = 'privacybee-widget-script'; // Added ID for potential future reference
       script.src = 'https://app.privacybee.io/widget.js';
       script.defer = true;
       document.head.appendChild(script);
     }
-
+    
     // Cleanup: Restore the original theme when unmounting/navigating away
     return () => {
+      // No specific cleanup needed for this script unless tracking load state
     };
-  // Only include stable setTheme function in dependencies.
   }, []);
 
   // Second effect synchronizes language between i18n, URL, and component state
@@ -101,7 +102,7 @@ export default function PrivacyPolicyPageDE() {
     };
   }, [isMounted, i18n]);
 
-  // Loading state
+  // Loading state for translations/mounting (KEEP THIS)
   if (!isMounted || !translationsReady) {
     return (
       <div className="flex justify-center items-center py-16 min-h-[500px]">
@@ -112,23 +113,22 @@ export default function PrivacyPolicyPageDE() {
 
   const today = new Date();
   // Use German locale for date formatting
-  const formattedDate = today.toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' }); 
+  const formattedDate = today.toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <ThemeProvider attribute="class" forcedTheme="dark">
-      <div className="container mx-auto max-w-3xl px-6 py-16">
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-            {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
-          </p>
-        </div>
-        <NoSSR>
-          <PrivacyWidget lang={pageLanguage} />
-        </NoSSR>
+    <div className="container mx-auto max-w-3xl px-6 py-16">
+      <div className="mb-6 text-center">
+        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+          {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-2">
+          {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
+        </p>
       </div>
+      {/* Render the dynamic widget directly, loading handles the skeleton */}
+      <PrivacyWidget lang={pageLanguage} />
+    </div>
     </ThemeProvider>
   );
 } 

@@ -67,7 +67,7 @@ export function FeedbackButton({
       
       // Close the dialog immediately after attempting to open mailto
       setIsOpen(false);
-      
+
     } catch (mailError) {
       console.error("Failed to open mail client:", mailError);
       // Provide fallback error message if mailto fails (e.g., browser blocks it)

@@ -81,14 +81,14 @@ export function Footer() {
           {/* Top Row: Calculator & Feedback */}
           <div className="flex flex-wrap justify-center gap-4">
             {/* 1. Calculator link (conditional) */}
-            {!isOnCalculatorPage && (
-              <Link
-                href={`/${currentLang}/app/`}
-                className="hover:underline transition-colors duration-200"
-              >
-                {calculatorLabel}
-              </Link>
-            )}
+          {!isOnCalculatorPage && (
+            <Link
+              href={`/${currentLang}/app/`}
+              className="hover:underline transition-colors duration-200"
+            >
+              {calculatorLabel}
+            </Link>
+          )}
             {/* 2. Feedback Button */}
             <FeedbackButton 
               variant="link" 
@@ -102,26 +102,26 @@ export function Footer() {
           {/* Bottom Row: Legal Links */}
           <div className="flex flex-wrap justify-center gap-4">
             {/* 3. Privacy Policy */}
-            <Link
-              href={`/${currentLang}/legal/privacy-policy/`}
-              className="hover:underline transition-colors duration-200"
-            >
-              {privacyLabel}
-            </Link>
+          <Link
+            href={`/${currentLang}/legal/privacy-policy/`}
+            className="hover:underline transition-colors duration-200"
+          >
+            {privacyLabel}
+          </Link>
             {/* 4. Terms of Use */}
-            <Link
-              href={`/${currentLang}/legal/terms-of-use/`}
-              className="hover:underline transition-colors duration-200"
-            >
-              {termsLabel}
-            </Link>
+          <Link
+            href={`/${currentLang}/legal/terms-of-use/`}
+            className="hover:underline transition-colors duration-200"
+          >
+            {termsLabel}
+          </Link>
             {/* 5. Impressum */}
-            <Link
-              href={`/${currentLang}/legal/impressum/`}
-              className="hover:underline transition-colors duration-200"
-            >
-              {impressumLabel}
-            </Link>
+          <Link
+            href={`/${currentLang}/legal/impressum/`}
+            className="hover:underline transition-colors duration-200"
+          >
+            {impressumLabel}
+          </Link>
           </div>
         </nav>
 

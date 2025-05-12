@@ -63,26 +63,19 @@ export default function TermsOfUsePageDE() {
   const [langPrefix, setLangPrefix] = useState("de");
   const [isMounted, setIsMounted] = useState(false);
   
-  // Function to load terms content - MOVED AND WRAPPED IN useCallback
+  // Function to load terms content - Wrapped in useCallback
   const loadTerms = useCallback(async (lang: string) => {
     setIsLoading(true);
     try {
-      // Determine file path based on language
       const langSuffix = lang === 'de' ? '.de' : '';
       const response = await fetch(`/terms-of-use${langSuffix}.md`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to load terms');
-      }
-      
+      if (!response.ok) throw new Error('Failed to load terms');
       const content = await response.text();
-      // Remove the first heading and date line to avoid duplication
       const processedContent = content
-        .replace(/^# .*$/m, '') // Remove the first heading
-        .replace(/^Last updated on.*$/m, '') // Remove the date line for English
-        .replace(/^Zuletzt aktualisiert am.*$/m, '') // Remove the date line for German
+        .replace(/^# .*$/m, '')
+        .replace(/^Last updated on.*$/m, '')
+        .replace(/^Zuletzt aktualisiert am.*$/m, '')
         .trim();
-      
       setTermsContent(processedContent);
     } catch (error) {
       console.error('Error loading terms of use:', error);
@@ -92,37 +85,51 @@ export default function TermsOfUsePageDE() {
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setTermsContent]); // Dependencies for useCallback
+  }, [setIsLoading, setTermsContent]); // Stable dependencies
   
-  // Get current URL language - this ensures we don't fight with the URL's language
+  // Get current URL language - Wrapped in useCallback
   const getUrlLanguage = useCallback(() => {
-    if (!pathname) return 'de';
-    const pathLanguage = getLanguageFromPath(pathname);
-    return pathLanguage || 'de';
-  }, [pathname]); // Added pathname as a dependency
+    if (!pathname) return 'de'; // Default or initial language
+    return getLanguageFromPath(pathname) || 'de';
+  }, [pathname]);
   
-  // First effect to handle mounting only
+  // Effect 1: Handle initial mount and URL/language synchronization
   useEffect(() => {
     if (!isMounted) {
-    setIsMounted(true);
-    } else {
-    // Set language prefix from URL
-    const urlLang = getUrlLanguage();
-    setLangPrefix(urlLang);
-    
-    // Sync i18n with URL language
-    if (i18n.language !== urlLang) {
-      i18n.changeLanguage(urlLang);
+      setIsMounted(true);
+      // On the very first run when isMounted becomes true, 
+      // we determine the initial language and trigger a load.
+      const initialLang = getUrlLanguage();
+      setLangPrefix(initialLang);
+      loadTerms(initialLang); // Initial load
+      if (i18n.language !== initialLang) {
+        i18n.changeLanguage(initialLang);
+      }
+      document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
+      return;
+    }
+
+    // Subsequent runs (e.g., due to pathname changing via getUrlLanguage, or t/i18n changing)
+    const currentUrlLang = getUrlLanguage();
+
+    if (currentUrlLang !== langPrefix) {
+      // Language has changed based on URL
+      setLangPrefix(currentUrlLang);
+      loadTerms(currentUrlLang);
+      if (i18n.language !== currentUrlLang) {
+        i18n.changeLanguage(currentUrlLang);
+      }
+      // Title will be updated when `t` changes or in the next render if i18n didn't change
     }
     
-    // Load terms based on current language
-    loadTerms(urlLang);
-    }
-    // Set title after i18n might have changed language
+    // Always ensure title is set with current `t`
+    // This covers cases where `t` might change without a language change (e.g. HMR of translation files)
+    // or after i18n.changeLanguage has resolved if it was async.
     document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
-  }, [isMounted, getUrlLanguage, i18n, loadTerms, t]); // Adjusted dependencies, added t
+
+  }, [isMounted, getUrlLanguage, langPrefix, loadTerms, i18n, t]); // Dependencies
   
-  // Listen for language change events from the language toggler
+  // Effect 2: Listen for external language change events
   useEffect(() => {
     if (!isMounted) return;
     
@@ -130,45 +137,30 @@ export default function TermsOfUsePageDE() {
       const customEvent = e as CustomEvent;
       const newLang = customEvent.detail?.language || customEvent.detail;
       
-      if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
-        setLangPrefix(newLang);
-        loadTerms(newLang);
+      // Only update if the new language is valid and different from the current state
+      if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang) && newLang !== langPrefix) {
+        console.log(`[TermsOfUse] Language changed event detected: ${newLang}`);
+        setLangPrefix(newLang); // Update state
+        loadTerms(newLang); // Load new content
+        // i18n is likely already updated by the component that fired the event, but sync just in case
+        if (i18n.language !== newLang) {
+          i18n.changeLanguage(newLang);
+        }
       }
     };
     
     document.addEventListener('languageChanged', handleLanguageChanged);
-    
-    return () => {
-      document.removeEventListener('languageChanged', handleLanguageChanged);
-    };
-  }, [isMounted, loadTerms]); // loadTerms is now stable
+    return () => document.removeEventListener('languageChanged', handleLanguageChanged);
+  }, [isMounted, loadTerms, i18n, langPrefix]); // Added langPrefix dependency
   
-  // Effect for pathname changes
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const urlLang = getUrlLanguage();
-    
-    // If URL language doesn't match current language prefix, update
-    if (urlLang !== langPrefix) {
-      setLangPrefix(urlLang);
-      loadTerms(urlLang);
-      
-      // Sync i18n with URL
-      if (i18n.language !== urlLang) {
-        i18n.changeLanguage(urlLang);
-      }
-    }
-  }, [pathname, isMounted, langPrefix, i18n, getUrlLanguage, loadTerms]); // Adjusted dependencies
-  
-  const formattedDate = new Date().toLocaleDateString('de-DE', {
+  const formattedDate = new Date().toLocaleDateString(langPrefix === 'de' ? 'de-DE' : 'en-US', { // Use state langPrefix
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
   // Determine H1 title based on mount state to avoid hydration mismatch
-  const h1Title = isMounted ? t("Legal.termsOfUseTitle", "Nutzungsbedingungen") : "Terms of Use";
+  const h1Title = isMounted ? t("Legal.termsOfUseTitle") : (langPrefix === 'de' ? "Nutzungsbedingungen" : "Terms of Use");
   
   return (
     <main className="container mx-auto max-w-3xl px-6 py-16">

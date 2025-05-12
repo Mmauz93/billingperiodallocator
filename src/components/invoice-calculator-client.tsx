@@ -3,7 +3,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 // Import the CalculationCallbackData type from InvoiceForm
 import { CalculationCallbackData } from "@/components/invoice-form";
@@ -58,18 +58,16 @@ type CalculationErrorType = string | Error | { message?: string; [key: string]: 
 export default function InvoiceCalculatorClient() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  // Add state specifically for the dynamic title, initialized with the prop
   const [dynamicTitle, setDynamicTitle] = useState<string>('');
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [calculationError, setCalculationError] = useState<string | null>(null);
-  // Update storedInputData to use CalculationCallbackData type
   const [storedInputData, setStoredInputData] = useState<CalculationCallbackData>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // Add ref for the results section
   const resultsSectionRef = useRef<HTMLDivElement>(null);
-
-  // State to store demo data to pass to InvoiceForm
-  const [demoData, setDemoData] = useState<DemoDataType>(null);
+  // State for holding demo data to pass as prop
+  const [initialDemoData, setInitialDemoData] = useState<DemoDataType>(null);
+  // Ref to track if we've already processed demo data to avoid duplicate processing
+  const demoDataProcessedRef = useRef(false);
 
   // --- Consent Management State and Logic --- 
   const gaMeasurementId = "G-9H2KTHX5YK"; 
@@ -102,39 +100,61 @@ export default function InvoiceCalculatorClient() {
     };
   }, []); // Empty dependency array means this runs only on mount/unmount
 
-  // Effect to check for existing consent cookie on mount and handle demo data
+  // Effect just for setting mounted state and title
   useEffect(() => {
     setMounted(true);
     setDynamicTitle(t('InvoiceForm.title'));
-    
-    console.log("[InvoiceCalculatorClient] useEffect for initial mount. Reading sessionStorage for demo data.");
+
     // Check consent cookie
     const consentGiven = Cookies.get(consentCookieName) === "true";
     setHasConsent(consentGiven);
-    
-    // Read demo data before lazy loading InvoiceForm
+  }, [t, consentCookieName]);
+
+  // Separate effect ONLY for reading demo data
+  useEffect(() => {
+    // Only process sessionStorage once per component lifecycle
+    if (demoDataProcessedRef.current) {
+      return;
+    }
+
+    // Read demo data from sessionStorage
     if (typeof window !== 'undefined') {
       const demoDataString = sessionStorage.getItem('billSplitterDemoData');
-      console.log("[InvoiceCalculatorClient] sessionStorage billSplitterDemoData:", demoDataString);
+      console.log("[InvoiceCalculatorClient] Reading sessionStorage billSplitterDemoData:", demoDataString);
+      
       if (demoDataString) {
         try {
           const parsedDemoData = JSON.parse(demoDataString);
-          console.log("[InvoiceCalculatorClient] Parsed demo data from sessionStorage:", parsedDemoData);
-          if (parsedDemoData.isDemo) {
-            console.log("[InvoiceCalculatorClient] isDemo is true. Setting demoData state.");
-            setDemoData(parsedDemoData);
-            // Don't remove it yet - we'll pass it to InvoiceForm and let it handle removal
+          if (parsedDemoData && parsedDemoData.isDemo) {
+            // Clear localStorage cache first to ensure it doesn't override demo data
+            localStorage.removeItem('invoiceFormDataCache');
+            console.log("[InvoiceCalculatorClient] Cleared localStorage cache to ensure demo data is used");
+            
+            console.log("[InvoiceCalculatorClient] Setting initialDemoData state:", parsedDemoData);
+            setInitialDemoData(parsedDemoData);
+            
+            // Clear sessionStorage immediately
+            sessionStorage.removeItem('billSplitterDemoData');
+            console.log("[InvoiceCalculatorClient] Removed billSplitterDemoData from sessionStorage");
+            
+            // Mark as processed to prevent re-reading
+            demoDataProcessedRef.current = true;
           } else {
-            console.log("[InvoiceCalculatorClient] isDemo is false or not present in parsedDemoData. Not setting demoData state.");
+            sessionStorage.removeItem('billSplitterDemoData');
           }
         } catch (error) {
-          console.error("Error parsing demo data from session storage in InvoiceCalculatorClient:", error);
+          console.error("[InvoiceCalculatorClient] Error parsing demo data:", error);
           sessionStorage.removeItem('billSplitterDemoData');
-          console.warn("[InvoiceCalculatorClient] Removed billSplitterDemoData from sessionStorage due to parsing error.");
         }
       }
     }
-  }, [t]);
+  }, []); // No dependencies - runs once on mount
+
+  // Callback for InvoiceForm to signal demo data has been processed
+  const handleDemoDataApplied = useCallback(() => {
+    console.log("[InvoiceCalculatorClient] Demo data processed by InvoiceForm, clearing state");
+    setInitialDemoData(null);
+  }, []);
 
   const handleCalculation = (
     formData: CalculationCallbackData,
@@ -259,7 +279,8 @@ export default function InvoiceCalculatorClient() {
                 }>
                   <InvoiceForm 
                     onCalculateAction={handleCalculation} 
-                    demoData={demoData} 
+                    initialDemoData={initialDemoData} // Pass state as prop
+                    onDemoDataApplied={handleDemoDataApplied} // Pass callback prop
                   />
                 </Suspense>
               </div>

@@ -111,9 +111,12 @@ function SelectItem({
   id,
   value,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Item>) {
+}: React.ComponentProps<typeof SelectPrimitive.Item> & { key?: React.Key }) {
+  const { key, ...restProps } = props;
+
   return (
     <SelectPrimitive.Item
+      key={key}
       data-slot="select-item"
       id={id || (value ? `select-item-${value}` : undefined)}
       className={cn(
@@ -121,7 +124,7 @@ function SelectItem({
         className,
       )}
       value={value}
-      {...props}
+      {...restProps}
     >
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>

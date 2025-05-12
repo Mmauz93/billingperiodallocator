@@ -46,17 +46,17 @@ export function middleware(request: NextRequest) {
     language = cookieValue;
   } else {
     // 3b. Check Accept-Language header if no valid cookie
-    const acceptLanguage = request.headers.get('accept-language');
-    if (acceptLanguage) {
-      const preferredLanguage = acceptLanguage
-        .split(',')
-        .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
-        .find(lang => supportedLanguages.includes(lang));
-      
-      if (preferredLanguage) {
-        language = preferredLanguage;
-      }
+  const acceptLanguage = request.headers.get('accept-language');
+  if (acceptLanguage) {
+    const preferredLanguage = acceptLanguage
+      .split(',')
+      .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
+      .find(lang => supportedLanguages.includes(lang));
+    
+    if (preferredLanguage) {
+      language = preferredLanguage;
     }
+  }
   }
 
   // 4. Redirect logic
