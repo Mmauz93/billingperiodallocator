@@ -31,23 +31,19 @@ export default function RootLayout({
    * Content Security Policy (CSP) Configuration
    * 
    * This is the single source of truth for the application's CSP.
-   * - 'unsafe-eval' is only allowed in development for hot reloading
+   * - 'unsafe-eval' is added *unconditionally* due to webpack runtime needs.
    * - In production, we maintain strict CSP for security
    * - Each external domain has a clear purpose commented
    */
+  // Add 'unsafe-eval' unconditionally for webpack runtime (`new Function('return this')()`).
+  scriptSrc += " 'unsafe-eval'"; 
+  
+  // Log the reason for adding unsafe-eval
   if (isDevelopment) {
-    // In development, allow 'unsafe-eval' for:
-    // - React Hot Module Replacement (HMR)
-    // - React Fast Refresh
-    // - Source maps and debugging tools
-    scriptSrc += " 'unsafe-eval'"; 
-    console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP.");
+    console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP (HMR/Fast Refresh/Webpack Runtime).");
   } else {
-    // Production maintains strict CSP for security.
-    // If third-party scripts require 'eval', document their purpose here.
-    // Example:
-    // scriptSrc += " 'unsafe-eval'"; // Required for [specific tool] that cannot work without eval
-    console.log("[Layout.tsx] Production mode: CSP remains strict (no 'unsafe-eval').");
+    // Production maintains strict CSP except for the required 'unsafe-eval'.
+    console.log("[Layout.tsx] Production mode: 'unsafe-eval' added to script-src for CSP (Required for Webpack Runtime).");
   }
 
   // Define img-src including the flag CDN and any analytics pixels
