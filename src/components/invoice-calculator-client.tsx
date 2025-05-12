@@ -52,7 +52,7 @@ type InputDataForDisplay = Pick<
 >;
 
 // Define a more specific type for the error parameter
-type CalculationErrorType = string | { message?: string; [key: string]: unknown } | null | undefined;
+type CalculationErrorType = string | Error | { message?: string; [key: string]: unknown } | null | undefined;
 
 export default function InvoiceCalculatorClient() {
   const { t } = useTranslation();
@@ -152,14 +152,29 @@ export default function InvoiceCalculatorClient() {
             } else {
                 displayError = baseErrorTitle + ": " + error;
             }
-        } else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
-            // Improved check for object with message property
+        } else if (error instanceof Error) {
+            // Handle standard Error objects
             displayError = baseErrorTitle + ": " + error.message;
-            console.error("[InvoiceCalculatorClient] An error object with a message was received:", error);
+            console.error("[InvoiceCalculatorClient] Error object received:", error);
+        } else if (error && typeof error === 'object') {
+            // Improved handling for object errors
+            if ('message' in error && typeof error.message === 'string') {
+                displayError = baseErrorTitle + ": " + error.message;
+            } else {
+                // For objects without a message property, convert to JSON string or use generic message
+                try {
+                    const stringifiedError = JSON.stringify(error);
+                    displayError = baseErrorTitle + ": " + (stringifiedError !== "{}" ? stringifiedError : t('Errors.unexpectedError'));
+                } catch {
+                    // If JSON stringification fails
+                    displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
+                }
+            }
+            console.error("[InvoiceCalculatorClient] Error object received:", error);
         } else {
-            // For other non-string errors or objects without a clear message, use generic message
+            // For other non-string errors or null/undefined that somehow made it here
             displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
-            console.error("[InvoiceCalculatorClient] An unexpected or non-standard error object was received:", error);
+            console.error("[InvoiceCalculatorClient] An unexpected or non-standard error was received:", error);
         }
     }
     setCalculationError(displayError);

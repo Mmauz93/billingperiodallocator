@@ -82,6 +82,9 @@ declare module '@/lib/calculations' {
     }
 }
 
+// Define the error type to match invoice-calculator-client.tsx
+type CalculationErrorType = string | Error | { message?: string; [key: string]: unknown } | null | undefined;
+
 // Schema for form validation
 const formSchema = (t: ReturnType<typeof useTranslation>['t']) => z
     .object({
@@ -133,7 +136,7 @@ export type CalculationCallbackData = {
 } | null;
 
 interface InvoiceFormProps {
-    onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: string) => void;
+    onCalculateAction: (formData: CalculationCallbackData, results: CalculationResult | null, error?: CalculationErrorType) => void;
     demoData?: {
         startDateString?: string;
         endDateString?: string;
@@ -214,7 +217,22 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                 setIsCalculating(false);
             }, 300);
         } catch (error) {
-             const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred during calculation.";
+            // Improved error handling to properly format errors
+            let errorMessage: CalculationErrorType;
+            
+            if (error instanceof Error) {
+                // Use Error object directly, don't convert to string
+                errorMessage = error;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            } else if (error && typeof error === 'object') {
+                // Pass the object as is, let the parent component handle stringification
+                errorMessage = error as { [key: string]: unknown };
+            } else {
+                // Fallback for unknown error types
+                errorMessage = t('Errors.unexpectedError');
+            }
+            
             onCalculateAction(validFormData, null, errorMessage);
             setTimeout(() => {
                 setIsCalculating(false);
