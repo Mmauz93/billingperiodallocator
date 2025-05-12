@@ -104,7 +104,6 @@
 /* Prevent layout shifts due to scrollbar appearing/disappearing */
 html {
   scrollbar-gutter: stable;
-  overflow-y: scroll !important; /* Force consistent scrollbar with !important */
   overflow-x: hidden !important; /* Prevent horizontal scrolling with !important */
   overflow-anchor: none; /* Prevent scroll jumps during content updates */
   width: 100%; /* Fix width to prevent layout shifts */
@@ -752,9 +751,9 @@ header.sticky {
 }
 
 /* Reset overflow on body and html to ensure no double scrollbars */
-html, body {
+body, html {
+  /* overscroll-behavior: none !important; */ /* Removed to allow pull-to-refresh */
   max-width: 100vw !important;
-  overscroll-behavior: none !important;
 }
 
 /* Ensure fixed/absolute positioned elements follow proper stacking */

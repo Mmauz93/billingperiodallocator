@@ -18,6 +18,18 @@ import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "@/translations";
 
+// Helper function to set a cookie
+function setCookie(name: string, value: string, days: number) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  // Ensure SameSite=Lax for compatibility with middleware default
+  document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+}
+
 export default function LanguageToggle() {
   const { i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
@@ -46,6 +58,8 @@ export default function LanguageToggle() {
     
     // Save language in localStorage for persistence
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+    // Set cookie for middleware persistence
+    setCookie('NEXT_LOCALE', lng, 365); 
     
     // Close dropdown menu
     setOpen(false);

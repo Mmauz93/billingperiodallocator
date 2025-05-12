@@ -1,11 +1,11 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/translations';
 
+import { ThemeProvider } from "next-themes";
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useTranslation } from '@/translations';
 
 // Create a NoSSR wrapper component with proper typing
@@ -32,67 +32,32 @@ const PrivacyWidget = dynamic<PrivacyWidgetProps>(() =>
 export default function PrivacyPolicyPageEN() {
   const { i18n, t } = useTranslation();
   const pathname = usePathname();
-  const { theme: currentTheme, setTheme } = useTheme();
-  const originalThemeRef = useRef<string | undefined>(undefined);
-  const themeWasSetRef = useRef(false);
   
-  // Set initial language from URL path for better consistency
   const urlLanguage = pathname ? getLanguageFromPath(pathname) : 'en';
   
   const [isMounted, setIsMounted] = useState(false);
   const [pageLanguage, setPageLanguage] = useState(urlLanguage || 'en');
   const [translationsReady, setTranslationsReady] = useState(false);
 
-  // First effect handles mounting, theme and script
-  useEffect(() => {
-    setIsMounted(true);
-    
-    // Store the original theme only once
-    if (originalThemeRef.current === undefined) {
-      originalThemeRef.current = currentTheme;
-    }
-
-    // Set dark theme once
-    if (!themeWasSetRef.current) {
-      setTheme('dark');
-      themeWasSetRef.current = true;
-    }
-
-    // Handle script loading only once
-    let script = document.querySelector<HTMLScriptElement>(
-      'script[src="https://app.privacybee.io/widget.js"]'
-    );
-    if (!script) {
-      script = document.createElement('script');
-      script.src = 'https://app.privacybee.io/widget.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-    
-    // Cleanup function to restore original theme
-    return () => {
-      if (originalThemeRef.current) {
-        setTheme(originalThemeRef.current);
-      }
-    };
-  }, [currentTheme, setTheme]);
-
   // Second effect synchronizes language between i18n, URL, and component state
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted) {
+      setIsMounted(true);
+      return;
+    }
     
-    // Sync language with URL if needed
     const pathLanguage = getLanguageFromPath(pathname || '');
     
     if (pathLanguage && pathLanguage !== i18n.language) {
       i18n.changeLanguage(pathLanguage);
-      // Since our changeLanguage is synchronous, we can update state directly after
       setTranslationsReady(true);
       document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
       setPageLanguage(pathLanguage);
     } else {
       setTranslationsReady(true);
       document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
+      // Ensure pageLanguage is set even if pathLanguage matches i18n
+      if (pathLanguage) setPageLanguage(pathLanguage); 
     }
   }, [pathname, isMounted, i18n, t]);
 
@@ -105,18 +70,10 @@ export default function PrivacyPolicyPageEN() {
       const newLang = customEvent.detail?.language || customEvent.detail;
       
       if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
-        // Update component language state to trigger widget re-render
         setPageLanguage(newLang);
-        // setTranslationsReady(false); // No longer needed to set to false here
-        
-        // Ensure i18n is in sync
         if (i18n.language !== newLang) {
           i18n.changeLanguage(newLang);
-          // setTranslationsReady(true); // changeLanguage will trigger re-render via context/state if t or i18n.language changes
-        } // else {
-          // setTranslationsReady(true);
-        //}
-        // Title and translations will update via the main effect that depends on i18n.language or t
+        }
       }
     };
     
@@ -127,8 +84,9 @@ export default function PrivacyPolicyPageEN() {
     };
   }, [isMounted, i18n]);
 
-  // Show loading state until fully mounted
+  // Show loading state until fully mounted and translations ready
   if (!isMounted || !translationsReady) {
+    // Render a placeholder or skeleton loader
     return (
       <div className="flex justify-center items-center py-16 min-h-[500px]">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -140,19 +98,20 @@ export default function PrivacyPolicyPageEN() {
   const formattedDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <div className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.privacyPolicyTitle", "Privacy Policy")}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
-        </p>
+    <ThemeProvider attribute="class" forcedTheme="dark">
+      <div className="container mx-auto max-w-3xl px-6 py-16">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+            {t("Legal.privacyPolicyTitle", "Privacy Policy")}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
+          </p>
+        </div>
+        <NoSSR>
+          <PrivacyWidget lang={pageLanguage} />
+        </NoSSR>
       </div>
-      {/* Use the PrivacyBee widget without our own headings */}
-      <NoSSR>
-        <PrivacyWidget lang={pageLanguage} />
-      </NoSSR>
-    </div>
+    </ThemeProvider>
   );
 } 

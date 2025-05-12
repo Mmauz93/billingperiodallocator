@@ -64,6 +64,8 @@ module.exports = {
           6: "hsl(var(--colorblind-6))",
           7: "hsl(var(--colorblind-7))",
         },
+        // Add the specific legal page primary color
+        "legal-primary": "hsl(var(--legal-primary))",
         // Add sidebar colors if needed as utilities
         sidebar: {
           DEFAULT: "hsl(var(--sidebar))",

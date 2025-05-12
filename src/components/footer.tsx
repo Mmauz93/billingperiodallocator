@@ -76,43 +76,52 @@ export function Footer() {
           <span className="text-gray-500 text-xs">by {companyLabel}</span>
         </div>
 
-        {/* Navigation Links - fixed width to maintain consistent positioning */}
-        <nav className="flex flex-wrap justify-center gap-4 text-sm md:w-1/3 md:justify-center">
-          {/* Add Calculator link if not on the calculator page */}
-          {!isOnCalculatorPage && (
-            <Link
-              href={`/${currentLang}/app/`}
-              className="hover:underline transition-colors duration-200"
-            >
-              {calculatorLabel}
-            </Link>
-          )}
-          <Link
-            href={`/${currentLang}/legal/privacy-policy/`}
-            className="hover:underline transition-colors duration-200"
-          >
-            {privacyLabel}
-          </Link>
-          <Link
-            href={`/${currentLang}/legal/terms-of-use/`}
-            className="hover:underline transition-colors duration-200"
-          >
-            {termsLabel}
-          </Link>
-          <Link
-            href={`/${currentLang}/legal/impressum/`}
-            className="hover:underline transition-colors duration-200"
-          >
-            {impressumLabel}
-          </Link>
-          <div className="hover:underline transition-colors duration-200">
+        {/* Navigation Links - Grouped into two rows */}
+        <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3">
+          {/* Top Row: Calculator & Feedback */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* 1. Calculator link (conditional) */}
+            {!isOnCalculatorPage && (
+              <Link
+                href={`/${currentLang}/app/`}
+                className="hover:underline transition-colors duration-200"
+              >
+                {calculatorLabel}
+              </Link>
+            )}
+            {/* 2. Feedback Button */}
             <FeedbackButton 
               variant="link" 
               size="sm"
-              className="p-0 h-auto font-normal"
-          >
-            {feedbackLabel}
+              className="p-0 h-auto font-normal text-sm hover:underline text-gray-600 dark:text-gray-400 transition-colors duration-200"
+            >
+              {feedbackLabel}
             </FeedbackButton>
+          </div>
+
+          {/* Bottom Row: Legal Links */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* 3. Privacy Policy */}
+            <Link
+              href={`/${currentLang}/legal/privacy-policy/`}
+              className="hover:underline transition-colors duration-200"
+            >
+              {privacyLabel}
+            </Link>
+            {/* 4. Terms of Use */}
+            <Link
+              href={`/${currentLang}/legal/terms-of-use/`}
+              className="hover:underline transition-colors duration-200"
+            >
+              {termsLabel}
+            </Link>
+            {/* 5. Impressum */}
+            <Link
+              href={`/${currentLang}/legal/impressum/`}
+              className="hover:underline transition-colors duration-200"
+            >
+              {impressumLabel}
+            </Link>
           </div>
         </nav>
 

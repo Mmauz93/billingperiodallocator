@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/faq-section";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
+import { useRouter } from 'next/navigation';
 import { useTranslation } from "@/translations";
 
 export default function GermanLandingPage() {
   const { t, i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -39,7 +41,6 @@ export default function GermanLandingPage() {
   const feature3Desc = "Nutzen Sie BillSplitter sofort ohne Konto. Ihre Daten bleiben sicher und privat.";
   const ctaTitle = "Starten Sie jetzt mit der Rechnungsaufteilung";
   const ctaSubtitle = "Starten Sie den Rechner und automatisieren Sie Ihre Einnahmen- und Ausgabenverteilung in Sekundenschnelle.";
-  const ctaButton = "Jetzt ausprobieren";
   
   // FAQ content for SEO
   const faqData = [
@@ -83,8 +84,8 @@ export default function GermanLandingPage() {
         isDemo: true
       };
       sessionStorage.setItem('billSplitterDemoData', JSON.stringify(demoDataForForm));
-      // Navigate to language-specific app route - use internal link instead of window.open
-      // window.open('/de/app', '_blank');
+      // Navigate to language-specific app route
+      router.push('/de/app');
     }
   };
   
@@ -96,7 +97,7 @@ export default function GermanLandingPage() {
   return (
     <>
       {/* Hero Section */}
-      <header className="py-20 text-center px-6 bg-background">
+      <header className="py-20 text-center px-6 bg-background mb-16">
         <div className="max-w-3xl mx-auto">
           <Image 
             src="/images/icon.svg"
@@ -115,7 +116,7 @@ export default function GermanLandingPage() {
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background">
+      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
         <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
@@ -170,29 +171,29 @@ export default function GermanLandingPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 px-6 mb-16"> 
+      <section className="py-20 px-6 mb-16">
         <div className="max-w-4xl mx-auto bg-muted/30 shadow-lg rounded-xl border border-border overflow-hidden">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
             <div className="text-left flex-1">
-              <h2 className="text-3xl font-bold mb-4 text-foreground bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-bold mb-4 text-primary">
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
               </h2>
               <p className="text-lg mb-6 text-muted-foreground">
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
-              <Link 
-                href="/de/app/" 
+              <Button 
+                size="lg" 
                 onClick={handleTestWithDemoData}
                 className="inline-flex items-center gap-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
-              > 
-                  {t('Landing.ctaButton', { defaultValue: ctaButton })}
-                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </Link>
+              >
+                {t('Landing.ctaButton', { defaultValue: 'Mit Demodaten testen' })}
+                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </Button>
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
               <Image 
                 src="/images/calculator-illustration.svg" 
-                alt={t('Landing.ctaIconAlt', { defaultValue: 'Invoice Allocation Illustration' })}
+                alt={t('Landing.ctaIconAlt', { defaultValue: 'Rechnungsaufteilungs-Illustration' })}
                 width={240} 
                 height={180} 
                 className="object-contain"

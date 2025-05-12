@@ -30,9 +30,9 @@ export default function ClientLayout({
           <TranslationProvider>
             <HeadWithHreflang currentPath={path} currentLanguage={lang} />
             
-            <div className="flex flex-col min-h-screen w-full">
+            <div className="flex flex-col min-h-screen w-full overflow-y-auto">
               <Header />
-              <main className="flex-grow w-full pt-16">{children}</main>
+              <main className="flex-grow w-full pt-16 pb-24">{children}</main>
               <Footer />
             </div>
             <CustomCookieConsentBanner

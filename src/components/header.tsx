@@ -107,11 +107,11 @@ export function Header() {
   const appPath = `/${linkLangForButton}/app/`;
 
   return (
-    <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm will-change-transform">
+    <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          {/* Simple Link for logo navigation */}
-          <Link 
+          {/* Changed Link to standard <a> tag for full refresh */}
+          <a 
             href={homePath}
             className="flex items-center cursor-pointer"
           >
@@ -123,7 +123,7 @@ export function Header() {
               priority
               className="h-10"
             />
-          </Link>
+          </a>
         </div>
         
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">

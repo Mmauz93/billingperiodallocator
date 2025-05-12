@@ -16,7 +16,7 @@ export function FaqSection({ faqData }: FaqSectionProps) {
   const { t } = useTranslation();
 
   return (
-    <section className="py-16 px-6 max-w-3xl mx-auto bg-background">
+    <section className="py-16 px-6 max-w-3xl mx-auto bg-background mb-10">
       <h2 className="text-3xl font-bold mb-10 text-center text-foreground">
         {t('Landing.faqTitle', { defaultValue: 'Häufig gestellte Fragen' })}
       </h2>

@@ -24,11 +24,22 @@ export default function RootLayout({
   const isDevelopment = process.env.NODE_ENV === 'development';
   console.log(`[Layout.tsx] NODE_ENV: ${process.env.NODE_ENV}, isDevelopment: ${isDevelopment}`);
 
-  // Strict CSP with no unsafe-eval
-  const cspContent = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws: localhost:* http://localhost:*; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';";
+  // Base CSP directives
+  let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io";
+  if (isDevelopment) {
+    scriptSrc += " 'unsafe-eval'"; // Allow eval only in development
+    console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP.");
+  } else {
+    console.log("[Layout.tsx] Production mode: CSP remains strict (no 'unsafe-eval').");
+  }
+
+  // Define img-src including the flag CDN
+  const imgSrc = "'self' data: blob: https://cdn.jsdelivr.net"; 
+
+  const cspContent = `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://app.privacybee.io; img-src ${imgSrc}; font-src 'self' data:; connect-src 'self' ws: localhost:* http://localhost:* https://app.privacybee.io; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';`;
   
-  console.log("[Layout.tsx] Applying strict CSP (no unsafe-eval):");
-  console.log(cspContent);
+  // console.log("[Layout.tsx] Applying CSP:"); // Combined logging above
+  // console.log(cspContent);
 
   return (
     <html className="scroll-smooth" suppressHydrationWarning>

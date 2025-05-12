@@ -1,11 +1,11 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/translations';
 
+import { ThemeProvider } from "next-themes";
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useTranslation } from '@/translations';
 
 // Create a NoSSR wrapper component with proper typing
@@ -32,33 +32,18 @@ const PrivacyWidget = dynamic<PrivacyWidgetProps>(() =>
 export default function PrivacyPolicyPageDE() {
   const { i18n, t } = useTranslation();
   const pathname = usePathname();
-  const { theme: currentTheme, setTheme } = useTheme();
-  const originalThemeRef = useRef<string | undefined>(undefined);
-  const themeWasSetRef = useRef(false);
   
-  // Set initial language from URL path for better consistency
   const urlLanguage = pathname ? getLanguageFromPath(pathname) : 'de';
   
   const [isMounted, setIsMounted] = useState(false);
   const [pageLanguage, setPageLanguage] = useState(urlLanguage || 'de');
   const [translationsReady, setTranslationsReady] = useState(false);
 
-  // First effect handles mounting, theme and script
+  // Effect for mounting, theme forcing, and script loading
   useEffect(() => {
     setIsMounted(true);
-    
-    // Store the original theme only once
-    if (originalThemeRef.current === undefined) {
-      originalThemeRef.current = currentTheme;
-    }
 
-    // Set dark theme once
-    if (!themeWasSetRef.current) {
-      setTheme('dark');
-      themeWasSetRef.current = true;
-    }
-
-    // Handle script loading only once
+    // Handle script loading only once (same script)
     let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://app.privacybee.io/widget.js"]'
     );
@@ -68,31 +53,28 @@ export default function PrivacyPolicyPageDE() {
       script.defer = true;
       document.head.appendChild(script);
     }
-    
-    // Cleanup function to restore original theme
+
+    // Cleanup: Restore the original theme when unmounting/navigating away
     return () => {
-      if (originalThemeRef.current) {
-        setTheme(originalThemeRef.current);
-      }
     };
-  }, [currentTheme, setTheme]);
+  // Only include stable setTheme function in dependencies.
+  }, []);
 
   // Second effect synchronizes language between i18n, URL, and component state
   useEffect(() => {
     if (!isMounted) return;
     
-    // Sync language with URL if needed
     const pathLanguage = getLanguageFromPath(pathname || '');
     
     if (pathLanguage && pathLanguage !== i18n.language) {
       i18n.changeLanguage(pathLanguage);
-      // Since our changeLanguage is synchronous, we can update state directly after
       setTranslationsReady(true);
       document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
       setPageLanguage(pathLanguage);
     } else {
       setTranslationsReady(true);
       document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
+      if (pathLanguage) setPageLanguage(pathLanguage); 
     }
   }, [pathname, isMounted, i18n, t]);
 
@@ -105,18 +87,10 @@ export default function PrivacyPolicyPageDE() {
       const newLang = customEvent.detail?.language || customEvent.detail;
       
       if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
-        // Update component language state to trigger widget re-render
         setPageLanguage(newLang);
-        // setTranslationsReady(false); // No longer needed to set to false here
-        
-        // Ensure i18n is in sync
         if (i18n.language !== newLang) {
           i18n.changeLanguage(newLang);
-          // setTranslationsReady(true); // changeLanguage will trigger re-render via context/state if t or i18n.language changes
-        } // else {
-          // setTranslationsReady(true);
-        //}
-        // Title and translations will update via the main effect that depends on i18n.language or t
+        }
       }
     };
     
@@ -127,7 +101,7 @@ export default function PrivacyPolicyPageDE() {
     };
   }, [isMounted, i18n]);
 
-  // Show loading state until fully mounted
+  // Loading state
   if (!isMounted || !translationsReady) {
     return (
       <div className="flex justify-center items-center py-16 min-h-[500px]">
@@ -137,23 +111,24 @@ export default function PrivacyPolicyPageDE() {
   }
 
   const today = new Date();
-  // Format date for German locale
-  const formattedDate = today.toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' });
+  // Use German locale for date formatting
+  const formattedDate = today.toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' }); 
 
   return (
-    <div className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
-        </p>
+    <ThemeProvider attribute="class" forcedTheme="dark">
+      <div className="container mx-auto max-w-3xl px-6 py-16">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+            {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
+          </p>
+        </div>
+        <NoSSR>
+          <PrivacyWidget lang={pageLanguage} />
+        </NoSSR>
       </div>
-      {/* Use the PrivacyBee widget without our own headings */}
-      <NoSSR>
-        <PrivacyWidget lang={pageLanguage} />
-      </NoSSR>
-    </div>
+    </ThemeProvider>
   );
 } 

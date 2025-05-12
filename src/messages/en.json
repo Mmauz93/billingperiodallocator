@@ -140,7 +140,10 @@
     "submittingButton": "Submitting...",
     "successMessage": "Feedback submitted successfully!",
     "errorEmptyMessage": "Please enter a message.",
-    "errorSubmit": "Error submitting feedback."
+    "errorSubmit": "Error submitting feedback.",
+    "emailSubject": "BillSplitter Feedback",
+    "errorOpenEmail": "Could not automatically open email client. Please send feedback manually.",
+    "emailBodyTemplate": "Message:\n{{message}}"
   },
   "ThemeToggle": {
     "light": "Light",
@@ -222,5 +225,14 @@
     "faqAnswer4": "Yes, BillSplitter supports multiple splitting options. You can allocate invoices across yearly, quarterly, or monthly periods depending on your accounting and reporting needs.",
     "faqQuestion5": "How accurate are the calculations?",
     "faqAnswer5": "BillSplitter provides highly accurate calculations down to the day, with proper rounding to the decimal place of your choice. Any minor rounding differences are automatically adjusted to ensure the total always matches your input amount."
+  },
+  "Metadata": {
+    "title": "Invoice Splitter",
+    "description": "Invoice period allocation calculator for finance professionals",
+    "calculatorTitle": "Calculator | BillSplitter",
+    "calculatorDescription": "Use the BillSplitter tool to upload and split invoices. Free for private use."
+  },
+  "Common": {
+    "close": "Close"
   }
 }

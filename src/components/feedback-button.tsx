@@ -33,8 +33,6 @@ export function FeedbackButton({
   const [isMounted, setIsMounted] = useState(false); // Mounted state
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null); // State for textarea error
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
-  const [submitSuccess, setSubmitSuccess] = useState(false); // Add success state
 
   useEffect(() => {
     setIsMounted(true); // Set mounted after initial render
@@ -47,48 +45,33 @@ export function FeedbackButton({
       setTimeout(() => {
         setMessage("");
         setError(null);
-        setIsSubmitting(false);
-        setSubmitSuccess(false);
       }, 300);
     }
   }, [isOpen]);
 
-  const handleSubmitFeedback = async () => {
+  const handleSubmitFeedback = () => { // Changed to simple function, no async needed
     if (!message.trim()) {
       setError(t("FeedbackDialog.errorEmptyMessage"));
       return;
     }
     setError(null);
-    setIsSubmitting(true);
-    setSubmitSuccess(false); // Reset success state on new submission
+
+    // --- Open Mail Client Instead of API Call ---
+    const subject = encodeURIComponent(t("FeedbackDialog.emailSubject", "BillSplitter Feedback"));
+    const body = encodeURIComponent(message);
+    const mailtoLink = `mailto:info@siempi.ch?subject=${subject}&body=${body}`;
 
     try {
-      // --- TODO: Replace with actual API call ---
-      console.log("Submitting feedback:", message);
-      // Example:
-      // const response = await fetch(FEEDBACK_API_ENDPOINT, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ message }),
-      // });
-      // if (!response.ok) {
-      //   throw new Error(t("FeedbackDialog.errorSubmit") || 'Failed to submit feedback');
-      // }
-      // Simulating API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // --- End TODO ---
-
-      setSubmitSuccess(true);
-      // Optionally close dialog after a short delay on success
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 1500);
-
-    } catch (submitError) {
-      console.error("Feedback submission error:", submitError);
-      setError(submitError instanceof Error ? submitError.message : t("FeedbackDialog.errorSubmit"));
-    } finally {
-      setIsSubmitting(false);
+      // Attempt to open mail client
+      window.location.href = mailtoLink;
+      
+      // Close the dialog immediately after attempting to open mailto
+      setIsOpen(false);
+      
+    } catch (mailError) {
+      console.error("Failed to open mail client:", mailError);
+      // Provide fallback error message if mailto fails (e.g., browser blocks it)
+      setError(t("FeedbackDialog.errorOpenEmail", "Could not open email client."));
     }
   };
 
@@ -106,9 +89,7 @@ export function FeedbackButton({
   const messageLabel = isMounted ? t("FeedbackDialog.messageLabel") : "Your Message";
   const messagePlaceholder = isMounted ? t("FeedbackDialog.messagePlaceholder") : "Type your message here...";
   const cancelButtonLabel = isMounted ? t("FeedbackDialog.cancelButton") : "Cancel";
-  const submitButtonLabel = isMounted ? t("FeedbackDialog.submitButton") : "Send Feedback";
-  const submittingButtonLabel = isMounted ? t("FeedbackDialog.submittingButton") : "Sending...";
-  const successMessage = isMounted ? t("FeedbackDialog.successMessage") : "Feedback sent successfully!";
+  const openEmailButtonLabel = isMounted ? t("FeedbackDialog.openEmailButton") : "Open Email"; // Changed label
 
   return (
     <>
@@ -129,49 +110,40 @@ export function FeedbackButton({
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogDescription>
-              {submitSuccess ? successMessage : dialogDescription}
+              {dialogDescription}
             </DialogDescription>
           </DialogHeader>
-          {!submitSuccess && (
-            <>
-              <div className="grid gap-4 py-4">
-                <div className="grid w-full gap-2">
-                  <Label htmlFor="feedback-message">
-                    {messageLabel}
-                  </Label>
-                  <Textarea
-                    placeholder={messagePlaceholder}
-                    id="feedback-message"
-                    value={message}
-                    onChange={handleMessageChange}
-                    error={error ?? undefined}
-                    disabled={isSubmitting}
-                  />
-                </div>
+          <>
+            <div className="grid gap-4 py-4">
+              <div className="grid w-full gap-2">
+                <Label htmlFor="feedback-message">
+                  {messageLabel}
+                </Label>
+                <Textarea
+                  placeholder={messagePlaceholder}
+                  id="feedback-message"
+                  value={message}
+                  onChange={handleMessageChange}
+                  className={error ? "border-destructive focus-visible:ring-destructive" : ""}
+                />
+                {error && <p className="text-sm text-destructive mt-1">{error}</p>}
               </div>
-              <DialogFooter className="gap-2">
-                <DialogClose asChild>
-                  <Button type="button" variant="outline" disabled={isSubmitting}>
-                    {cancelButtonLabel}
-                  </Button>
-                </DialogClose>
-                <Button 
-                  type="button" 
-                  onClick={handleSubmitFeedback}
-                  disabled={isSubmitting || !message.trim()} // Disable if submitting or message is empty
-                >
-                  {isSubmitting ? submittingButtonLabel : submitButtonLabel}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-          {submitSuccess && (
-            <DialogFooter>
+            </div>
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
-                <Button type="button" variant="outline">{t('Common.close')}</Button>
+                <Button type="button" variant="outline">
+                  {cancelButtonLabel}
+                </Button>
               </DialogClose>
+              <Button 
+                type="button" 
+                onClick={handleSubmitFeedback}
+                disabled={!message.trim()}
+              >
+                {openEmailButtonLabel}
+              </Button>
             </DialogFooter>
-          )}
+          </>
         </DialogContent>
       </Dialog>
     </>

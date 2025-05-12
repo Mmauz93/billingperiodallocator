@@ -81,13 +81,15 @@ export default function InvoiceCalculatorClient() {
         const hasDemoData = sessionStorage.getItem('billSplitterDemoData') !== null;
         const hasFormCache = sessionStorage.getItem('invoiceFormDataCache') !== null;
         
-        // Safely remove items
+        // Safely remove only the form cache on unmount.
+        // Let InvoiceForm handle clearing billSplitterDemoData after processing.
         try {
-          sessionStorage.removeItem('billSplitterDemoData');
+          // sessionStorage.removeItem('billSplitterDemoData'); // REMOVED
           sessionStorage.removeItem('invoiceFormDataCache');
           console.log('[InvoiceCalculatorClient] Cleaned up sessionStorage on unmount', { 
             hadDemoData: hasDemoData, 
-            hadFormCache: hasFormCache 
+            hadFormCache: hasFormCache, 
+            // Note: billSplitterDemoData is no longer removed here.
           });
         } catch (error) {
           console.error('[InvoiceCalculatorClient] Error clearing sessionStorage on unmount:', error);
