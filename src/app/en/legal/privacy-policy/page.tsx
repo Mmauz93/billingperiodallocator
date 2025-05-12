@@ -70,12 +70,12 @@ export default function PrivacyPolicyPageEN() {
        setTranslationsReady(true);
     }
 
-    // Cleanup function: restore original theme state when component unmounts
+    // Cleanup function to remove styles when the component unmounts
     return () => {
-      // Removed to avoid unwanted flashes: let the theme context handle it
-      // document.documentElement.classList.remove('dark');
-      // document.documentElement.style.colorScheme = '';
-      // document.body.classList.remove('dark');
+      console.log("Cleaning up dark mode styles from Privacy Policy EN");
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.style.colorScheme = ''; // Reset color scheme
     };
   }, [pathname, i18n, t, pageLanguage]); // Dependencies for initial setup
 

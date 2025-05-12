@@ -39,14 +39,24 @@ export default function PrivacyPolicyPageDE() {
   const [pageLanguage, setPageLanguage] = useState(urlLanguage || 'de');
   const [translationsReady, setTranslationsReady] = useState(false);
 
+  // Effect to force dark mode and manage body background
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+    document.documentElement.style.colorScheme = 'dark';
+
+    // Cleanup function to remove styles when the component unmounts
+    return () => {
+      console.log("Cleaning up dark mode styles from Privacy Policy DE");
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.style.colorScheme = ''; // Reset color scheme
+    };
+  }, []); // Empty dependency array ensures this runs only on mount and unmount
+
   // Effect for mounting and script loading
   useEffect(() => {
     setIsMounted(true);
-    
-    // Force dark mode for entire page including header and footer
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.colorScheme = 'dark';
-    document.body.classList.add('dark');
     
     // Handle script loading only once (same script)
     let script = document.querySelector<HTMLScriptElement>(
@@ -59,14 +69,6 @@ export default function PrivacyPolicyPageDE() {
       script.defer = true;
       document.head.appendChild(script);
     }
-    
-    // Cleanup function: restore original theme state when component unmounts
-    return () => {
-      // Removed to avoid unwanted flashes: let the theme context handle it
-      // document.documentElement.classList.remove('dark');
-      // document.documentElement.style.colorScheme = '';
-      // document.body.classList.remove('dark');
-    };
   }, []);
 
   // Second effect synchronizes language between i18n, URL, and component state
