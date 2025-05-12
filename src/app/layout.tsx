@@ -25,7 +25,7 @@ export default function RootLayout({
   console.log(`[Layout.tsx] NODE_ENV: ${process.env.NODE_ENV}, isDevelopment: ${isDevelopment}`);
 
   // Base CSP directives
-  let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io";
+  let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io https://www.googletagmanager.com";
   if (isDevelopment) {
     scriptSrc += " 'unsafe-eval'"; // Allow eval only in development
     console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP.");
