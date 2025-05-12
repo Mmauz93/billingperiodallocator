@@ -51,6 +51,9 @@ type InputDataForDisplay = Pick<
   "startDate" | "endDate" | "includeEndDate" | "amounts" | "splitPeriod"
 >;
 
+// Define a more specific type for the error parameter
+type CalculationErrorType = string | { message?: string; [key: string]: unknown } | null | undefined;
+
 export default function InvoiceCalculatorClient() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
@@ -135,18 +138,34 @@ export default function InvoiceCalculatorClient() {
   const handleCalculation = (
     formData: CalculationCallbackData,
     results: CalculationResult | null,
-    error?: string
+    error?: CalculationErrorType // Use the more specific type
    ) => {
     setCalculationResult(results);
-    if (error && error.includes("At least one amount is required")) {
-        setCalculationError(t('Errors.calculationErrorTitle') + ": " + t('InvoiceForm.errorAmountRequired'));
-    } else if (error && error.includes("Start date must be before")) {
-         setCalculationError(t('Errors.calculationErrorTitle') + ": " + t('InvoiceForm.errorEndDateBeforeStart'));
-    } else {
-         setCalculationError(error ? (t('Errors.calculationErrorTitle') + ": " + t('Errors.unexpectedError')) : null);
+    let displayError: string | null = null;
+    if (error) {
+        const baseErrorTitle = t('Errors.calculationErrorTitle');
+        if (typeof error === 'string') {
+            if (error.includes("At least one amount is required")) {
+                displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
+            } else if (error.includes("Start date must be before")) {
+                displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
+            } else {
+                displayError = baseErrorTitle + ": " + error;
+            }
+        } else if (typeof error === 'object' && error !== null && error.message && typeof error.message === 'string') {
+            // If it's an object with a string message property
+            displayError = baseErrorTitle + ": " + error.message;
+            console.error("[InvoiceCalculatorClient] An error object with a message was received:", error);
+        } else {
+            // For other non-string errors or objects without a clear message, use generic message
+            displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
+            console.error("[InvoiceCalculatorClient] An unexpected or non-standard error object was received:", error);
+        }
     }
+    setCalculationError(displayError);
 
-    if (formData && results && !error) {
+    // If there was any kind of error, we should ensure results are not processed as successful
+    if (formData && results && !displayError) { // Check against displayError now
         setStoredInputData(formData);
         // Use requestAnimationFrame + timeout to ensure the layout is stable before scrolling
         setTimeout(() => {
@@ -161,6 +180,10 @@ export default function InvoiceCalculatorClient() {
         }, 200); // Slightly longer delay to ensure layout is fully settled
     } else {
         setStoredInputData(null);
+        // If there was an error, but results were somehow passed, clear them too
+        if (displayError) {
+            setCalculationResult(null);
+        }
     }
   };
 
