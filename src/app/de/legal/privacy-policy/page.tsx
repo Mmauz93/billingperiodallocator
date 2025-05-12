@@ -39,9 +39,14 @@ export default function PrivacyPolicyPageDE() {
   const [pageLanguage, setPageLanguage] = useState(urlLanguage || 'de');
   const [translationsReady, setTranslationsReady] = useState(false);
 
-  // Effect for mounting and script loading (KEEP THIS)
+  // Effect for mounting and script loading
   useEffect(() => {
     setIsMounted(true);
+    
+    // Force dark mode for entire page including header and footer
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.colorScheme = 'dark';
+    document.body.classList.add('dark');
     
     // Handle script loading only once (same script)
     let script = document.querySelector<HTMLScriptElement>(
@@ -49,15 +54,18 @@ export default function PrivacyPolicyPageDE() {
     );
     if (!script) {
       script = document.createElement('script');
-      script.id = 'privacybee-widget-script'; // Added ID for potential future reference
+      script.id = 'privacybee-widget-script';
       script.src = 'https://app.privacybee.io/widget.js';
       script.defer = true;
       document.head.appendChild(script);
     }
     
-    // Cleanup: Restore the original theme when unmounting/navigating away
+    // Cleanup function: restore original theme state when component unmounts
     return () => {
-      // No specific cleanup needed for this script unless tracking load state
+      // Removed to avoid unwanted flashes: let the theme context handle it
+      // document.documentElement.classList.remove('dark');
+      // document.documentElement.style.colorScheme = '';
+      // document.body.classList.remove('dark');
     };
   }, []);
 
@@ -117,18 +125,18 @@ export default function PrivacyPolicyPageDE() {
 
   return (
     <ThemeProvider attribute="class" forcedTheme="dark">
-    <div className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
-        </p>
+      <div className="container mx-auto max-w-3xl px-6 py-16 dark" style={{ backgroundColor: "#121212" }}>
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+            {t("Legal.privacyPolicyTitle", "Datenschutzerklärung")}
+          </h1>
+          <p className="text-sm text-white opacity-70 mt-2">
+            {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${formattedDate}`}
+          </p>
+        </div>
+        {/* Render the dynamic widget directly, loading handles the skeleton */}
+        <PrivacyWidget lang={pageLanguage} />
       </div>
-      {/* Render the dynamic widget directly, loading handles the skeleton */}
-      <PrivacyWidget lang={pageLanguage} />
-    </div>
     </ThemeProvider>
   );
 } 

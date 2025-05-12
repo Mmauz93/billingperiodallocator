@@ -38,6 +38,11 @@ export default function PrivacyPolicyPageEN() {
   useEffect(() => {
     setIsMounted(true);
 
+    // Force dark mode for entire page including header and footer
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.colorScheme = 'dark';
+    document.body.classList.add('dark');
+
     // Load Privacy Bee script if not already present
     let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://app.privacybee.io/widget.js"]'
@@ -65,6 +70,13 @@ export default function PrivacyPolicyPageEN() {
        setTranslationsReady(true);
     }
 
+    // Cleanup function: restore original theme state when component unmounts
+    return () => {
+      // Removed to avoid unwanted flashes: let the theme context handle it
+      // document.documentElement.classList.remove('dark');
+      // document.documentElement.style.colorScheme = '';
+      // document.body.classList.remove('dark');
+    };
   }, [pathname, i18n, t, pageLanguage]); // Dependencies for initial setup
 
   // Effect for handling language changes triggered by the language toggle
@@ -114,17 +126,17 @@ export default function PrivacyPolicyPageEN() {
 
   return (
     <ThemeProvider attribute="class" forcedTheme="dark">
-    <div className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.privacyPolicyTitle", "Privacy Policy")}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
-        </p>
+      <div className="container mx-auto max-w-3xl px-6 py-16 dark" style={{ backgroundColor: "#121212" }}>
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+            {t("Legal.privacyPolicyTitle", "Privacy Policy")}
+          </h1>
+          <p className="text-sm text-white opacity-70 mt-2">
+            {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
+          </p>
+        </div>
+        <PrivacyWidget lang={pageLanguage} />
       </div>
-      <PrivacyWidget lang={pageLanguage} />
-    </div>
     </ThemeProvider>
   );
 } 

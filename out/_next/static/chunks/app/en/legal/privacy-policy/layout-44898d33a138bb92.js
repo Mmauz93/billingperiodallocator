@@ -1,2 +1,2 @@
 (self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6021],{28518:(e,o,n)=>{"use strict";n.d(o,{default:()=>r});var t=n(95155),u=n(12115);function r(e){let{children:o}=e;return(0,u.useEffect)(()=>(document.body.style.backgroundColor="#121212",document.documentElement.style.backgroundColor="#121212",()=>{document.body.style.backgroundColor="",document.documentElement.style.backgroundColor=""}),[]),(0,t.jsx)(t.Fragment,{children:o})}},72352:(e,o,n)=>{Promise.resolve().then(n.bind(n,28518))}},e=>{var o=o=>e(e.s=o);e.O(0,[8441,1684,7358],()=>o(72352)),_N_E=e.O()}]);
-//# sourceMappingURL=layout-be539eec130ab1f4.js.map
+//# sourceMappingURL=layout-44898d33a138bb92.js.map
