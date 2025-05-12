@@ -13,6 +13,7 @@ import {
 import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn, safeText } from "@/lib/utils";
 import { de, enUS } from 'date-fns/locale';
 import { format, isValid, parse, startOfDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -20,8 +21,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import React from "react";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import { debounce } from 'lodash';
 import { useTranslation } from '@/translations';
 import { z } from "zod";
@@ -202,7 +203,7 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
             const results = calculateInvoiceSplit(calculationInput);
             setTimeout(() => {
                 if (results.calculationSteps?.error) {
-                    onCalculateAction(validFormData, null, results.calculationSteps.error);
+                    onCalculateAction(validFormData, null, safeText(results.calculationSteps.error));
                 } else if (!results.aggregatedSplits || results.aggregatedSplits.length === 0) {
                     onCalculateAction(validFormData, null, "Calculation completed but resulted in no splits.");
                 } else {
@@ -683,16 +684,26 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                                 <FormDescription>{t('InvoiceForm.splitPeriodDescription', { defaultValue: 'Choose how to split the invoice amounts.' })}</FormDescription>
                             </div>
                             <div className="min-w-[120px]">
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select 
+                                    onValueChange={field.onChange} 
+                                    defaultValue={field.value || 'yearly'} 
+                                    value={field.value || 'yearly'}
+                                >
                                     <FormControl>
                                         <SelectTrigger className="w-full" id="splitPeriod" name="splitPeriod">
-                                            <SelectValue placeholder={t('InvoiceForm.selectPeriodPlaceholder', { defaultValue: "Select..." })} />
+                                            <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="yearly">{t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })}</SelectItem>
-                                        <SelectItem value="quarterly">{t('InvoiceForm.periodQuarterly', { defaultValue: 'Quarterly' })}</SelectItem>
-                                        <SelectItem value="monthly">{t('InvoiceForm.periodMonthly', { defaultValue: 'Monthly' })}</SelectItem>
+                                        <SelectItem key="yearly" value="yearly">
+                                            {`${t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })}`}
+                                        </SelectItem>
+                                        <SelectItem key="quarterly" value="quarterly">
+                                            {`${t('InvoiceForm.periodQuarterly', { defaultValue: 'Quarterly' })}`}
+                                        </SelectItem>
+                                        <SelectItem key="monthly" value="monthly">
+                                            {`${t('InvoiceForm.periodMonthly', { defaultValue: 'Monthly' })}`}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -701,82 +712,84 @@ export function InvoiceForm({ onCalculateAction, demoData }: InvoiceFormProps) {
                     )} 
                 />
                 <div className="space-y-5 rounded-lg border p-6 shadow-xs">
-                    <FormLabel className="text-base">{t('InvoiceForm.amountsLabel')}</FormLabel>
+                    <h3 className="text-base font-medium" id="amounts-section-label">{t('InvoiceForm.amountsLabel')}</h3>
                     <FormDescription>{t('InvoiceForm.amountsDescription')}</FormDescription>
-                    {fields.map((item, index) => (
-                        <FormField 
-                            control={form.control} 
-                            key={item.id} 
-                            name={`amounts.${index}.value`} 
-                            render={({ field }) => (
-                                <FormItem className="mb-3">
-                                    <div className="flex flex-col gap-1">
-                                        <FormLabel htmlFor={`amount-${index}`} className="text-sm font-medium">#{index + 1}</FormLabel>
-                                        <div className="flex items-center gap-2">
-                                            <div className="relative flex-1">
-                                                <FormControl>
-                                                    <Input 
-                                                        type="number" 
-                                                        step="any" 
-                                                        className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" 
-                                                        {...field} 
-                                                        id={`amount-${index}`}
-                                                        name={`amounts.${index}.value`}
-                                                    />
-                                                </FormControl>
-                                                <div className="absolute right-2 top-0 h-full flex items-center justify-center z-[1]">
-                                                    {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
-                                                        <div className="flex items-center justify-center h-5 w-5">
-                                                            <CheckCircle className="h-4 w-4 text-green-500" />
-                                                        </div>
-                                                    )}
-                                                    {form.formState.errors.amounts?.[index]?.value && (
-                                                        <div className="flex items-center justify-center h-5 w-5">
-                                                            <AlertCircle className="h-4 w-4 text-destructive" />
-                                                        </div>
-                                                    )}
+                    <div aria-labelledby="amounts-section-label" className="space-y-4 mt-4">
+                        {fields.map((item, index) => (
+                            <FormField 
+                                control={form.control} 
+                                key={item.id} 
+                                name={`amounts.${index}.value`} 
+                                render={({ field }) => (
+                                    <FormItem className="mb-3">
+                                        <div className="flex flex-col gap-1">
+                                            <FormLabel htmlFor={`amount-${index}`} className="text-sm font-medium">#{index + 1}</FormLabel>
+                                            <div className="flex items-center gap-2">
+                                                <div className="relative flex-1">
+                                                    <FormControl>
+                                                        <Input 
+                                                            type="number" 
+                                                            step="any" 
+                                                            className="focus:border-primary focus:ring-2 focus:ring-primary/20 transition-transform duration-150 pr-8" 
+                                                            {...field} 
+                                                            id={`amount-${index}`}
+                                                            name={`amounts.${index}.value`}
+                                                        />
+                                                    </FormControl>
+                                                    <div className="absolute right-2 top-0 h-full flex items-center justify-center z-[1]">
+                                                        {field.value && !isNaN(parseFloat(field.value)) && parseFloat(field.value) > 0 && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                                            </div>
+                                                        )}
+                                                        {form.formState.errors.amounts?.[index]?.value && (
+                                                            <div className="flex items-center justify-center h-5 w-5">
+                                                                <AlertCircle className="h-4 w-4 text-destructive" />
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                                {fields.length > 1 && (
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        onClick={() => remove(index)} 
+                                                        className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
+                                                        aria-label="Remove amount"
+                                                    >
+                                                        <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
+                                                    </Button>
+                                                )}
                                             </div>
-                                            {fields.length > 1 && (
-                                                <Button 
-                                                    type="button" 
-                                                    variant="ghost" 
-                                                    size="icon" 
-                                                    onClick={() => remove(index)} 
-                                                    className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200 shrink-0" 
-                                                    aria-label="Remove amount"
-                                                >
-                                                    <XCircle className="h-4 w-4 transition-transform duration-150 hover:scale-95" />
-                                                </Button>
-                                            )}
                                         </div>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )} 
-                        />
-                    ))}
-                    <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => { 
-                            append({ value: "" }); 
-                            setTimeout(() => { 
-                                const ni = document.querySelectorAll('input[type="number"]'); 
-                                if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); 
-                            }, 10); 
-                        }} 
-                        className="mt-4"
-                    >
-                        <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
-                    </Button>
-                    {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
-                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>
-                    )}
-                    {form.formState.errors.amounts?.root?.message && (
-                        <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>
-                    )}
+                                        <FormMessage />
+                                    </FormItem>
+                                )} 
+                            />
+                        ))}
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => { 
+                                append({ value: "" }); 
+                                setTimeout(() => { 
+                                    const ni = document.querySelectorAll('input[type="number"]'); 
+                                    if (ni.length > 0) (ni[ni.length - 1] as HTMLInputElement).focus(); 
+                                }, 10); 
+                            }} 
+                            className="mt-4"
+                        >
+                            <PlusCircle className="mr-2 h-4 w-4" /> {t('InvoiceForm.addAmountButton')}
+                        </Button>
+                        {form.formState.errors.amounts && !form.formState.errors.amounts.root && form.formState.errors.amounts.message && (
+                            <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.message}</p>
+                        )}
+                        {form.formState.errors.amounts?.root?.message && (
+                            <p className="text-sm font-medium text-destructive">{form.formState.errors.amounts.root.message}</p>
+                        )}
+                    </div>
                 </div>
                 <Button 
                     type="submit" 

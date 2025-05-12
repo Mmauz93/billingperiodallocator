@@ -87,18 +87,71 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function FormLabel({
+// Helper component that assumes context is available
+function FormLabelInternal({ 
+  fieldContext,
+  itemContext,
   className,
+  htmlFor: explicitHtmlFor, // Rename explicit prop
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemId } = useFormField();
+}: React.ComponentProps<typeof LabelPrimitive.Root> & {
+  fieldContext: FormFieldContextValue;
+  itemContext: FormItemContextValue;
+  htmlFor?: string;
+}) {
+  // Hooks are safe to call unconditionally here
+  const { getFieldState } = useFormContext();
+  const formState = useFormState({ name: fieldContext.name });
+  const fieldState = getFieldState(fieldContext.name, formState);
+
+  const formItemId = `${itemContext.id}-form-item`;
+  const hasError = !!fieldState.error;
+  // Prioritize explicit htmlFor prop if provided
+  const derivedHtmlFor = explicitHtmlFor || formItemId;
 
   return (
     <Label
       data-slot="form-label"
-      data-error={!!error}
+      data-error={hasError}
       className={cn("data-[error=true]:text-destructive", className)}
-      htmlFor={formItemId}
+      htmlFor={derivedHtmlFor}
+      {...props}
+    />
+  );
+}
+
+function FormLabel({
+  className,
+  htmlFor,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+  // Get contexts unconditionally
+  const fieldContext = React.useContext(FormFieldContext);
+  const itemContext = React.useContext(FormItemContext);
+
+  // Check if contexts are valid (simple non-empty check for fieldContext)
+  const hasContext = fieldContext && Object.keys(fieldContext).length > 0 && itemContext && itemContext.id;
+
+  if (hasContext) {
+    // Render internal component only when context is available
+    return (
+      <FormLabelInternal 
+        fieldContext={fieldContext}
+        itemContext={itemContext}
+        className={className}
+        htmlFor={htmlFor} // Pass explicit htmlFor
+        {...props} 
+      />
+    );
+  }
+
+  // Render basic label if no context
+  return (
+    <Label
+      data-slot="form-label"
+      data-error={false} // No context means no error state derived from it
+      className={cn("data-[error=true]:text-destructive", className)} // Keep class for consistency if needed
+      htmlFor={htmlFor} // Use explicit htmlFor
       {...props}
     />
   );

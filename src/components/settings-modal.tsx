@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import React from "react";
 import { Settings } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useSettings } from "@/context/settings-context";
@@ -284,17 +285,17 @@ export function SettingsModal({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value=",">
-                          {t("SettingsModal.comma")} (1,234.56)
+                        <SelectItem key="," value=",">
+                          {`${t("SettingsModal.comma")} (1,234.56)`}
                         </SelectItem>
-                        <SelectItem value=".">
-                          {t("SettingsModal.period")} (1.234,56)
+                        <SelectItem key="." value=".">
+                          {`${t("SettingsModal.period")} (1.234,56)`}
                         </SelectItem>
-                        <SelectItem value="'">
-                          {t("SettingsModal.apostrophe")} (1&apos;234.56)
+                        <SelectItem key="'" value="'">
+                          {`${t("SettingsModal.apostrophe")} (1&apos;234.56)`}
                         </SelectItem>
-                        <SelectItem value=" ">
-                          {t("SettingsModal.space")} (1 234.56)
+                        <SelectItem key="space" value=" ">
+                          {`${t("SettingsModal.space")} (1 234.56)`}
                         </SelectItem>
                       </SelectContent>
                     </Select>

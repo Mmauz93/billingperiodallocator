@@ -27,38 +27,56 @@ export default function RootLayout({
   // Base CSP directives
   let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io https://www.googletagmanager.com";
   
-  // Add all required domain sources for scripts
+  /**
+   * Content Security Policy (CSP) Configuration
+   * 
+   * This is the single source of truth for the application's CSP.
+   * - 'unsafe-eval' is only allowed in development for hot reloading
+   * - In production, we maintain strict CSP for security
+   * - Each external domain has a clear purpose commented
+   */
   if (isDevelopment) {
-    // In development mode, we need 'unsafe-eval' for hot reloading and other development tools
+    // In development, allow 'unsafe-eval' for:
+    // - React Hot Module Replacement (HMR)
+    // - React Fast Refresh
+    // - Source maps and debugging tools
     scriptSrc += " 'unsafe-eval'"; 
     console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP.");
   } else {
-    // In production, we should avoid 'unsafe-eval' if possible
-    // If certain third-party scripts require eval, consider adding it here with proper comment
-    // scriptSrc += " 'unsafe-eval'"; // Uncomment only if absolutely necessary in production
+    // Production maintains strict CSP for security.
+    // If third-party scripts require 'eval', document their purpose here.
+    // Example:
+    // scriptSrc += " 'unsafe-eval'"; // Required for [specific tool] that cannot work without eval
     console.log("[Layout.tsx] Production mode: CSP remains strict (no 'unsafe-eval').");
   }
 
-  // Define img-src including the flag CDN
+  // Define img-src including the flag CDN and any analytics pixels
   const imgSrc = "'self' data: blob: https://cdn.jsdelivr.net"; 
 
   // Define connect-src with all necessary API endpoints
-  const connectSrc = "'self' ws: localhost:* http://localhost:* https://app.privacybee.io https://www.google-analytics.com";
+  const connectSrc = [
+    "'self'",                        // Main application
+    "ws: localhost:*",               // WebSocket for development
+    "http://localhost:*",            // Local development
+    "https://app.privacybee.io",     // Privacy management
+    "https://www.google-analytics.com" // Analytics
+  ].join(" ");
 
-  const cspContent = `
-    default-src 'self'; 
-    script-src ${scriptSrc}; 
-    style-src 'self' 'unsafe-inline' https://app.privacybee.io; 
-    img-src ${imgSrc}; 
-    font-src 'self' data:; 
-    connect-src ${connectSrc}; 
-    worker-src 'self' blob:; 
-    frame-src 'self'; 
-    manifest-src 'self'; 
-    object-src 'none'; 
-    base-uri 'self'; 
-    form-action 'self';
-  `.replace(/\s+/g, ' ').trim();
+  // Build the final CSP as a single string with clear formatting
+  const cspContent = [
+    "default-src 'self'", 
+    `script-src ${scriptSrc}`,
+    "style-src 'self' 'unsafe-inline' https://app.privacybee.io",
+    `img-src ${imgSrc}`,
+    "font-src 'self' data:",
+    `connect-src ${connectSrc}`,
+    "worker-src 'self' blob:",
+    "frame-src 'self'",
+    "manifest-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join("; ");
   
   // console.log("[Layout.tsx] Applying CSP:"); // Combined logging above
   // console.log(cspContent);

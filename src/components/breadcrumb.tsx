@@ -1,41 +1,17 @@
-import { useEffect, useState } from 'react';
-
 import Link from 'next/link';
-import { useTranslation } from '@/translations';
 
 interface BreadcrumbProps {
   currentPage: string;
   lang: string;
 }
 
+/**
+ * Simple breadcrumb component with hardcoded translations for stability.
+ * No client-side effects or hooks to cause hydration issues.
+ */
 export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
-  const { t } = useTranslation();
-  const [mounted, setMounted] = useState(false);
-  
-  // Get correct language-specific default labels to avoid hydration mismatch
-  const getDefaultHomeLabel = () => {
-    if (lang === 'de') return 'Startseite';
-    return 'Home';
-  };
-  
-  const getDefaultCalculatorLabel = () => {
-    if (lang === 'de') return 'Rechner';
-    return 'Calculator';
-  };
-  
-  // Use static default text for initial render to avoid hydration mismatch
-  const homeLabel = mounted 
-    ? t('General.home', { defaultValue: getDefaultHomeLabel() })
-    : getDefaultHomeLabel();
-    
-  const currentPageLabel = currentPage || (mounted 
-    ? t('General.calculator', { defaultValue: getDefaultCalculatorLabel() })
-    : getDefaultCalculatorLabel());
-  
-  // After mount, allow React to handle the component normally
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Static translations to avoid hydration mismatches
+  const homeLabel = lang === 'de' ? 'Startseite' : 'Home';
   
   return (
     <nav className="flex mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
@@ -56,7 +32,7 @@ export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
           </div>
         </li>
         <li aria-current="page">
-          <span className="text-foreground">{currentPageLabel}</span>
+          <span className="text-foreground">{currentPage}</span>
         </li>
       </ol>
       
@@ -77,7 +53,7 @@ export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
               {
                 "@type": "ListItem",
                 "position": 2,
-                "name": currentPageLabel
+                "name": currentPage
               }
             ]
           })

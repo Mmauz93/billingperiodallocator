@@ -4,6 +4,7 @@
 
 import deTranslations from '../messages/de.json';
 import enTranslations from '../messages/en.json';
+import { safeText } from './utils';
 
 // Type safety for translation objects
 type TranslationResource = Record<string, string | Record<string, string>>;
@@ -57,7 +58,9 @@ export function t(key: string, optionsOrDefaultValue?: TranslationOptions | stri
   
   // Get the translation or default value
   const translation = getTranslation(key, currentLanguage);
-  const finalText = translation || options.defaultValue || key;
+  
+  // Ensure we always have a string, not an object (prevents React Error #418)
+  const finalText = safeText(translation || options.defaultValue || key);
   
   // Replace any {{key}} values
   if (options.values && Object.keys(options.values).length > 0) {
@@ -121,7 +124,7 @@ function getTranslation(key: string, lang: string): string | undefined {
     current = (current as Record<string, unknown>)[part];
   }
   
-  // Return the found string or undefined
+  // Return the found string or undefined - but ensure it's a string
   return typeof current === 'string' ? current : undefined;
 }
 
@@ -131,7 +134,8 @@ function getTranslation(key: string, lang: string): string | undefined {
 function replaceValues(text: string, values: Record<string, string | number>): string {
   return text.replace(/\{\{([^{}]+)\}\}/g, (match, key) => {
     const replacement = values[key.trim()];
-    return replacement !== undefined ? String(replacement) : match;
+    // Ensure replacement is always a string
+    return replacement !== undefined ? safeText(replacement) : match;
   });
 }
 

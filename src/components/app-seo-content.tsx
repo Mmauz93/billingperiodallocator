@@ -1,36 +1,38 @@
-import { usePathname } from 'next/navigation';
-import { useTranslation } from '@/translations';
+"use client";
 
-// This component adds SEO-friendly text content to the app pages
+import { useEffect, useState } from 'react';
+
+import { usePathname } from 'next/navigation';
+
+/**
+ * Client-only SEO content component.
+ * Renders JSON-LD structured data only on the client to avoid hydration mismatches.
+ */
 export default function AppSeoContent() {
-  const { i18n } = useTranslation();
-  const isGerman = i18n.language === 'de';
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isAppPage = pathname?.includes('/app');
-
-  // Skip rendering if we're not on the app page
-  if (!isAppPage) {
-    return null; // Don't render any SEO content if not on app page
+  
+  // Determine language from URL path instead of i18n hooks to avoid hydration issues
+  const isGerman = pathname?.includes('/de/');
+  
+  // Always run this effect at top level
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Don't render during SSR
+  if (!mounted || !isAppPage) {
+    return null;
   }
-
-  // Define content in both languages for schema.org metadata only
-  const content = {
-    en: {
-      title: "Invoice Period Allocation Calculator",
-      description: "Split invoices across fiscal years, quarters, or months with precision."
-    },
-    de: {
-      title: "Rechnungsperioden-Zuordnungsrechner",
-      description: "Teilen Sie Rechnungen präzise auf Geschäftsjahre, Quartale oder Monate auf."
-    }
-  };
-
-  // Use the content based on the current language
-  const { /* title, */ description } = isGerman ? content.de : content.en;
-
+  
+  // Hardcoded content by language for reliable rendering
+  const description = isGerman
+    ? "Teilen Sie Rechnungen präzise auf Geschäftsjahre, Quartale oder Monate auf."
+    : "Split invoices across fiscal years, quarters, or months with precision.";
+  
   return (
     <div className="hidden">
-      {/* Structured data for SEO - this will remain in the DOM but not be visible */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

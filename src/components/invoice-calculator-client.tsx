@@ -14,6 +14,7 @@ import { ResultsDisplay } from "@/components/results-display";
 import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
 import dynamic from 'next/dynamic';
+import { safeText } from "@/lib/utils";
 import { useTranslation } from '@/translations';
 
 // Define a type for the demo data that matches the one in InvoiceForm
@@ -271,7 +272,7 @@ export default function InvoiceCalculatorClient() {
               <Alert variant="destructive" className="w-full">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>{t('Errors.calculationErrorTitle')}</AlertTitle>
-                <AlertDescription>{calculationError}</AlertDescription>
+                <AlertDescription>{safeText(calculationError)}</AlertDescription>
               </Alert>
             )}
             {mounted && calculationResult && storedInputData && !calculationError && (

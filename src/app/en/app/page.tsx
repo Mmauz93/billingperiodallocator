@@ -28,7 +28,8 @@ export default function AppPageEN() {
   return (
     <div className="container max-w-5xl mx-auto px-4 py-6">
       {/* Add breadcrumb navigation for better SEO and user navigation */}
-      <Breadcrumb currentPage={t("AppPage.title", "Calculator")} lang="en" />
+      {/* Use hardcoded "Calculator" instead of t() to prevent hydration mismatch */}
+      <Breadcrumb currentPage="Calculator" lang="en" />
       
       {/* The surrounding layout.tsx provides structure, header, footer */}
       {/* This page only needs to render the core calculator component with proper suspense */}
