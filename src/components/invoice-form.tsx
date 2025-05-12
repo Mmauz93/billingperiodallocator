@@ -794,7 +794,7 @@ export function InvoiceForm({
                 <Button 
                     type="submit" 
                     disabled={form.formState.isSubmitting || isCalculating} 
-                    className={`w-full bg-primary text-white hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
+                    className={`w-full bg-[#4a90e2] text-white hover:bg-[#4a90e2]/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-[#4a90e2]/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
                 >
                     {isCalculating ? (
                         <span className="flex items-center justify-center">
