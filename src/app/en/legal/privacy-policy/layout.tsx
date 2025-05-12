@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
+import PrivacyPolicyDarkLayoutClient from './PrivacyPolicyDarkLayoutClient';
 
 // Generate alternates for English privacy policy page
 const alternates = generateSubpageHreflangMetadata('en', 'legal/privacy-policy');
@@ -10,10 +11,6 @@ export const metadata: Metadata = {
   alternates
 };
 
-export default function PrivacyPolicyLayoutEN({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+export default function PrivacyPolicyLayoutEN({ children }: { children: React.ReactNode }) {
+  return <PrivacyPolicyDarkLayoutClient>{children}</PrivacyPolicyDarkLayoutClient>;
 } 
