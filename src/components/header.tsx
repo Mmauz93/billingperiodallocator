@@ -121,7 +121,6 @@ export function Header() {
               width={180}
               height={40}
               priority
-              className="h-10"
             />
           </a>
         </div>

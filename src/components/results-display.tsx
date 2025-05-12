@@ -530,7 +530,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   return (
     <div className="w-full animate-fadeIn">
       {/* Wrap everything except the modal in a single card */}
-      <Card className="shadow-lg border border-border/50 overflow-hidden">
+      <Card className="shadow-lg border border-border/50">
         <CardContent className="p-6 space-y-8">
           <Card className="shadow-md border border-border/40 overflow-hidden">
             <CardContent className="p-6">
@@ -629,7 +629,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
 
           {/* Calculation Details Accordion */}
           <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1" className="border rounded-lg shadow-md bg-card overflow-hidden">
+              <AccordionItem value="item-1" className="border rounded-lg shadow-md bg-card">
                   <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-primary hover:bg-muted/40">
                       {t('ResultsDisplay.calculationStepsTitle', { defaultValue: "View Full Split Calculation" })}
             </AccordionTrigger>

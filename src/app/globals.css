@@ -46,32 +46,45 @@
 /* Updated color palette based on the branding guide */
 :root {
   --radius: 0.5rem; /* 8px border-radius as per design style */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: #2e5a8c; /* Primary Blue with reduced opacity for accents */
-  --accent-foreground: #111827;
-  --destructive: #ef4444; /* Error Red */
-  --destructive-foreground: #ffffff;
-  --border: #e5e7eb; /* Border/Divider */
-  --input: #f3f4f6; /* Input Field Background */
-  --ring: #2e5a8c; /* Primary Blue for focus rings */
+  /* --- Light Mode --- */
+  --background: #ffffff;               /* white */
+  --foreground: 222.2 84% 4.9%;         /* almost black */
+  --card: #ffffff;                     /* white */
+  --card-foreground: 222.2 84% 4.9%;     /* almost black */
+  --popover: #ffffff;                  /* white */
+  --popover-foreground: 222.2 84% 4.9%;  /* almost black */
+
+  /* Primary - Use the blue from dark mode */
+  --primary: 217 78% 58%; /* hsl for #4a90e2 */
+  --primary-foreground: 0 0% 100%;      /* white (contrasts with blue) */
+
+  /* Secondary - Use the existing light gray */
+  --secondary: 210 40% 96.1%;           /* light gray */
+  --secondary-foreground: 222.2 47.4% 11.2%; /* dark blue/black (keep existing) */
+
+  /* Muted - Keep existing */
+  --muted: 210 40% 96.1%;               /* light gray */
+  --muted-foreground: 215.4 16.3% 46.9%; /* mid-gray */
+
+  /* Accent - Use primary blue */
+  --accent: 217 78% 58%; /* hsl for #4a90e2 */
+  --accent-foreground: 0 0% 100%;       /* white */
+
+  /* Destructive - Keep existing */
+  --destructive: 0 84.2% 60.2%; /* hsl for #ef4444 */
+  --destructive-foreground: 0 0% 100%;  /* white */
+
+  /* Border/Input/Ring */
+  --border: 214.3 31.8% 91.4%;        /* light gray hsl for #e5e7eb */
+  --input: 220 13% 95.7%;             /* very light gray hsl for #f3f4f6 */
+  --ring: 217 78% 58%; /* hsl for #4a90e2 */
 
   /* Base Chart Colors */
-  --chart-1: #2e5a8c;
-  --chart-2: #f5a623;
-  --chart-3: #22c55e;
-  --chart-4: #5a6271; /* Adjusted */
-  --chart-5: #ef4444;
+  --chart-1: #2e5a8c; /* Original dark blue might be ok for charts */
+  --chart-2: #f5a623; /* Orange */
+  --chart-3: #22c55e; /* Green */
+  --chart-4: #5a6271; /* Gray */
+  --chart-5: #ef4444; /* Red */
 
   /* Colorblind-Safe Chart Colors */
   --colorblind-1: #1b9e77;
@@ -738,6 +751,7 @@ header.sticky {
   z-index: 1000 !important;
 }
 
+/* Ensure this block is NOT duplicated */
 /* Prevent any portals from affecting document flow */
 [data-radix-portal] {
   overflow: visible !important;
@@ -822,3 +836,14 @@ privacybee-widget div > h1 + p {
     z-index: 0;
   }
 }
+
+/* Also force calendar background within popovers */
+/* .popover-content > .rdp { ... } */ /* REMOVE THIS BLOCK */
+/* .dark .popover-content > .rdp { ... } */ /* REMOVE THIS BLOCK */
+
+/* NEW OVERRIDE: Force DropdownMenuContent background in light mode */
+/* html:not(.dark) [data-radix-dropdown-menu-portal] .bg-popover { ... } */ /* REMOVE THIS BLOCK */
+
+/* == FINAL ATTEMPT OVERRIDE: Force white background for pop-ups in light mode == */
+/* html:not(.dark) [data-radix-dropdown-menu-content], ... { ... } */ /* REMOVE THIS ENTIRE BLOCK */
+/* == END OVERRIDE == */

@@ -677,12 +677,12 @@ export function InvoiceForm({
                     control={form.control} 
                     name="splitPeriod" 
                     render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5 pr-4">
+                        <FormItem className="flex flex-col items-start justify-start rounded-lg border p-4">
+                            <div className="space-y-0.5 pr-4 mb-3">
                                 <FormLabel htmlFor="splitPeriod" className="text-base">{t('InvoiceForm.splitPeriodLabel', { defaultValue: 'Split Period' })}</FormLabel>
                                 <FormDescription>{t('InvoiceForm.splitPeriodDescription', { defaultValue: 'Choose how to split the invoice amounts.' })}</FormDescription>
                             </div>
-                            <div className="min-w-[120px]">
+                            <div className="w-full">
                                 <Select 
                                     onValueChange={field.onChange} 
                                     defaultValue={field.value}
