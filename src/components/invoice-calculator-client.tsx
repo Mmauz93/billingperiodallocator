@@ -152,8 +152,8 @@ export default function InvoiceCalculatorClient() {
             } else {
                 displayError = baseErrorTitle + ": " + error;
             }
-        } else if (typeof error === 'object' && error !== null && error.message && typeof error.message === 'string') {
-            // If it's an object with a string message property
+        } else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+            // Improved check for object with message property
             displayError = baseErrorTitle + ": " + error.message;
             console.error("[InvoiceCalculatorClient] An error object with a message was received:", error);
         } else {

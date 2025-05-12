@@ -26,17 +26,39 @@ export default function RootLayout({
 
   // Base CSP directives
   let scriptSrc = "'self' 'unsafe-inline' https://app.privacybee.io https://www.googletagmanager.com";
+  
+  // Add all required domain sources for scripts
   if (isDevelopment) {
-    scriptSrc += " 'unsafe-eval'"; // Allow eval only in development
+    // In development mode, we need 'unsafe-eval' for hot reloading and other development tools
+    scriptSrc += " 'unsafe-eval'"; 
     console.log("[Layout.tsx] Development mode: 'unsafe-eval' added to script-src for CSP.");
   } else {
+    // In production, we should avoid 'unsafe-eval' if possible
+    // If certain third-party scripts require eval, consider adding it here with proper comment
+    // scriptSrc += " 'unsafe-eval'"; // Uncomment only if absolutely necessary in production
     console.log("[Layout.tsx] Production mode: CSP remains strict (no 'unsafe-eval').");
   }
 
   // Define img-src including the flag CDN
   const imgSrc = "'self' data: blob: https://cdn.jsdelivr.net"; 
 
-  const cspContent = `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline' https://app.privacybee.io; img-src ${imgSrc}; font-src 'self' data:; connect-src 'self' ws: localhost:* http://localhost:* https://app.privacybee.io; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';`;
+  // Define connect-src with all necessary API endpoints
+  const connectSrc = "'self' ws: localhost:* http://localhost:* https://app.privacybee.io https://www.google-analytics.com";
+
+  const cspContent = `
+    default-src 'self'; 
+    script-src ${scriptSrc}; 
+    style-src 'self' 'unsafe-inline' https://app.privacybee.io; 
+    img-src ${imgSrc}; 
+    font-src 'self' data:; 
+    connect-src ${connectSrc}; 
+    worker-src 'self' blob:; 
+    frame-src 'self'; 
+    manifest-src 'self'; 
+    object-src 'none'; 
+    base-uri 'self'; 
+    form-action 'self';
+  `.replace(/\s+/g, ' ').trim();
   
   // console.log("[Layout.tsx] Applying CSP:"); // Combined logging above
   // console.log(cspContent);
