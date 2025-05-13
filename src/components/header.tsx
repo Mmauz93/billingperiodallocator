@@ -5,13 +5,28 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import LanguageToggle from "@/components/language-toggle";
 import Link from "next/link";
-// import { MainNav } from "@/components/main-nav"; // TODO: Resolve path or remove if not used
-// import { MobileNav } from "@/components/mobile-nav"; // TODO: Resolve path or remove if not used
-import { ThemeToggle } from "@/components/theme-toggle";
+import dynamic from "next/dynamic"; // <-- Add this import
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
+
+// import LanguageToggle from "@/components/language-toggle"; // Remove static import
+
+// import { MainNav } from "@/components/main-nav"; // TODO: Resolve path or remove if not used
+// import { MobileNav } from "@/components/mobile-nav"; // TODO: Resolve path or remove if not used
+// import { ThemeToggle } from "@/components/theme-toggle"; // Remove static import
+
+
+
+
+// Dynamic imports for toggles
+const DynamicLanguageToggle = dynamic(() => import("@/components/language-toggle"), {
+  ssr: false,
+});
+
+const DynamicThemeToggle = dynamic(() => import("@/components/theme-toggle").then(mod => mod.ThemeToggle), {
+  ssr: false,
+});
 
 export function Header() {
   const { t, i18n } = useTranslation();
@@ -145,8 +160,8 @@ export function Header() {
               </Link>
             </Button>
           )}
-          <LanguageToggle />
-          {showThemeToggle && <ThemeToggle />}
+          <DynamicLanguageToggle />
+          {showThemeToggle && <DynamicThemeToggle />}
         </nav>
         </div>
       </div>

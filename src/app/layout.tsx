@@ -4,6 +4,7 @@ import "@/app/globals.css";
 
 import ClientLayout from "@/components/client-layout";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
 import { cn } from "@/lib/utils";
 import { metadata } from "./layout.metadata";
 
@@ -262,8 +263,18 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={cn(roboto.className, "bg-background antialiased")} suppressHydrationWarning>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          roboto.className
+        )}
+      >
         <ClientLayout>{children}</ClientLayout>
+        <Script
+          id="privacybee-widget"
+          src="https://app.privacybee.io/widget.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

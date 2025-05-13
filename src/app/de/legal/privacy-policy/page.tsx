@@ -57,18 +57,6 @@ export default function PrivacyPolicyPageDE() {
   // Effect for mounting and script loading
   useEffect(() => {
     setIsMounted(true);
-    
-    // Handle script loading only once (same script)
-    let script = document.querySelector<HTMLScriptElement>(
-      'script[src="https://app.privacybee.io/widget.js"]'
-    );
-    if (!script) {
-      script = document.createElement('script');
-      script.id = 'privacybee-widget-script';
-      script.src = 'https://app.privacybee.io/widget.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    }
   }, []);
 
   // Second effect synchronizes language between i18n, URL, and component state

@@ -1,6 +1,5 @@
 'use client';
 
-import { CustomCookieConsentBanner } from "@/components/custom-cookie-banner";
 import { Footer } from "@/components/footer";
 import HeadWithHreflang from "@/components/head-with-hreflang";
 import { Header } from "@/components/header";
@@ -8,7 +7,13 @@ import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TranslationProvider from "@/components/translation-provider";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
+
+const DynamicCookieConsentBanner = dynamic(() => 
+  import("@/components/custom-cookie-banner").then(mod => mod.CustomCookieConsentBanner),
+  { ssr: false }
+);
 
 export default function ClientLayout({
   children,
@@ -35,7 +40,7 @@ export default function ClientLayout({
               <main className="flex-grow w-full pt-16 pb-24">{children}</main>
               <Footer />
             </div>
-            <CustomCookieConsentBanner
+            <DynamicCookieConsentBanner
               onAcceptAction={() => {
                 console.log("Global consent accepted");
                 if (typeof window !== "undefined") {

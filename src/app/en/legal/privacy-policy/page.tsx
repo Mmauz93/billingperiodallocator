@@ -43,18 +43,6 @@ export default function PrivacyPolicyPageEN() {
     document.documentElement.style.colorScheme = 'dark';
     document.body.classList.add('dark');
 
-    // Load Privacy Bee script if not already present
-    let script = document.querySelector<HTMLScriptElement>(
-      'script[src="https://app.privacybee.io/widget.js"]'
-    );
-    if (!script) {
-      script = document.createElement('script');
-      script.id = 'privacybee-widget-script';
-      script.src = 'https://app.privacybee.io/widget.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-    
     // Initial language setup based on path
     const initialPathLanguage = getLanguageFromPath(pathname || '');
     if (initialPathLanguage && initialPathLanguage !== i18n.language) {

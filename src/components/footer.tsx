@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FeedbackButton } from "@/components/feedback-button";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { getLanguageFromPath } from "@/translations";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
@@ -80,15 +81,16 @@ export function Footer() {
         <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3">
           {/* Top Row: Calculator & Feedback */}
           <div className="flex flex-wrap justify-center gap-4 min-h-10 items-center">
-            {/* 1. Calculator link (conditional) */}
-          {!isOnCalculatorPage && (
+            {/* 1. Calculator link (now always rendered, conditionally hidden) */}
             <Link
               href={`/${currentLang}/app/`}
-              className="hover:underline transition-colors duration-200"
+              className={cn(
+                "hover:underline transition-colors duration-200",
+                isOnCalculatorPage && "hidden"
+              )}
             >
               {calculatorLabel}
             </Link>
-          )}
             {/* 2. Feedback Button */}
             <FeedbackButton 
               variant="link" 

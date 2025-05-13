@@ -100,16 +100,6 @@ export default function TermsOfUseClient({ initialContent, initialLang }: TermsO
       i18n.changeLanguage(langPrefix);
     }
 
-
-    let script = document.querySelector<HTMLScriptElement>('script[src="https://app.privacybee.io/widget.js"]');
-    if (!script) {
-      script = document.createElement('script');
-      script.src = "https://app.privacybee.io/widget.js";
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-
-
     document.title = t("Legal.termsOfUseTitle") + " | BillSplitter";
 
 
