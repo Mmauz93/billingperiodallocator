@@ -144,7 +144,7 @@ export function CustomCookieConsentBanner({
             role="region"
           >
             <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
-              <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
+              <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                     <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
@@ -154,7 +154,7 @@ export function CustomCookieConsentBanner({
                   </svg>
                 </div>
                 
-                <h2 className="text-lg font-semibold text-center">
+                <h2 id="cookie-dialog-title" className="text-lg font-semibold text-center">
                   {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
                 </h2>
                 

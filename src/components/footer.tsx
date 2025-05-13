@@ -73,7 +73,7 @@ export function Footer() {
             </span>
           </Link>
           {/* "by Siempi AG" is now a sibling to the Link, not a child */}
-          <span className="text-gray-500 text-xs">by {companyLabel}</span>
+          <span className="text-gray-600 dark:text-gray-400 text-xs">by {companyLabel}</span>
         </div>
 
         {/* Navigation Links - Grouped into two rows */}
@@ -126,7 +126,7 @@ export function Footer() {
         </nav>
 
         {/* Copyright notice - fixed width to maintain consistent positioning */}
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-4 md:mt-0 md:w-1/3 md:text-right transition-colors duration-200">
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-4 md:mt-0 md:w-1/3 md:text-right transition-colors duration-200">
           {copyrightLabel}
         </div>
       </div>
