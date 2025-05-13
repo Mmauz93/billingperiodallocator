@@ -31,10 +31,10 @@ export default function AppPageEN() {
       {/* Use hardcoded "Calculator" instead of t() to prevent hydration mismatch */}
       <Breadcrumb currentPage="Calculator" lang="en" />
       
-      {/* Main Page Heading */}
-      <h1 className="text-3xl font-bold my-6 text-center">
+      {/* Main Page Heading - REMOVED */}
+      {/* <h1 className="text-3xl font-bold my-6 text-center">
         {t("AppPage.title", "Calculator")}
-      </h1>
+      </h1> */}
       
       {/* The surrounding layout.tsx provides structure, header, footer */}
       {/* This page only needs to render the core calculator component with proper suspense */}
