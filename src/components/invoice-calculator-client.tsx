@@ -240,28 +240,20 @@ export default function InvoiceCalculatorClient() {
       {hasConsent && gaMeasurementId && <GoogleAnalytics gaId={gaMeasurementId} />}
 
       <div className="container mx-auto px-4 py-8 max-w-4xl grow overflow-hidden w-full">
-        {/* Title and description moved outside the card */}
+        {/* Title and description moved outside the card - Render directly */}
         <div className="text-center mb-8">
-          {!mounted ? (
-            <>
-              <div className="h-9 bg-muted/60 rounded-md animate-pulse w-1/3 mx-auto mb-4" />
-              <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-2/3 mx-auto mb-2" />
-              <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-1/2 mx-auto" />
-            </>
-          ) : (
-            <>
-              <h2 className="text-2xl font-semibold mb-4">
-                {dynamicTitle}
-              </h2>
-              <div className="max-w-2xl mx-auto space-y-2 px-4">
-                <p>{t('InvoiceForm.description_p1')}</p>
-                <p>{t('InvoiceForm.description_p2')}</p>
-              </div>
-            </>
-          )}
+          {/* Remove !mounted condition for h2 and paragraphs */}
+          <h2 className="text-2xl font-semibold mb-4">
+            {/* Render dynamicTitle directly; it will update from useEffect. Or use a placeholder if empty initially. */}
+            {dynamicTitle || t('InvoiceForm.title')}{/* Or a more generic placeholder like "..." */}
+          </h2>
+          <div className="max-w-2xl mx-auto space-y-2 px-4">
+            <p>{t('InvoiceForm.description_p1')}</p>
+            <p>{t('InvoiceForm.description_p2')}</p>
+          </div>
         </div>
         
-        {/* Only show loading indicator when component is not mounted */}
+        {/* Only show loading indicator for the form when component is not mounted (InvoiceForm itself has a more detailed skeleton via dynamic import) */}
         {!mounted && (
           <div className="flex items-center gap-2 justify-center text-muted-foreground text-sm mb-6">
             <Loader2 className="animate-spin h-4 w-4 text-primary" />
