@@ -644,7 +644,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
         </Accordion>
 
           {/* Export Buttons Section */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 border-t border-border/30">
+          <div className="mt-8 w-full flex flex-col items-center sm:flex-row sm:justify-center gap-4 px-4 sm:px-0">
             <Button
                 variant="outline"
                 onClick={handleExportExcel}
