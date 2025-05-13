@@ -30,6 +30,11 @@ export default function AppPageDE() {
       {/* Add breadcrumb navigation for better SEO and user navigation */}
       <Breadcrumb currentPage="Rechner" lang="de" />
       
+      {/* Main Page Heading */}
+      <h1 className="text-3xl font-bold my-6 text-center">
+        {t("AppPage.title", "Rechner")}
+      </h1>
+      
       {/* The surrounding layout.tsx provides structure, header, footer */}
       {/* This page only needs to render the core calculator component with proper suspense */}
       <Suspense fallback={<Loading />}>

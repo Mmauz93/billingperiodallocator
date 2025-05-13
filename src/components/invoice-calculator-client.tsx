@@ -5,7 +5,6 @@ import { CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
-// Import the CalculationCallbackData type from InvoiceForm
 import { CalculationCallbackData } from "@/components/invoice-form";
 import Cookies from 'js-cookie';
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -16,6 +15,18 @@ import { Terminal } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { safeText } from "@/lib/utils";
 import { useTranslation } from '@/translations';
+
+// Import the CalculationCallbackData type from InvoiceForm
+
+
+
+
+
+
+
+
+
+
 
 // Define a type for the demo data that matches the one in InvoiceForm
 type DemoDataType = {
@@ -239,9 +250,9 @@ export default function InvoiceCalculatorClient() {
             </>
           ) : (
             <>
-              <h1 className="text-3xl font-bold mb-4">
+              <h2 className="text-2xl font-semibold mb-4">
                 {dynamicTitle}
-              </h1>
+              </h2>
               <div className="max-w-2xl mx-auto space-y-2 px-4">
                 <p>{t('InvoiceForm.description_p1')}</p>
                 <p>{t('InvoiceForm.description_p2')}</p>
