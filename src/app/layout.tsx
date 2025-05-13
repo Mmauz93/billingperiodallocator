@@ -130,9 +130,32 @@ export default function RootLayout({
                 function setupHreflangTags() {
                   // First remove any existing hreflang/canonical tags to avoid duplicates
                   removeExistingTags();
+
+                  let originalPathname = window.location.pathname;
+
+                  // Normalize the pathname for canonical and hreflang generation
+                  // 1. Split by '/' and filter out empty segments (handles multiple slashes like //)
+                  // 2. Join back with single '/'
+                  // 3. Ensure it starts with a '/'
+                  let normalizedPathname = '/' + originalPathname.split('/').filter(Boolean).join('/');
+                  
+                  // 4. For language root paths (e.g., /en, /de), ensure they have a trailing slash.
+                  //    This makes them consistent with how buildAlternateUrl('en', '/') would generate https://.../en/
+                  //    Also handle the case where originalPathname might be just '/'
+                  const pathSegmentsForNormalization = normalizedPathname.split('/').filter(Boolean);
+                  if (pathSegmentsForNormalization.length === 1 && supportedLanguages.includes(pathSegmentsForNormalization[0])) {
+                      if (normalizedPathname.charAt(normalizedPathname.length - 1) !== '/') {
+                          normalizedPathname += '/';
+                      }
+                  } else if (originalPathname === '/') {
+                      // If the original path was exactly '/', filter(Boolean) + join would make it '',
+                      // so normalizedPathname would be '/'. This is correct.
+                      // No extra action needed here for the root path.
+                  }
                   
                   // Get current path and determine page type
-                  const { pathname } = window.location;
+                  // Use the normalizedPathname for all subsequent logic
+                  const { pathname } = { pathname: normalizedPathname }; // Effectively 'const pathname = normalizedPathname;'
                   const pathSegments = pathname.split('/').filter(Boolean);
                   
                   // Determine current language from URL path
