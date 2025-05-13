@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/faq-section";
 import Image from "next/image";
 import React /*, { Suspense } */ from "react";
+import { useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { useTranslation } from "@/translations";
 
 export default function EnglishLandingPage() {
   const { t, i18n } = useTranslation();
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
     // Force English language 
     if (i18n.language !== 'en') {
       i18n.changeLanguage('en');
@@ -89,11 +86,6 @@ export default function EnglishLandingPage() {
     }
   };
   
-  // Early return null or placeholder if not mounted to avoid hydration mismatch
-  if (!mounted) {
-      return null;
-  }
-
   return (
     <>
       {/* Hero Section */}
@@ -117,7 +109,7 @@ export default function EnglishLandingPage() {
 
       {/* Features Section */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
@@ -134,7 +126,7 @@ export default function EnglishLandingPage() {
             {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
@@ -151,7 +143,7 @@ export default function EnglishLandingPage() {
             {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-all duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 

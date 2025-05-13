@@ -201,7 +201,6 @@ html {
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-color: #121212; /* Add default dark background */
-    font-family: "Roboto", sans-serif;
     font-size: 16px;
     line-height: 1.4;
     overflow-x: hidden; /* Prevent horizontal scrolling at body level */

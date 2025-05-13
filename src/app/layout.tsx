@@ -90,14 +90,15 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                const stylesheets = [
-                  "656e24b8ad9bee56.css",
-                  "c0f2b38205c98c82.css"
-                  // Add other non-critical CSS filenames if any
-                ];
-                stylesheets.forEach(sheetName => {
-                  const link = document.querySelector(\`link[href*="\${sheetName}"]\`);
-                  if (link) {
+                // Target stylesheets loaded by Next.js from the /_next/static/css/ directory
+                const mainStylesheets = document.querySelectorAll('head > link[rel="stylesheet"][href^="/_next/static/css/"]');
+                mainStylesheets.forEach(link => {
+                  // Avoid interfering with critical font CSS if next/font inlines it with a specific attribute
+                  if (link.getAttribute('data-n-g') || link.getAttribute('data-n-href')) {
+                    // These attributes are often used by Next.js for its managed stylesheets.
+                    // Check if it's NOT a font optimization CSS (next/font might inline some critical font CSS)
+                    // This check is a heuristic and might need adjustment based on how next/font handles its CSS.
+                    // For now, we assume all stylesheets under /_next/static/css/ are candidates for deferral.
                     link.rel = 'preload';
                     link.as = 'style';
                     link.onload = () => {
