@@ -18,7 +18,7 @@ interface PrivacyWidgetProps {
 const PrivacyWidget = dynamic<PrivacyWidgetProps>(() => 
   Promise.resolve(({ lang }: PrivacyWidgetProps) => {
     // Construct the widget HTML string
-    const widgetHtml = `<privacybee-widget website-id="cma1q0yid003g14kfg78yzilb" type="dsgvo" lang="${lang}" data-theme="dark"></privacybee-widget>`;
+    const widgetHtml = `<privacybee-widget website-id="cmama28x0005vjo8hyyznlmon" type="dsgvo" lang="${lang}" data-theme="dark"></privacybee-widget>`;
 
     // Return only the div with innerHTML (no visibility logic)
     return <div dangerouslySetInnerHTML={{ __html: widgetHtml }} />;
