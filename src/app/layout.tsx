@@ -84,8 +84,35 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         
+        {/* Script to defer non-critical CSS */}
+        <script
+          id="defer-non-critical-css"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const stylesheets = [
+                  "656e24b8ad9bee56.css",
+                  "c0f2b38205c98c82.css"
+                  // Add other non-critical CSS filenames if any
+                ];
+                stylesheets.forEach(sheetName => {
+                  const link = document.querySelector(\`link[href*="\${sheetName}"]\`);
+                  if (link) {
+                    link.rel = 'preload';
+                    link.as = 'style';
+                    link.onload = () => {
+                      link.onload = null;
+                      link.rel = 'stylesheet';
+                    };
+                  }
+                });
+              })();
+            `,
+          }}
+        />
+        
         {/* 
-          Clean hreflang implementation following Google's official guidance:
+          Clean hreflang implementation following Google\'s official guidance:
           https://developers.google.com/search/docs/specialty/international/localized-versions
           
           This script:
