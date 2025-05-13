@@ -79,7 +79,7 @@ export function Footer() {
         {/* Navigation Links - Grouped into two rows */}
         <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3">
           {/* Top Row: Calculator & Feedback */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 min-h-10 items-center">
             {/* 1. Calculator link (conditional) */}
           {!isOnCalculatorPage && (
             <Link
@@ -100,7 +100,7 @@ export function Footer() {
           </div>
 
           {/* Bottom Row: Legal Links */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 min-h-10 items-center">
             {/* 3. Privacy Policy */}
           <Link
             href={`/${currentLang}/legal/privacy-policy/`}
