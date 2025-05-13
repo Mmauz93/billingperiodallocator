@@ -1,33 +1,26 @@
-"use client";
+import { FaqItem, FaqSection } from "@/components/faq-section";
 
-import { Button } from "@/components/ui/button";
-import { FaqSection } from "@/components/faq-section";
 import Image from "next/image";
-import React /*, { Suspense } */ from "react";
-import { useEffect } from "react";
-import { useRouter } from 'next/navigation';
-import { useTranslation } from "@/translations";
+import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
+import { Metadata } from 'next';
+import React from "react";
+import { getServerSideTranslator } from '@/lib/translation';
 
-export default function EnglishLandingPage() {
-  const { t, i18n } = useTranslation();
-  const router = useRouter();
+// Define or ensure FaqItem is correctly typed if not exported from faq-section
+// export type FaqItem = { question: string; answer: string; };
 
-  useEffect(() => {
-    // Force English language 
-    if (i18n.language !== 'en') {
-      i18n.changeLanguage('en');
-    }
-    
-    // Set document title
-    document.title = t("LandingPage.title", "Home") + " | BillSplitter";
-    
-    // Force scroll to top when component mounts
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0);
-    }
-  }, [i18n, t]);
+export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
+  // Assuming lang will be 'en' for this specific page, but good to use params if generalizing
+  const { t } = getServerSideTranslator(params.lang || 'en'); 
+  return {
+    title: t('LandingPage.title', 'Home') + ' | BillSplitter',
+  };
+}
 
-  // Define default texts for translation keys
+export default async function EnglishLandingPage({ params }: { params: { lang: string }}) {
+  const { t } = getServerSideTranslator(params.lang || 'en'); // Use 'en' or params.lang
+
+  // Define default texts for translation keys (these are fallbacks for t())
   const heroTitle = "Automated Invoice Split Calculator";
   const heroSubtitle = "BillSplitter helps you split invoices across fiscal years accurately and effortlessly. Built for finance professionals and businesses. Fast, simple, precise.";
   const feature1Title = "Accurate Period Allocation";
@@ -39,8 +32,8 @@ export default function EnglishLandingPage() {
   const ctaTitle = "Start Splitting Invoices Now";
   const ctaSubtitle = "Launch the calculator and automate your revenue and expense allocations within seconds.";
   
-  // FAQ content for SEO
-  const faqData = [
+  // FAQ content for SEO (remains the same, as FaqSection handles its own translations now)
+  const faqData: FaqItem[] = [
     {
       question: "How does BillSplitter calculate invoice allocations?",
       answer: "BillSplitter calculates proportional allocations based on the exact number of days in each fiscal period. It divides the total invoice amount by the number of days in the service period, then multiplies by the days in each fiscal year or period."
@@ -63,28 +56,12 @@ export default function EnglishLandingPage() {
     }
   ];
   
-  // Demo data for pre-filling the calculator form
+  // Demo data for pre-filling the calculator form (remains the same)
   const demoEndDate = "2025-04-29";
   const demoStartDate = "2024-11-01";
   const demoAmount = "5000";
   const demoIncludeEndDate = "true";
-  const demoSplitPeriod = "yearly";
-  
-  const handleTestWithDemoData = () => {
-    if (typeof window !== "undefined") {
-      const demoDataForForm = {
-        startDateString: demoStartDate,
-        endDateString: demoEndDate,
-        amount: demoAmount,
-        includeEndDate: demoIncludeEndDate === 'true',
-        splitPeriod: demoSplitPeriod as 'yearly' | 'quarterly' | 'monthly',
-        isDemo: true
-      };
-      sessionStorage.setItem('billSplitterDemoData', JSON.stringify(demoDataForForm));
-      // Navigate to language-specific app route
-      router.push('/en/app');
-    }
-  };
+  const demoSplitPeriod = "yearly" as 'yearly' | 'quarterly' | 'monthly'; // Ensure type
   
   return (
     <>
@@ -97,7 +74,7 @@ export default function EnglishLandingPage() {
             width={64}
             height={64}
             className="mx-auto mb-6 w-16 h-16" 
-            priority
+            priority // Keep priority for LCP elements
           />
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             {t('Landing.heroTitle', { defaultValue: heroTitle })}
@@ -174,14 +151,15 @@ export default function EnglishLandingPage() {
               <p className="text-lg mb-6 text-muted-foreground">
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
-              <Button 
-                size="lg" 
-                onClick={handleTestWithDemoData}
-                className="inline-flex items-center gap-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 group"
-              >
-                {t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}
-                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </Button>
+              <LandingPageClientInteractions 
+                buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}
+                demoStartDate={demoStartDate}
+                demoEndDate={demoEndDate}
+                demoAmount={demoAmount}
+                demoIncludeEndDate={demoIncludeEndDate}
+                demoSplitPeriod={demoSplitPeriod}
+                appPath={`/${params.lang || 'en'}/app`} // Construct app path based on lang
+              />
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
               <Image 
@@ -190,14 +168,14 @@ export default function EnglishLandingPage() {
                 width={240} 
                 height={180} 
                 className="object-contain"
-                priority
+                priority // Keep priority for LCP elements
               />
             </div>
           </div>
         </div>
       </section>
       
-      {/* FAQ/Q&A Section for SEO */}
+      {/* FAQ/Q&A Section for SEO - FaqSection is now a client component */}
       <FaqSection faqData={faqData} />
     </>
   );

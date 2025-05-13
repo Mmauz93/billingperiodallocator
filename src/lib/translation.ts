@@ -167,5 +167,35 @@ export function useTranslation() {
       changeLanguage
     }
   };
+}
+
+// New function for Server Components
+export function getServerSideTranslator(lang: string) {
+  if (!['en', 'de'].includes(lang)) {
+    // Default to 'en' or throw an error if an unsupported language is passed
+    // console.warn(`Unsupported language "${lang}" for getServerSideTranslator, defaulting to 'en'.`);
+    lang = 'en'; 
+  }
+
+  return {
+    t: (key: string, optionsOrDefaultValue?: TranslationOptions | string): string => {
+      let options: TranslationOptions = {};
+      if (typeof optionsOrDefaultValue === 'string') {
+        options = { defaultValue: optionsOrDefaultValue };
+      } else if (optionsOrDefaultValue) {
+        options = optionsOrDefaultValue;
+      }
+
+      const translation = getTranslation(key, lang); // Use the passed 'lang'
+      const finalText = safeText(translation || options.defaultValue || key);
+
+      if (options.values && Object.keys(options.values).length > 0) {
+        return replaceValues(finalText, options.values);
+      }
+      return finalText;
+    },
+    // Optionally, expose the language if needed by the server component
+    // language: lang 
+  };
 } 
  
