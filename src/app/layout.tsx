@@ -94,19 +94,14 @@ export default function RootLayout({
                 // Target stylesheets loaded by Next.js from the /_next/static/css/ directory
                 const mainStylesheets = document.querySelectorAll('head > link[rel="stylesheet"][href^="/_next/static/css/"]');
                 mainStylesheets.forEach(link => {
-                  // Avoid interfering with critical font CSS if next/font inlines it with a specific attribute
-                  if (link.getAttribute('data-n-g') || link.getAttribute('data-n-href')) {
-                    // These attributes are often used by Next.js for its managed stylesheets.
-                    // Check if it's NOT a font optimization CSS (next/font might inline some critical font CSS)
-                    // This check is a heuristic and might need adjustment based on how next/font handles its CSS.
-                    // For now, we assume all stylesheets under /_next/static/css/ are candidates for deferral.
-                    link.rel = 'preload';
-                    link.as = 'style';
-                    link.onload = () => {
-                      link.onload = null;
-                      link.rel = 'stylesheet';
-                    };
-                  }
+                  // Apply deferral to all stylesheets matched by the selector
+                  // The original check for data-n-g or data-n-href might have been too restrictive
+                  link.rel = 'preload';
+                  link.as = 'style';
+                  link.onload = () => {
+                    link.onload = null;
+                    link.rel = 'stylesheet';
+                  };
                 });
               })();
             `,

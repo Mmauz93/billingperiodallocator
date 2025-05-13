@@ -243,10 +243,10 @@ export default function InvoiceCalculatorClient() {
         {/* Title and description moved outside the card - Render directly */}
         <div className="text-center mb-8">
           {/* Remove !mounted condition for h2 and paragraphs */}
-          <h2 className="text-2xl font-semibold mb-4">
+          <h1 className="text-3xl font-bold text-center mb-4">
             {/* Render dynamicTitle directly; it will update from useEffect. Or use a placeholder if empty initially. */}
             {dynamicTitle || t('InvoiceForm.title')}{/* Or a more generic placeholder like "..." */}
-          </h2>
+          </h1>
           <div className="max-w-2xl mx-auto space-y-2 px-4">
             <p>{t('InvoiceForm.description_p1')}</p>
             <p>{t('InvoiceForm.description_p2')}</p>

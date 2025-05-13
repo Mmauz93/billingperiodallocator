@@ -97,6 +97,7 @@ export default function GermanLandingPage() {
             width={64}
             height={64}
             className="mx-auto mb-6 w-16 h-16" 
+            priority
           />
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             {t('Landing.heroTitle', { defaultValue: heroTitle })}

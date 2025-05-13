@@ -1,37 +1,17 @@
 1:"$Sreact.fragment"
-4:I[54046,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","651","static/chunks/651-50af9e0544d03bb7.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","629","static/chunks/629-ba7fb0a43fab8bfa.js","6781","static/chunks/6781-8abf24e17907dc55.js","7177","static/chunks/app/layout-34c7fee9de7410c7.js"],"default"]
-5:I[87555,[],""]
-6:I[31295,[],""]
-7:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
-8:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","651","static/chunks/651-50af9e0544d03bb7.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","629","static/chunks/629-ba7fb0a43fab8bfa.js","6781","static/chunks/6781-8abf24e17907dc55.js","7177","static/chunks/app/layout-34c7fee9de7410c7.js"],""]
-a:I[59665,[],"MetadataBoundary"]
-c:I[59665,[],"OutletBoundary"]
-f:I[74911,[],"AsyncMetadataOutlet"]
-11:I[59665,[],"ViewportBoundary"]
-13:I[26614,[],""]
-:HL["/_next/static/css/e3b59f1373e4c6cf.css","style"]
+3:I[54046,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","651","static/chunks/651-50af9e0544d03bb7.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","629","static/chunks/629-ba7fb0a43fab8bfa.js","6781","static/chunks/6781-8abf24e17907dc55.js","7177","static/chunks/app/layout-34c7fee9de7410c7.js"],"default"]
+4:I[87555,[],""]
+5:I[31295,[],""]
+6:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
+7:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","651","static/chunks/651-50af9e0544d03bb7.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","629","static/chunks/629-ba7fb0a43fab8bfa.js","6781","static/chunks/6781-8abf24e17907dc55.js","7177","static/chunks/app/layout-34c7fee9de7410c7.js"],""]
+9:I[59665,[],"MetadataBoundary"]
+b:I[59665,[],"OutletBoundary"]
+e:I[74911,[],"AsyncMetadataOutlet"]
+10:I[59665,[],"ViewportBoundary"]
+12:I[26614,[],""]
+:HL["/_next/static/css/c0fa4ec23e40af53.css","style"]
 :HL["/_next/static/css/c0f2b38205c98c82.css","style"]
-2:T4de,
-              (function() {
-                // Target stylesheets loaded by Next.js from the /_next/static/css/ directory
-                const mainStylesheets = document.querySelectorAll('head > link[rel="stylesheet"][href^="/_next/static/css/"]');
-                mainStylesheets.forEach(link => {
-                  // Avoid interfering with critical font CSS if next/font inlines it with a specific attribute
-                  if (link.getAttribute('data-n-g') || link.getAttribute('data-n-href')) {
-                    // These attributes are often used by Next.js for its managed stylesheets.
-                    // Check if it's NOT a font optimization CSS (next/font might inline some critical font CSS)
-                    // This check is a heuristic and might need adjustment based on how next/font handles its CSS.
-                    // For now, we assume all stylesheets under /_next/static/css/ are candidates for deferral.
-                    link.rel = 'preload';
-                    link.as = 'style';
-                    link.onload = () => {
-                      link.onload = null;
-                      link.rel = 'stylesheet';
-                    };
-                  }
-                });
-              })();
-            3:T1566,
+2:T1566,
               (function() {
                 // Configuration
                 const siteUrl = 'https://billsplitter.siempi.ch';
@@ -146,17 +126,17 @@ f:I[74911,[],"AsyncMetadataOutlet"]
                   setupHreflangTags();
                 };
               })();
-            0:{"P":null,"b":"OdyxDExnS7AgasxOIgVho","p":"","c":["","en","legal","terms-of-use",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["terms-of-use",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/e3b59f1373e4c6cf.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/c0f2b38205c98c82.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"id":"defer-non-critical-css","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased __className_22ceb1","children":[["$","$L4",null,{"children":["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L7",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L8",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["terms-of-use",["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L9",["$","$La",null,{"children":"$Lb"}],null,["$","$Lc",null,{"children":["$Ld","$Le",["$","$Lf",null,{"promise":"$@10"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","tCIJzZ5PHWzjkDUrInGkc",{"children":[["$","$L11",null,{"children":"$L12"}],null]}],null]}],false]],"m":"$undefined","G":["$13","$undefined"],"s":false,"S":true}
-14:"$Sreact.suspense"
-15:I[74911,[],"AsyncMetadata"]
-b:["$","$14",null,{"fallback":null,"children":["$","$L15",null,{"promise":"$@16"}]}]
-e:null
-12:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+            0:{"P":null,"b":"Yle_eg67gfUjcseqF3fwj","p":"","c":["","en","legal","terms-of-use",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["terms-of-use",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/c0fa4ec23e40af53.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/c0f2b38205c98c82.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"id":"defer-non-critical-css","dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // Target stylesheets loaded by Next.js from the /_next/static/css/ directory\n                const mainStylesheets = document.querySelectorAll('head > link[rel=\"stylesheet\"][href^=\"/_next/static/css/\"]');\n                mainStylesheets.forEach(link => {\n                  // Apply deferral to all stylesheets matched by the selector\n                  // The original check for data-n-g or data-n-href might have been too restrictive\n                  link.rel = 'preload';\n                  link.as = 'style';\n                  link.onload = () => {\n                    link.onload = null;\n                    link.rel = 'stylesheet';\n                  };\n                });\n              })();\n            "}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased __className_22ceb1","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L7",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["terms-of-use",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L8",["$","$L9",null,{"children":"$La"}],null,["$","$Lb",null,{"children":["$Lc","$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","x6gnqWt3pGZGgtKNkTMqN",{"children":[["$","$L10",null,{"children":"$L11"}],null]}],null]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
+13:"$Sreact.suspense"
+14:I[74911,[],"AsyncMetadata"]
+a:["$","$13",null,{"fallback":null,"children":["$","$L14",null,{"promise":"$@15"}]}]
 d:null
-16:{"metadata":[["$","title","0",{"children":"Terms of Use | BillSplitter"}],["$","meta","1",{"name":"description","content":"Terms and conditions for using the BillSplitter service. Please read these terms carefully before using our platform."}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","meta","3",{"name":"googlebot","content":"index, follow"}],["$","link","4",{"rel":"canonical","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","6",{"rel":"alternate","hrefLang":"de","href":"https://billsplitter.siempi.ch/de/legal/terms-of-use/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","8",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}]],"error":null,"digest":"$undefined"}
-10:{"metadata":"$16:metadata","error":null,"digest":"$undefined"}
-17:I[82962,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6146","static/chunks/6146-bd9f67f6d3ca33f8.js","6781","static/chunks/6781-8abf24e17907dc55.js","3042","static/chunks/app/en/legal/terms-of-use/page-275f53d4e9aff37f.js"],"default"]
-18:T9d0,## 1. General Information
+11:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+c:null
+15:{"metadata":[["$","title","0",{"children":"Terms of Use | BillSplitter"}],["$","meta","1",{"name":"description","content":"Terms and conditions for using the BillSplitter service. Please read these terms carefully before using our platform."}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","meta","3",{"name":"googlebot","content":"index, follow"}],["$","link","4",{"rel":"canonical","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","6",{"rel":"alternate","hrefLang":"de","href":"https://billsplitter.siempi.ch/de/legal/terms-of-use/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://billsplitter.siempi.ch/en/legal/terms-of-use/"}],["$","link","8",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}]],"error":null,"digest":"$undefined"}
+f:{"metadata":"$15:metadata","error":null,"digest":"$undefined"}
+16:I[82962,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6146","static/chunks/6146-bd9f67f6d3ca33f8.js","6781","static/chunks/6781-8abf24e17907dc55.js","3042","static/chunks/app/en/legal/terms-of-use/page-275f53d4e9aff37f.js"],"default"]
+17:T9d0,## 1. General Information
 
 These Terms of Service ("Terms") govern your access to and use of https://billsplitter.siempi.ch/ ("Website"), operated by Siempi AG ("we", "us"). Our Website provides an invoice allocation calculator that helps you split invoices across fiscal years and periods in compliance with accounting standards. By accessing or using the Website, you agree to these Terms.
 
@@ -214,4 +194,4 @@ Birkenstrasse 47
 info@siempi.ch
 
 Legal seat: Risch  
-Registration number: CHE-369.093.5569:["$","$L17",null,{"initialContent":"$18","initialLang":"en"}]
+Registration number: CHE-369.093.5568:["$","$L16",null,{"initialContent":"$17","initialLang":"en"}]
