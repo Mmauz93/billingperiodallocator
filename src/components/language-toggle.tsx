@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LazyMotion, domAnimation, motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +31,7 @@ function setCookie(name: string, value: string, days: number) {
 }
 
 export default function LanguageToggle() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -42,9 +42,9 @@ export default function LanguageToggle() {
     setMounted(true);
   }, []);
 
-  const handleLanguageChange = (lng: string) => {
+  const handleLanguageChange = (lang: string) => {
     // Don't do anything if the language is already set to the target language
-    if (i18n.language === lng) {
+    if (i18n.language === lang) {
       setOpen(false);
       return;
     }
@@ -57,9 +57,9 @@ export default function LanguageToggle() {
     );
     
     // Save language in localStorage for persistence
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     // Set cookie for middleware persistence
-    setCookie('NEXT_LOCALE', lng, 365); 
+    setCookie('NEXT_LOCALE', lang, 365); 
     
     // Close dropdown menu
     setOpen(false);
@@ -76,10 +76,10 @@ export default function LanguageToggle() {
       
       if (currentLang) {
         // Replace language segment in path
-        newPath = pathname.replace(`/${currentLang}`, `/${lng}`);
+        newPath = pathname.replace(`/${currentLang}`, `/${lang}`);
       } else {
         // If no language in URL, add it
-        newPath = `/${lng}${pathname}`;
+        newPath = `/${lang}${pathname}`;
       }
       
       // Different handling based on page type
@@ -91,22 +91,22 @@ export default function LanguageToggle() {
         // 2. Change the language after URL is updated
         // This sequence is important to prevent the race condition
         setTimeout(() => {
-          changeLanguage(lng);
+          changeLanguage(lang);
           
           // 3. Dispatch event so other components know to update
           document.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: lng, source: 'language-toggle' } 
+            detail: { language: lang, source: 'language-toggle' } 
           }));
         }, 0);
       } else {
         // For regular pages, use router navigation
         // Change language first to avoid flashing
-        changeLanguage(lng);
+        changeLanguage(lang);
         router.push(newPath);
       }
     } else {
       // If no pathname available, just change the language
-      changeLanguage(lng);
+      changeLanguage(lang);
     }
   };
 
@@ -118,73 +118,65 @@ export default function LanguageToggle() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative w-10 h-10 flex items-center justify-center"
-          onClick={(e) => {
-            // Prevent event propagation to avoid layout shifts
-            e.stopPropagation();
-          }}
-        >
-          <div className="relative w-5 h-5 flex items-center justify-center">
-            <Globe className="h-5 w-5 text-foreground hover:text-primary" />
-          </div>
-          <span className="sr-only">Toggle language</span>
+        <Button variant="ghost" size="icon" aria-label={t("LanguageToggle.toggleLanguage")}>
+          <Globe className="size-5" />
+          <span className="sr-only">{t("LanguageToggle.toggleLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
-      <AnimatePresence>
-        {open && (
-          <DropdownMenuContent 
-            align="end" 
-            side="top" 
-            sideOffset={4} 
-            className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
-            asChild
-            forceMount
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              transition={{ duration: 0.15 }}
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence>
+          {open && (
+            <DropdownMenuContent 
+              align="end" 
+              side="top" 
+              sideOffset={4} 
+              className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
+              asChild
+              forceMount
             >
-              <DropdownMenuItem 
-                onClick={() => handleLanguageChange("en")}
-                className={`cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                transition={{ duration: 0.15 }}
               >
-                <ReactCountryFlag
-                  countryCode="GB"
-                  svg
-                  style={{
-                    width: "1.2em",
-                    height: "1.2em",
-                    marginRight: "0.5rem",
-                  }}
-                  title="English"
-                />
-                <span className={isEnglish ? "font-bold" : ""}>English</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handleLanguageChange("de")}
-                className={`cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
-              >
-                <ReactCountryFlag
-                  countryCode="DE"
-                  svg
-                  style={{
-                    width: "1.2em",
-                    height: "1.2em",
-                    marginRight: "0.5rem",
-                  }}
-                  title="Deutsch"
-                />
-                <span className={isGerman ? "font-bold" : ""}>Deutsch</span>
-              </DropdownMenuItem>
-            </motion.div>
-          </DropdownMenuContent>
-        )}
-      </AnimatePresence>
+                <DropdownMenuItem 
+                  onClick={() => handleLanguageChange("en")}
+                  className={`cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
+                >
+                  <ReactCountryFlag
+                    countryCode="GB"
+                    svg
+                    style={{
+                      width: "1.2em",
+                      height: "1.2em",
+                      marginRight: "0.5rem",
+                    }}
+                    title="English"
+                  />
+                  <span className={isEnglish ? "font-bold" : ""}>English</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleLanguageChange("de")}
+                  className={`cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
+                >
+                  <ReactCountryFlag
+                    countryCode="DE"
+                    svg
+                    style={{
+                      width: "1.2em",
+                      height: "1.2em",
+                      marginRight: "0.5rem",
+                    }}
+                    title="Deutsch"
+                  />
+                  <span className={isGerman ? "font-bold" : ""}>Deutsch</span>
+                </DropdownMenuItem>
+              </motion.div>
+            </DropdownMenuContent>
+          )}
+        </AnimatePresence>
+      </LazyMotion>
     </DropdownMenu>
   );
 }

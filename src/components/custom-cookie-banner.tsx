@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LazyMotion, domAnimation, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -130,66 +130,68 @@ export function CustomCookieConsentBanner({
   };
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div 
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className={getPositionClass()}
-          aria-label="Cookie consent banner"
-          aria-live="polite"
-          role="region"
-        >
-          <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
-            <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                  <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-                  <path d="M8.5 8.5v.01" />
-                  <path d="M16 15.5v.01" />
-                  <path d="M12 12v.01" />
-                </svg>
-              </div>
-              
-              <h2 className="text-lg font-semibold text-center">
-                {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
-              </h2>
-              
-              <p className="text-sm text-center text-muted-foreground">
-                {t('ConsentBanner.message')}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 justify-center w-full mt-1">
-                <Button
-                  variant="default"
-                  className="w-full sm:w-auto"
-                  onClick={handleAccept}
-                  autoFocus
-                >
-                  {t('ConsentBanner.acceptButton')}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  onClick={handleDecline}
-                >
-                  {t('ConsentBanner.declineButton')}
-                </Button>
-              </div>
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence>
+        {visible && (
+          <motion.div 
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className={getPositionClass()}
+            aria-label="Cookie consent banner"
+            aria-live="polite"
+            role="region"
+          >
+            <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
+              <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
+                    <path d="M8.5 8.5v.01" />
+                    <path d="M16 15.5v.01" />
+                    <path d="M12 12v.01" />
+                  </svg>
+                </div>
+                
+                <h2 className="text-lg font-semibold text-center">
+                  {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
+                </h2>
+                
+                <p className="text-sm text-center text-muted-foreground">
+                  {t('ConsentBanner.message')}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 justify-center w-full mt-1">
+                  <Button
+                    variant="default"
+                    className="w-full sm:w-auto"
+                    onClick={handleAccept}
+                    autoFocus
+                  >
+                    {t('ConsentBanner.acceptButton')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                    onClick={handleDecline}
+                  >
+                    {t('ConsentBanner.declineButton')}
+                  </Button>
+                </div>
 
-              <button
-                type="button"
-                onClick={onOpenPrivacyAction}
-                className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mt-3"
-              >
-                {t('ConsentBanner.learnMoreButton')}
-              </button>
+                <button
+                  type="button"
+                  onClick={onOpenPrivacyAction}
+                  className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mt-3"
+                >
+                  {t('ConsentBanner.learnMoreButton')}
+                </button>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </LazyMotion>
   );
 } 

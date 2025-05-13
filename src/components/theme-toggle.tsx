@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LazyMotion, domAnimation, motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,22 +84,23 @@ export function ThemeToggle() {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <AnimatePresence>
-        {open && (
-          <DropdownMenuContent 
-            align="end" 
-            side="top" 
-            sideOffset={4} 
-            className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
-            asChild
-            forceMount
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              transition={{ duration: 0.15 }}
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence>
+          {open && (
+            <DropdownMenuContent 
+              align="end" 
+              side="top" 
+              sideOffset={4} 
+              className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
+              asChild
+              forceMount
             >
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                transition={{ duration: 0.15 }}
+              >
         <DropdownMenuItem
           onClick={() => handleThemeChange("light")}
           className={`cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
@@ -118,10 +119,11 @@ export function ThemeToggle() {
         >
           {t("ThemeToggle.system")}
         </DropdownMenuItem>
-            </motion.div>
-      </DropdownMenuContent>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </DropdownMenuContent>
+          )}
+        </AnimatePresence>
+      </LazyMotion>
     </DropdownMenu>
   );
 }
