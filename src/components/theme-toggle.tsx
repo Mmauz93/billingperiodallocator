@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
@@ -21,7 +21,7 @@ export function ThemeToggle() {
   const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [sunIconStyle, setSunIconStyle] = useState({});
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Add effect to detect system preference on first load
   useEffect(() => {
@@ -51,15 +51,31 @@ export function ThemeToggle() {
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
     setOpen(false); // Close dropdown after selection
+    
+    // Remove focus from button to reset its visual state
+    if (buttonRef.current) {
+      buttonRef.current.blur();
+    }
   };
 
   // Determine the label text, use default English on server/pre-mount
   const toggleLabel = isMounted ? t("ThemeToggle.toggleTheme") : "Toggle theme";
 
-  // Render null if not mounted to prevent hydration errors
+  // Render the full button structure even before mounting, but disable interactivity
   if (!isMounted) {
-    // Returning a simple div or null ensures no interactive elements mismatch
-    return <div className="w-10 h-10" />; // Or return null;
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled
+        aria-label="Toggle theme"
+        className="header-toggle-button relative w-10 h-10 text-foreground !opacity-100"
+      >
+        <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
+          <Sun className="h-[1.2rem] w-[1.2rem] absolute pointer-events-none text-foreground" />
+        </div>
+      </Button>
+    );
   }
 
   // Render the full dropdown menu once mounted
@@ -69,8 +85,9 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
+          ref={buttonRef}
           aria-label={toggleLabel}
-          className="text-foreground hover:text-primary relative w-10 h-10"
+          className="header-toggle-button relative w-10 h-10 text-foreground"
           onClick={(e) => {
             // Prevent event propagation to avoid layout shifts
             e.stopPropagation();
@@ -80,9 +97,6 @@ export function ThemeToggle() {
             {/* <AccessibleIcon label={toggleLabel}> */}
               <Sun 
                 className="h-[1.2rem] w-[1.2rem] absolute rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0 pointer-events-none" 
-                style={sunIconStyle}
-                onMouseEnter={() => setSunIconStyle({ color: 'red' })} 
-                onMouseLeave={() => setSunIconStyle({})} 
               />
               <Moon className="h-[1.2rem] w-[1.2rem] absolute rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100 pointer-events-none" />
             {/* </AccessibleIcon> */}
@@ -108,21 +122,24 @@ export function ThemeToggle() {
               >
         <DropdownMenuItem
           onClick={() => handleThemeChange("light")}
-          className={`!cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
+          className={`header-dropdown-item ${theme === "light" ? "font-medium" : ""}`}
+          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none">{t("ThemeToggle.light")}</span>
+          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.light")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("dark")}
-          className={`!cursor-pointer hover:text-primary ${theme === "dark" ? "font-medium" : ""}`}
+          className={`header-dropdown-item ${theme === "dark" ? "font-medium" : ""}`}
+          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none">{t("ThemeToggle.dark")}</span>
+          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.dark")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("system")}
-          className={`!cursor-pointer hover:text-primary ${theme === "system" ? "font-medium" : ""}`}
+          className={`header-dropdown-item ${theme === "system" ? "font-medium" : ""}`}
+          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none">{t("ThemeToggle.system")}</span>
+          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.system")}</span>
         </DropdownMenuItem>
               </motion.div>
             </DropdownMenuContent>

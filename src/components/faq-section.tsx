@@ -44,13 +44,13 @@ export function FaqSection({
           <AccordionItem 
             key={index} 
             value={`item-${index}`}
-            className="bg-muted/30 rounded-xl px-6 py-2 border border-border cursor-default"
+            className="bg-card rounded-xl px-6 py-2 border border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-default"
           >
             {/* Assuming faq.question and faq.answer are pre-translated or fine as defaults */}
             <AccordionTrigger className="text-xl font-semibold text-foreground hover:no-underline cursor-pointer">
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
+            <AccordionContent className="text-muted-foreground pt-2">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

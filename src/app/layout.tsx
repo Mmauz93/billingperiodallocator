@@ -128,6 +128,76 @@ export default function RootLayout({
             `,
           }}
         />
+        
+        {/* Anti-flicker script to prevent content shifts during load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Prevent scroll restoration jumping during page load
+                if ('scrollRestoration' in history) {
+                  // Disable automatic scroll restoration
+                  history.scrollRestoration = 'manual';
+                }
+                
+                // Store current scroll position on reload only
+                let isReload = false;
+                let scrollPos = { x: 0, y: 0 };
+                
+                // Check if this is a reload (not initial page load)
+                try {
+                  if (performance && performance.navigation && performance.navigation.type === 1) {
+                    isReload = true;
+                    scrollPos = { x: window.scrollX, y: window.scrollY };
+                  }
+                } catch (e) {
+                  // Performance API might not be available in all browsers
+                }
+                
+                // Add preload class without hiding content completely (to maintain layout dimensions)
+                document.documentElement.classList.add('loading');
+                
+                // Fix content in place instead of hiding it completely
+                const style = document.createElement('style');
+                style.id = 'anti-flicker-style';
+                style.textContent = \`
+                  html.loading * {
+                    transition: none !important;
+                  }
+                  
+                  body {
+                    opacity: 0.99; /* Very slight transparency to prevent flicker without dimension changes */
+                  }
+                \`;
+                document.head.appendChild(style);
+                
+                // Remove loading classes after content is ready
+                window.addEventListener('load', function() {
+                  // Small delay to ensure all resources are loaded
+                  setTimeout(function() {
+                    // First make content visible
+                    const styleElement = document.getElementById('anti-flicker-style');
+                    if (styleElement) styleElement.remove();
+                    
+                    // Then restore scroll position if this was a reload
+                    if (isReload) {
+                      window.scrollTo(scrollPos.x, scrollPos.y);
+                    }
+                    
+                    // Finally re-enable transitions
+                    setTimeout(function() {
+                      document.documentElement.classList.remove('loading');
+                      // Re-enable automatic scroll restoration for future navigations
+                      if ('scrollRestoration' in history) {
+                        history.scrollRestoration = 'auto';
+                      }
+                    }, 100);
+                  }, 50);
+                });
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         className={cn(

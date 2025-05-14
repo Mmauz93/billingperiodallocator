@@ -6,13 +6,25 @@ interface InputProps extends React.ComponentProps<"input"> {
   helperText?: string;
   error?: string;
   id?: string;
+  onDoubleClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
 }
 
 function Input(
-  { className, type, helperText, error, id, ...props }: InputProps,
+  { className, type, helperText, error, id, onDoubleClick, ...props }: InputProps,
   ref: React.Ref<HTMLInputElement>,
 ) {
   const errorId = error ? `${id}-error` : undefined;
+  
+  // Handle double click to select all text
+  const handleDoubleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    // Call the target's select method to select all text
+    e.currentTarget.select();
+    
+    // Also call any provided onDoubleClick handler (to maintain existing behavior)
+    if (onDoubleClick) {
+      onDoubleClick(e);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -23,6 +35,7 @@ function Input(
         data-slot="input"
         aria-invalid={!!error}
         aria-describedby={errorId}
+        onDoubleClick={handleDoubleClick}
         className={cn(
           "flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
           "shadow-sm",

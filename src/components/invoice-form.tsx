@@ -298,6 +298,14 @@ export function InvoiceForm({
         }
     }, [t, onCalculateAction, setIsCalculating, setButtonText, setShowSuccessGlow]);
 
+    // Effect to ensure splitPeriod always has a value
+    useEffect(() => {
+        const currentSplitPeriod = form.getValues('splitPeriod');
+        if (!currentSplitPeriod) {
+            form.setValue('splitPeriod', 'yearly');
+        }
+    }, [form]);
+
     // Effect for Initial Data Loading - ONE EFFECT TO RULE THEM ALL
     useEffect(() => {
         // Set mounted state and button text
@@ -556,25 +564,30 @@ export function InvoiceForm({
                                                 }} 
                                                 onBlur={() => form.trigger("startDateString")} 
                                                 placeholder={dateExamplePlaceholder} 
-                                                className={`w-full pr-10 ${form.formState.errors.startDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
+                                                className={`w-full pr-16 ${form.formState.errors.startDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
                                                 autoFocus 
                                                 id="startDateString"
                                                 name="startDateString"
                                             />
                                             {field.value && !form.formState.errors.startDateString && (
-                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                <div className="absolute inset-y-0 right-12 flex items-center z-[1]">
                                                     <CheckCircle className="h-4 w-4 text-green-500" />
                                                 </div>
                                             )}
                                             {form.formState.errors.startDateString && (
-                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                <div className="absolute inset-y-0 right-12 flex items-center z-[1]">
                                                     <AlertCircle className="h-4 w-4 text-destructive" />
                                                 </div>
                                             )}
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center z-[1]">
                                                 <PopoverTrigger asChild>
-                                                    <Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date">
-                                                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        className="h-7 w-7 p-0 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-200 cursor-pointer" 
+                                                        aria-label="Pick a date"
+                                                    >
+                                                        <CalendarIcon className="h-4 w-4 transition-colors duration-200" />
                                                     </Button>
                                                 </PopoverTrigger>
                                             </div>
@@ -590,7 +603,7 @@ export function InvoiceForm({
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage className="text-xs mt-1">{form.formState.errors.startDateString?.message}</FormMessage>
+                                <FormMessage className="text-xs mt-1 error-message">{form.formState.errors.startDateString?.message}</FormMessage>
                             </FormItem>
                         )} 
                     />
@@ -611,24 +624,29 @@ export function InvoiceForm({
                                                 }} 
                                                 onBlur={() => form.trigger("endDateString")} 
                                                 placeholder={dateExamplePlaceholder} 
-                                                className={`w-full pr-10 ${form.formState.errors.endDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
+                                                className={`w-full pr-16 ${form.formState.errors.endDateString ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20" : ""}`} 
                                                 id="endDateString"
                                                 name="endDateString"
                                             />
                                             {field.value && !form.formState.errors.endDateString && (
-                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                <div className="absolute inset-y-0 right-12 flex items-center z-[1]">
                                                     <CheckCircle className="h-4 w-4 text-green-500" />
                                                 </div>
                                             )}
                                             {form.formState.errors.endDateString && (
-                                                <div className="absolute inset-y-0 right-10 flex items-center z-[1]">
+                                                <div className="absolute inset-y-0 right-12 flex items-center z-[1]">
                                                     <AlertCircle className="h-4 w-4 text-destructive" />
                                                 </div>
                                             )}
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center z-[1]">
                                                 <PopoverTrigger asChild>
-                                                    <Button type="button" variant="ghost" className="h-7 w-7 p-0" aria-label="Pick a date">
-                                                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        className="h-7 w-7 p-0 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-200 cursor-pointer" 
+                                                        aria-label="Pick a date"
+                                                    >
+                                                        <CalendarIcon className="h-4 w-4 transition-colors duration-200" />
                                                     </Button>
                                                 </PopoverTrigger>
                                             </div>
@@ -648,7 +666,7 @@ export function InvoiceForm({
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage className="text-xs mt-1">{form.formState.errors.endDateString?.message}</FormMessage>
+                                <FormMessage className="text-xs mt-1 error-message">{form.formState.errors.endDateString?.message}</FormMessage>
                             </FormItem>
                         )} 
                     />
@@ -668,6 +686,7 @@ export function InvoiceForm({
                                     onCheckedChange={field.onChange}
                                     id="includeEndDate"
                                     name="includeEndDate"
+                                    className="include-end-date-switch"
                                 />
                             </FormControl>
                         </FormItem>
@@ -691,17 +710,39 @@ export function InvoiceForm({
                                 >
                                     <FormControl>
                                         <SelectTrigger className="w-full" id="splitPeriod">
-                                            <SelectValue />
+                                            <SelectValue placeholder={t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })} />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
-                                        <SelectItem key="yearly" value="yearly">
+                                    <SelectContent 
+                                        className="!fixed !z-[9999] !overflow-visible shadow-lg" 
+                                        position="popper" 
+                                        sideOffset={8}
+                                        align="center"
+                                        avoidCollisions
+                                        collisionPadding={20}
+                                    >
+                                        <SelectItem 
+                                            key="yearly" 
+                                            value="yearly" 
+                                            className="select-dropdown-item !cursor-pointer"
+                                            style={{cursor: 'pointer'}}
+                                        >
                                             {`${t('InvoiceForm.periodYearly', { defaultValue: 'Yearly' })}`}
                                         </SelectItem>
-                                        <SelectItem key="quarterly" value="quarterly">
+                                        <SelectItem 
+                                            key="quarterly" 
+                                            value="quarterly" 
+                                            className="select-dropdown-item !cursor-pointer"
+                                            style={{cursor: 'pointer'}}
+                                        >
                                             {`${t('InvoiceForm.periodQuarterly', { defaultValue: 'Quarterly' })}`}
                                         </SelectItem>
-                                        <SelectItem key="monthly" value="monthly">
+                                        <SelectItem 
+                                            key="monthly" 
+                                            value="monthly" 
+                                            className="select-dropdown-item !cursor-pointer"
+                                            style={{cursor: 'pointer'}}
+                                        >
                                             {`${t('InvoiceForm.periodMonthly', { defaultValue: 'Monthly' })}`}
                                         </SelectItem>
                                     </SelectContent>
@@ -763,7 +804,7 @@ export function InvoiceForm({
                                             )}
                                         </div>
                                     </div>
-                                    <FormMessage />
+                                    <FormMessage className="text-xs mt-1 error-message" />
                                 </FormItem>
                             )} 
                         />

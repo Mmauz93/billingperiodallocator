@@ -110,7 +110,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
 
       {/* Features Section */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
@@ -127,7 +127,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
@@ -144,7 +144,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 
@@ -165,7 +165,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
 
       {/* Call to Action */}
       <section className="py-20 px-6 mb-16">
-        <div className="max-w-4xl mx-auto bg-muted/30 shadow-lg rounded-xl border border-border overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
             <div className="text-left flex-1">
               <h2 className="text-3xl font-bold mb-4 text-primary">

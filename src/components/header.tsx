@@ -5,30 +5,13 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import LanguageToggle from "@/components/language-toggle";
 import Link from "next/link";
-import dynamic from "next/dynamic"; // <-- Add this import
+import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
 
-// import LanguageToggle from "@/components/language-toggle"; // Remove static import
-
-// import { MainNav } from "@/components/main-nav"; // TODO: Resolve path or remove if not used
-// import { MobileNav } from "@/components/mobile-nav"; // TODO: Resolve path or remove if not used
-// import { ThemeToggle } from "@/components/theme-toggle"; // Remove static import
-
-// Define a placeholder component
-const Placeholder = () => <div className="w-10 h-10" />;
-
-// Dynamic imports for toggles
-const DynamicLanguageToggle = dynamic(() => import("@/components/language-toggle"), {
-  ssr: false,
-  loading: () => <Placeholder />,
-});
-
-const DynamicThemeToggle = dynamic(() => import("@/components/theme-toggle").then(mod => mod.ThemeToggle), {
-  ssr: false,
-  loading: () => <Placeholder />,
-});
+// Import components directly instead of using dynamic imports
 
 export function Header() {
   const { t, i18n } = useTranslation();
@@ -153,19 +136,31 @@ export function Header() {
           {/* <MobileNav /> */}
           <nav className="flex items-center space-x-2">
           {showGetStartedButton && (
-            <Button 
-              asChild
-              variant="outline" 
-              size="sm" 
-              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
-            >
-              <Link href={appPath}>
-                {t("General.getStarted", { defaultValue: "Split Invoice" })}
-              </Link>
-            </Button>
+            mounted ? (
+              <Button 
+                asChild
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
+              >
+                <Link href={appPath}>
+                  {t("General.getStarted", { defaultValue: "Split Invoice" })}
+                </Link>
+              </Button>
+            ) : (
+              // Server-side non-interactive version with identical styling
+              <Button 
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer !opacity-100"
+                disabled
+              >
+                Split Invoice
+              </Button>
+            )
           )}
-          <DynamicLanguageToggle />
-          {showThemeToggle && <DynamicThemeToggle />}
+          <LanguageToggle />
+          {showThemeToggle && <ThemeToggle />}
         </nav>
         </div>
       </div>

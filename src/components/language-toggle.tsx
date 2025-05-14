@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES, changeLanguage } from "@/translations";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ export default function LanguageToggle() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Ensure hydration works properly
   useEffect(() => {
@@ -46,6 +47,10 @@ export default function LanguageToggle() {
     // Don't do anything if the language is already set to the target language
     if (i18n.language === lang) {
       setOpen(false);
+      // Remove focus from button to reset its visual state
+      if (buttonRef.current) {
+        buttonRef.current.blur();
+      }
       return;
     }
     
@@ -80,16 +85,42 @@ export default function LanguageToggle() {
       // The NEXT_LOCALE cookie will be used by the server to render the correct language
       router.push(newPath);
 
+      // Remove focus from button to reset its visual state
+      if (buttonRef.current) {
+        buttonRef.current.blur();
+      }
     } else {
       // If no pathname available, just change the language (fallback, less ideal)
       // This might still rely on client-side changeLanguage if no navigation occurs.
       // For full SC compatibility, a navigation is preferred.
       // Consider if this case is still needed or can be removed if pathname is always available.
       changeLanguage(lang); 
+      
+      // Remove focus from button to reset its visual state
+      if (buttonRef.current) {
+        buttonRef.current.blur();
+      }
     }
   };
 
-  if (!mounted) return <div className="w-10 h-10" />;
+  if (!mounted) {
+    // Instead of returning a placeholder div, render the full button structure for SSR
+    // with exact same styling as the mounted version
+    return (
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        disabled
+        aria-label="Toggle language"
+        className="header-toggle-button relative w-10 h-10 text-foreground !opacity-100"
+      >
+        <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
+          <Globe className="h-[1.2rem] w-[1.2rem] pointer-events-none text-foreground" />
+        </div>
+        <span className="sr-only">Toggle language</span>
+      </Button>
+    );
+  }
 
   const isEnglish = i18n.language === "en";
   const isGerman = i18n.language === "de";
@@ -97,7 +128,13 @@ export default function LanguageToggle() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("LanguageToggle.toggleLanguage")} className="text-foreground hover:text-primary relative w-10 h-10">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          ref={buttonRef}
+          aria-label={t("LanguageToggle.toggleLanguage")} 
+          className="header-toggle-button relative w-10 h-10 text-foreground"
+        >
           <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
             <Globe className="h-[1.2rem] w-[1.2rem] pointer-events-none" />
           </div>
@@ -123,7 +160,8 @@ export default function LanguageToggle() {
               >
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("en")}
-                  className={`!cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
+                  className={`header-dropdown-item ${isEnglish ? "font-medium" : ""}`}
+                  style={{ cursor: 'pointer' }}
                 >
                   <ReactCountryFlag
                     countryCode="GB"
@@ -132,15 +170,17 @@ export default function LanguageToggle() {
                       width: "1.2em",
                       height: "1.2em",
                       marginRight: "0.5rem",
+                      cursor: "pointer"
                     }}
                     title="English"
                     className="pointer-events-none"
                   />
-                  <span className={`${isEnglish ? "font-bold" : ""} pointer-events-none`}>English</span>
+                  <span className={`${isEnglish ? "font-bold" : ""} pointer-events-none`} style={{ cursor: 'pointer' }}>English</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("de")}
-                  className={`!cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
+                  className={`header-dropdown-item ${isGerman ? "font-medium" : ""}`}
+                  style={{ cursor: 'pointer' }}
                 >
                   <ReactCountryFlag
                     countryCode="DE"
@@ -149,11 +189,12 @@ export default function LanguageToggle() {
                       width: "1.2em",
                       height: "1.2em",
                       marginRight: "0.5rem",
+                      cursor: "pointer"
                     }}
                     title="Deutsch"
                     className="pointer-events-none"
                   />
-                  <span className={`${isGerman ? "font-bold" : ""} pointer-events-none`}>Deutsch</span>
+                  <span className={`${isGerman ? "font-bold" : ""} pointer-events-none`} style={{ cursor: 'pointer' }}>Deutsch</span>
                 </DropdownMenuItem>
               </motion.div>
             </DropdownMenuContent>

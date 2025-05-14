@@ -104,11 +104,11 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
 
       {/* Features Section */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
-              alt={t('Landing.feature1Alt', { defaultValue: 'Genaue Abgrenzung Icon' })} 
+              alt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })} 
               width={28} 
               height={28} 
               className="text-primary transition-colors duration-200"
@@ -121,11 +121,11 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
-              alt={t('Landing.feature2Alt', { defaultValue: 'Rechnungsabgrenzung Icon' })} 
+              alt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })} 
               width={28} 
               height={28} 
               className="text-primary transition-colors duration-200"
@@ -138,11 +138,11 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
           </p>
         </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 hover:bg-muted/10 hover:shadow-sm">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 
-              alt={t('Landing.feature3Alt', { defaultValue: 'Kein Login Icon' })} 
+              alt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })} 
               width={28} 
               height={28} 
               className="text-primary transition-colors duration-200"
@@ -159,7 +159,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
 
       {/* Call to Action */}
       <section className="py-20 px-6 mb-16">
-        <div className="max-w-4xl mx-auto bg-muted/30 shadow-lg rounded-xl border border-border overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
             <div className="text-left flex-1">
               <h2 className="text-3xl font-bold mb-4 text-primary">
@@ -169,7 +169,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
               <LandingPageClientInteractions 
-                buttonText={t('Landing.ctaButton', { defaultValue: 'Mit Testdaten ausprobieren' })}
+                buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}
                 demoStartDate={demoStartDate}
                 demoEndDate={demoEndDate}
                 demoAmount={demoAmount}
@@ -181,7 +181,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
               <Image 
                 src="/images/calculator-illustration.svg" 
-                alt={t('Landing.ctaIconAlt', { defaultValue: 'Rechnungsabgrenzung Illustration' })}
+                alt={t('Landing.ctaIconAlt', { defaultValue: 'Invoice Allocation Illustration' })}
                 width={240} 
                 height={180} 
                 className="object-contain"
@@ -194,7 +194,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
       
       <FaqSection 
         faqData={faqData} 
-        title={faqSectionTitle} 
+        title={faqSectionTitle}
         ldJsonMainEntity={ldJsonMainEntity}
       />
     </>
