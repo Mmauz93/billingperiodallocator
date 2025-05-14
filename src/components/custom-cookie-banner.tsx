@@ -195,7 +195,8 @@ export function CustomCookieConsentBanner({
                       <a
                         href="#"
                         onClick={(e) => { e.preventDefault(); onOpenPrivacyAction(); }}
-                        className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 mb-4 inline-block"
+                        className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 outline-none ring-0 focus:outline-none focus:ring-0 focus:border-0 mb-4 inline-block"
+                        style={{ boxShadow: 'none' }}
                       >
                         {t('ConsentBanner.learnMoreButton')}
                       </a>
