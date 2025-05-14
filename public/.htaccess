@@ -1,5 +1,30 @@
 # Force HTTPS redirection
 RewriteEngine On
+
+# Next.js static export handling - add these rules first
+# If the requested resource doesn't exist as a file
+RewriteCond %{REQUEST_FILENAME} !-f
+# If the requested resource doesn't exist as a directory
+RewriteCond %{REQUEST_FILENAME} !-d
+# If requested path ends with slash, try to serve the index.html in that directory
+RewriteRule ^(.+)/$ /$1/index.html [L]
+
+# If the requested resource still doesn't exist as a file
+RewriteCond %{REQUEST_FILENAME} !-f
+# If the requested resource doesn't exist as a directory
+RewriteCond %{REQUEST_FILENAME} !-d
+# Try adding .html extension
+RewriteRule ^(.+)$ /$1.html [L]
+
+# Default index.html fallback for directories
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*)$ /$1/index.html [L]
+
+# Error handling - redirect to custom error pages
+ErrorDocument 404 /fallback.html
+ErrorDocument 500 /error500.html
+
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>htaccess Test - BillSplitter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0284C7;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>htaccess Test Success</h1>
+    <p class="success">If you can see this page, your .htaccess file is working correctly!</p>
+    
+    <h2>Server Info</h2>
+    <pre>
+Server Time: <?php echo date('Y-m-d H:i:s'); ?>
+
+Server Software: <?php echo $_SERVER['SERVER_SOFTWARE']; ?>
+
+Document Root: <?php echo $_SERVER['DOCUMENT_ROOT']; ?>
+
+Script Filename: <?php echo $_SERVER['SCRIPT_FILENAME']; ?>
+
+Request URI: <?php echo $_SERVER['REQUEST_URI']; ?>
+    </pre>
+    
+    <p>This file is being served as static HTML, so PHP code will not execute. This is normal for a Next.js static export.</p>
+    
+    <h2>Next Steps</h2>
+    <p>Try accessing these pages to verify your routing is working:</p>
+    <ul>
+        <li><a href="/">Home Page</a></li>
+        <li><a href="/en/">English Home</a></li>
+        <li><a href="/de/">German Home</a></li>
+        <li><a href="/en/app/">App (English)</a></li>
+        <li><a href="/de/app/">App (German)</a></li>
+    </ul>
+</body>
+</html> 
