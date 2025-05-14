@@ -236,6 +236,16 @@ export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculator
     }
   };
 
+  // Determine static description text based on pageTitle to avoid hydration mismatch
+  // IMPORTANT: This must exactly match the text in the translation files
+  const description1 = pageTitle === "Rechnungsperioden-Rechner" 
+    ? "Teilen Sie Rechnungen über Geschäftsjahre auf. Konform mit IFRS, HGB und OR — keine Anmeldung, keine Datenspeicherung. Einfach, schnell, präzise."
+    : "Split invoices across fiscal years. Stay compliant with IFRS, HGB, and OR — no login, no data storage. Simple, fast, precise.";
+    
+  const description2 = pageTitle === "Rechnungsperioden-Rechner"
+    ? "Ideal für Buchhalter bei der Erstellung von Gewinn- und Verlustrechnungen und Bilanzen, für Finanzfachleute bei der Budgetverwaltung oder für alle, die eine klare finanzielle Aufschlüsselung für das Reporting benötigen."
+    : "Ideal for accountants preparing income statements and balance sheets, financial professionals managing budgets, or anyone needing a clear financial breakdown for reporting.";
+
   return (
     <>
       {/* Conditionally render Google Analytics only if consent is given */}
@@ -244,14 +254,13 @@ export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculator
       <div className="container mx-auto px-4 py-8 max-w-4xl grow overflow-hidden w-full">
         {/* Title and description moved outside the card - Render directly */}
         <div className="text-center mb-8">
-          {/* Remove !mounted condition for h2 and paragraphs */}
           <h1 className="text-3xl font-bold text-center mb-4">
-            {/* Render pageTitle prop directly */}
             {pageTitle}
           </h1>
           <div className="max-w-2xl mx-auto space-y-2 px-4">
-            <p>{t('InvoiceForm.description_p1')}</p>
-            <p>{t('InvoiceForm.description_p2')}</p>
+            {/* Use static text for initial render, then t() after mounting */}
+            <p>{mounted ? t('InvoiceForm.description_p1') : description1}</p>
+            <p>{mounted ? t('InvoiceForm.description_p2') : description2}</p>
           </div>
         </div>
         

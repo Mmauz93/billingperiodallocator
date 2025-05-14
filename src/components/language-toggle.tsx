@@ -98,8 +98,9 @@ export default function LanguageToggle() {
       let newPath;
       
       if (currentLang) {
-        // Replace language segment in path
-        newPath = pathname.replace(`/${currentLang}`, `/${lang}`);
+        // Replace language segment in path, but preserve the rest of the path
+        const pathWithoutLang = pathname.substring(pathname.indexOf('/', 1) || pathname.length);
+        newPath = `/${lang}${pathWithoutLang}`;
       } else {
         // If no language in URL, add it
         // This case should ideally not happen if all pages are under /en or /de

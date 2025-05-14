@@ -62,7 +62,7 @@ export function Footer() {
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Brand section - fixed width to maintain consistent positioning */}
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href={`/${effectiveLang}/`} className="flex items-center gap-2 cursor-pointer">
+          <Link href={`/${effectiveLang}`} className="flex items-center gap-2 cursor-pointer">
             <Image
               src="/images/icon.svg" 
               alt="BillSplitter Logo Icon"
@@ -92,7 +92,7 @@ export function Footer() {
           <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
             {/* 1. Calculator link (now always rendered, conditionally hidden) */}
             <Link
-              href={`/${effectiveLang}/app/`}
+              href={`/${effectiveLang}/app`}
               className={cn(
                 "hover:underline transition-colors duration-200",
                 isOnCalculatorPage && "hidden"
@@ -114,21 +114,21 @@ export function Footer() {
           <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
             {/* 3. Privacy Policy */}
           <Link
-            href={`/${effectiveLang}/legal/privacy-policy/`}
+            href={`/${effectiveLang}/legal/privacy-policy`}
             className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
           >
             {privacyLabel}
           </Link>
             {/* 4. Terms of Use */}
           <Link
-            href={`/${effectiveLang}/legal/terms-of-use/`}
+            href={`/${effectiveLang}/legal/terms-of-use`}
             className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
           >
             {termsLabel}
           </Link>
             {/* 5. Impressum */}
           <Link
-            href={`/${effectiveLang}/legal/impressum/`}
+            href={`/${effectiveLang}/legal/impressum`}
             className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
           >
             {impressumLabel}
