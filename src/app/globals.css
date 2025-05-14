@@ -232,8 +232,8 @@ button.day,
   --popover: #FFFFFF;                  /* white */
   --popover-foreground: 222.2 84% 4.9%;  /* almost black */
 
-  /* Primary - Use the blue from dark mode */
-  --primary: 217 78% 53%; /* hsl for a slightly darker #0284C7 (was #4285D6 and #4a90e2) */
+  /* Primary - Use a darker blue for better light mode link contrast */
+  --primary: 217 78% 48%; /* #1A5CBB (was 217 78% 53%) */
   --primary-foreground: 0 0% 100%;      /* white (contrasts with blue) */
 
   /* Secondary - Use a more distinct light gray */
@@ -1080,50 +1080,6 @@ privacybee-widget div > h1 + p {
     opacity: 1 !important; 
   }
 
-  /* FINAL ATTEMPT: Override CSS variable for "Share Your Feedback" BUTTON AND ICON */
-  button:has(svg.lucide-message-square) {
-    --primary: #0284C7 !important; /* Override the --primary variable for this button */
-    color: #0284C7 !important;
-    -webkit-text-fill-color: #0284C7 !important;
-  }
-
-  button:has(svg.lucide-message-square) svg {
-    --primary: #0284C7 !important; /* Also for SVG, in case it's read directly */
-    color: #0284C7 !important;
-    stroke: #0284C7 !important;
-    fill: none !important;       /* CORRECTED: Ensure icon is not filled */
-  }
-
-  /* Force Feedback button & icon to #0284C7 in LIGHT mode - Language Agnostic */
-  html:not(.dark) footer div.container nav button:has(svg.lucide-message-square),
-  html:not(.dark) footer div.container nav button:has(svg.lucide-message-square) svg {
-    color: #0284C7 !important;
-    stroke: #0284C7 !important;
-    fill: none !important;
-    -webkit-text-fill-color: #0284C7 !important;
-  }
-
-  /* Force Feedback button & icon to #0284C7 in DARK mode (for consistency) - Language Agnostic */
-  .dark footer div.container nav button:has(svg.lucide-message-square),
-  .dark footer div.container nav button:has(svg.lucide-message-square) svg {
-    color: #0284C7 !important;
-    stroke: #0284C7 !important;
-    fill: none !important;
-    -webkit-text-fill-color: #0284C7 !important;
-  }
-
-  /* Force "Calculator" link to #0284C7 in LIGHT mode - Language Agnostic */
-  html:not(.dark) footer div.container nav a[href$="/app/"] {
-    color: #0284C7 !important;
-    -webkit-text-fill-color: #0284C7 !important;
-  }
-
-  /* Force "Calculator" link to #0284C7 in DARK mode (for consistency) - Language Agnostic */
-  .dark footer div.container nav a[href$="/app/"] {
-    color: #0284C7 !important;
-    -webkit-text-fill-color: #0284C7 !important;
-  }
-
   /* Footer Dark Mode Contrast Fix - Overrides */
   .dark footer,
   .dark footer span,
@@ -1140,6 +1096,36 @@ privacybee-widget div > h1 + p {
   .dark footer a:hover,
   .dark footer button[class*="text-foreground"]:hover {
     color: hsl(var(--foreground)) !important; /* Brighter white for hover */
+  }
+
+  /* REMOVED: Force Feedback button & icon to #0284C7 in LIGHT mode - Language Agnostic */
+  /* html:not(.dark) footer div.container nav button:has(svg.lucide-message-square), */
+  /* html:not(.dark) footer div.container nav button:has(svg.lucide-message-square) svg { */
+    /* color: #0284C7 !important; */
+    /* stroke: #0284C7 !important; */
+    /* fill: none !important; */
+    /* -webkit-text-fill-color: #0284C7 !important; */
+  /* } */
+
+  /* Force Feedback button & icon to #0284C7 in DARK mode (for consistency) - Language Agnostic */
+  .dark footer div.container nav button:has(svg.lucide-message-square),
+  .dark footer div.container nav button:has(svg.lucide-message-square) svg {
+    color: #0284C7 !important; /* This specific dark mode override remains for now */
+    stroke: #0284C7 !important;
+    fill: none !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  /* REMOVED: Force "Calculator" link to #0284C7 in LIGHT mode - Language Agnostic */
+  /* html:not(.dark) footer div.container nav a[href$="/app/"] { */
+    /* color: #0284C7 !important; */
+    /* -webkit-text-fill-color: #0284C7 !important; */
+  /* } */
+
+  /* Force "Calculator" link to #0284C7 in DARK mode (for consistency) - Language Agnostic */
+  .dark footer div.container nav a[href$="/app/"] {
+    color: #0284C7 !important; /* This specific dark mode override remains for now */
+    -webkit-text-fill-color: #0284C7 !important;
   }
 }
 
