@@ -1,0 +1,25 @@
+# Properly serve image assets
+<IfModule mod_rewrite.c>
+  RewriteEngine Off
+</IfModule>
+
+# Set proper MIME types for image assets
+<IfModule mod_mime.c>
+  AddType image/svg+xml .svg
+  AddType image/png .png
+  AddType image/jpeg .jpg .jpeg
+  AddType image/gif .gif
+  AddType image/webp .webp
+  AddType image/x-icon .ico
+</IfModule>
+
+# Allow all access
+<IfModule mod_authz_core.c>
+  Require all granted
+</IfModule>
+
+# Cache image assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/* "access plus 1 year"
+</IfModule> 

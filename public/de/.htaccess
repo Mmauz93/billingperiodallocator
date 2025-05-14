@@ -3,20 +3,26 @@ Options +Indexes
 Allow from all
 Require all granted
 
-# Default document
-DirectoryIndex app.html
+# Simple configuration for language directory
+DirectoryIndex index.html
 
-# Simple redirect to app.html
+# Handle app route
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /de/
-  # Only apply if the file doesn't exist
+  
+  # Redirect app path to app.html
+  RewriteRule ^app/?$ app.html [L]
+  
+  # Don't rewrite existing files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
-  # Redirect to app.html
-  RewriteRule ^$ app.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Pass through all other paths to avoid interfering with static assets
+  RewriteRule ^ - [L]
 </IfModule>
 
-# Fallback with meta refresh if mod_rewrite isn't available
+# Fallback for servers without mod_rewrite
 <IfModule !mod_rewrite.c>
-  ErrorDocument 404 /de/app.html
+  ErrorDocument 404 /404.html
 </IfModule> 

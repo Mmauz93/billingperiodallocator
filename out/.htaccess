@@ -1,4 +1,4 @@
-# Basic redirects and settings for a Next.js static site
+# Proper configuration for Next.js static export
 <IfModule mod_rewrite.c>
   RewriteEngine On
   
@@ -6,39 +6,42 @@
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   
-  # Handle routes for the app
-  # First check if the file exists
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
+  # Allow direct access to static assets
+  RewriteRule ^_next/(.*)$ _next/$1 [L]
+  RewriteRule ^images/(.*)$ images/$1 [L]
   
-  # Handle specific language routes
-  RewriteRule ^de/app/?(.*)$ /de/app.html [L]
-  RewriteRule ^en/app/?(.*)$ /en/app.html [L]
+  # Handle language routes
+  RewriteRule ^de/?$ de/index.html [L]
+  RewriteRule ^en/?$ en/index.html [L]
   
-  # Default language-specific paths
-  RewriteRule ^de/?$ /de.html [L]
-  RewriteRule ^en/?$ /en.html [L]
+  # Handle language-specific app paths
+  RewriteRule ^de/app/?(.*)$ de/app.html [L]
+  RewriteRule ^en/app/?(.*)$ en/app.html [L]
   
-  # Fallback to index.html for all other routes
-  RewriteRule ^(.*)$ /index.html [L]
+  # Fallback to index.html for root requests
+  RewriteRule ^$ index.html [L]
 </IfModule>
 
-# Set MIME types
+# Set proper MIME types
 <IfModule mod_mime.c>
   AddType application/javascript .js
   AddType application/json .json
   AddType text/css .css
+  AddType image/svg+xml .svg
+  AddType image/x-icon .ico
 </IfModule>
 
 # GZIP Compression
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
 </IfModule>
 
 # Cache Control
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/* "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 month"
   ExpiresByType text/css "access plus 1 week"
   ExpiresByType application/javascript "access plus 1 week"
   ExpiresByType application/json "access plus 1 day"
