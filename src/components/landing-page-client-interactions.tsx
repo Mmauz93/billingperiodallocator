@@ -51,7 +51,7 @@ export default function LandingPageClientInteractions({
     <Button 
       size="lg" 
       onClick={handleTestWithDemoData}
-      className="inline-flex items-center gap-1 font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg group !hover:transform !hover:translate-y-[-2px] !hover:scale-[1.015] bg-[#0284C7] hover:bg-[#0284C7]/90 text-white"
+      className="inline-flex items-center gap-1 font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg group !hover:transform !hover:translate-y-[-2px] !hover:scale-[1.015] bg-primary text-white"
     >
       {buttonText}
       <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>

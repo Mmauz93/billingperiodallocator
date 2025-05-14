@@ -155,6 +155,12 @@ a[href]:hover,
   font-weight: 600 !important;
 }
 
+/* Ensure paragraphs within feature card <a> tags (which have .group) use muted-foreground in dark mode */
+/* This addresses cases where the <p> itself inherits link color instead of its own text-muted-foreground class */
+.dark section a.group p.text-muted-foreground {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
 /* Ensure entire card has pointer cursor as it's a link */
 .p-6.rounded-lg.group[href] {
   cursor: pointer !important;
