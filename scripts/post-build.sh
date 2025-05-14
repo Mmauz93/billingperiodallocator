@@ -109,26 +109,31 @@ cat > out/images/.htaccess << EOF
 </IfModule>
 EOF
 
-# Language directories
+# Language directories with clean URL handling
 for lang in de en; do
   cat > out/$lang/.htaccess << EOF
 # Simple configuration for language directory
 DirectoryIndex index.html
 
-# Handle app route
+# Handle app route and hide .html extension
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /$lang/
   
-  # Redirect app path to app.html
-  RewriteRule ^app/?$ app.html [L]
+  # Hide .html extension in URLs (301 redirect)
+  RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+  RewriteRule ^ /%1 [NC,L,R=301]
   
-  # Don't rewrite existing files or directories
+  # Internally map /app to app.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^app/?$ app.html [L]
   
-  # Pass through all other paths to avoid interfering with static assets
-  RewriteRule ^ - [L]
+  # Handle requests without .html extension
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ \$1.html [L]
 </IfModule>
 
 # Fallback for servers without mod_rewrite

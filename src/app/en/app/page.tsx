@@ -15,7 +15,9 @@ const InvoiceCalculatorClient = lazy(() =>
 // English version of app page
 export default function AppPageEN() {
   const { t, i18n } = useTranslation();
-  const pageTitleForCalculator = t("InvoiceForm.title");
+  // IMPORTANT: Use the exact hardcoded string to avoid hydration mismatch
+  // This matches the exact text in en.json for InvoiceForm.title
+  const pageTitleForCalculator = "Invoice Split Calculator";
 
   useEffect(() => {
     // Force English language

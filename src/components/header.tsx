@@ -65,8 +65,7 @@ export function Header() {
   const showThemeToggle = !rawPathname.includes('/legal/privacy-policy');
 
   // Compute paths using effectiveLang to ensure consistency
-  const homePath = `/${effectiveLang}/`;
-  const appPath = `/${effectiveLang}/app/`;
+  const appPath = `/${effectiveLang}/app`;  // Remove trailing slash for cleaner URLs
 
   // Compute the button text based on the effective language
   const buttonText = effectiveLang === 'de' ? "Rechnung aufteilen" : "Split Invoice";
@@ -75,9 +74,9 @@ export function Header() {
     <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          {/* Use server-side rendering friendly approach with static links */}
+          {/* Root link to homepage - update to use direct <a> tag for SSR */}
           <a 
-            href={homePath}
+            href={`/${effectiveLang}`}
             className="flex items-center cursor-pointer"
           >
             <Image

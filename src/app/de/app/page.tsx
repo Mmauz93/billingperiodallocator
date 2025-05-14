@@ -15,7 +15,9 @@ const InvoiceCalculatorClient = lazy(() =>
 // German version of app page
 export default function AppPageDE() {
   const { t, i18n } = useTranslation();
-  const pageTitleForCalculator = t("InvoiceForm.title");
+  // IMPORTANT: Use the exact hardcoded string to avoid hydration mismatch
+  // This matches the exact text in de.json for InvoiceForm.title
+  const pageTitleForCalculator = "Rechnungsperioden-Rechner";
 
   useEffect(() => {
     // Force German language
