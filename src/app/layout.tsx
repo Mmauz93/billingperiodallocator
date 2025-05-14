@@ -1,24 +1,21 @@
 // Root Layout (Server Component)
 
-import React from 'react';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import TranslationProvider from '@/components/translation-provider';
-import '@/app/globals.css';
+import "@/app/globals.css";
 
-// Load Inter font
+import ClientLayout from "@/components/client-layout";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import { cn } from "@/lib/utils";
+import { metadata } from "./layout.metadata";
+
+// Re-export the metadata
+export { metadata };
+
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
-
-export const metadata: Metadata = {
-  title: 'BillSplitter',
-  description: 'Invoice period allocation calculator for finance professionals',
-  robots: 'index, follow',
-  icons: { icon: '/favicon.ico' },
-};
 
 export default function RootLayout({
   children,
@@ -121,10 +118,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`min-h-screen bg-background font-sans antialiased ${inter.className}`}>
-        <TranslationProvider>
-          {children}
-        </TranslationProvider>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
+        <ClientLayout>{children}</ClientLayout>
+        <Script
+          id="privacybee-widget"
+          src="https://app.privacybee.io/widget.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

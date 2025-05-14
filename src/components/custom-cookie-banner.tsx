@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import Cookies from 'js-cookie';
+import { Switch } from "@/components/ui/switch";
 import { useTranslation } from '@/translations';
 
 // import Link from 'next/link'; // Not used in the provided snippet for the banner itself
@@ -24,6 +25,8 @@ export function CustomCookieConsentBanner({
 }: CustomCookieConsentBannerProps) {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Wrap in useCallback to prevent dependency cycle
@@ -40,18 +43,33 @@ export function CustomCookieConsentBanner({
     setTimeout(() => window.scrollTo(0, scrollPos), 10);
   }, [consentCookieName, onAcceptAction]);
 
-  const handleDecline = useCallback(() => {
+  const handleSavePreferences = useCallback(() => {
     // Store scroll position before closing
     const scrollPos = window.scrollY;
     
-    // Set cookie and close banner
-    Cookies.set(consentCookieName, "false", { expires: 150 });
+    // Set cookie based on analytics preference and close banner
+    Cookies.set(consentCookieName, analyticsEnabled ? "true" : "false", { expires: 150 });
     setVisible(false);
-    onDeclineAction();
+    
+    if (analyticsEnabled) {
+      onAcceptAction();
+    } else {
+      onDeclineAction();
+    }
     
     // Restore scroll position after a short delay
     setTimeout(() => window.scrollTo(0, scrollPos), 10);
-  }, [consentCookieName, onDeclineAction]);
+  }, [analyticsEnabled, consentCookieName, onAcceptAction, onDeclineAction]);
+
+  // Toggle options panel
+  const handleManageOptions = () => {
+    setShowOptions(true);
+  };
+
+  // Go back to main banner
+  const handleBack = () => {
+    setShowOptions(false);
+  };
 
   useEffect(() => {
     const consent = Cookies.get(consentCookieName);
@@ -164,41 +182,94 @@ export function CustomCookieConsentBanner({
                     </div>
                   </div>
                   
-                  <div className="flex-1 flex flex-col items-center w-full">
-                    <h2 id="cookie-dialog-title" className="text-2xl font-semibold text-center">
-                      {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
-                    </h2>
-                    
-                    <p className="text-base text-center text-muted-foreground my-4 max-w-sm">
-                      {t('ConsentBanner.message')}
-                    </p>
-                    
-                    <button
-                      type="button"
-                      onClick={onOpenPrivacyAction}
-                      className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mb-4 cookie-privacy"
-                    >
-                      {t('ConsentBanner.learnMoreButton')}
-                    </button>
-                    
-                    <div className="flex flex-col space-y-3 w-full mt-2">
-                      <Button
-                        variant="default"
-                        className="w-full text-base py-6 bg-[#0284C7] hover:bg-[#0284C7]/90 cookie-accept text-lg font-medium"
-                        onClick={handleAccept}
-                        autoFocus
+                  {!showOptions ? (
+                    <div className="flex-1 flex flex-col items-center w-full">
+                      <h2 id="cookie-dialog-title" className="text-2xl font-semibold text-center">
+                        {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
+                      </h2>
+                      
+                      <p className="text-base text-center text-muted-foreground my-4 max-w-sm">
+                        {t('ConsentBanner.message')}
+                      </p>
+                      
+                      <a
+                        href="#"
+                        onClick={(e) => { e.preventDefault(); onOpenPrivacyAction(); }}
+                        className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 mb-4 inline-block"
                       >
-                        {t('ConsentBanner.acceptButton')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full text-base py-4"
-                        onClick={handleDecline}
-                      >
-                        {t('ConsentBanner.declineButton', { defaultValue: 'Manage Options' })}
-                      </Button>
+                        {t('ConsentBanner.learnMoreButton')}
+                      </a>
+                      
+                      <div className="flex flex-col space-y-3 w-full mt-2">
+                        <Button
+                          variant="default"
+                          className="w-full text-base py-6 bg-[#0284C7] hover:bg-[#0284C7]/90 cookie-accept text-lg font-medium"
+                          onClick={handleAccept}
+                          autoFocus
+                        >
+                          {t('ConsentBanner.acceptButton')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="w-full text-base py-4"
+                          onClick={handleManageOptions}
+                        >
+                          {t('ConsentBanner.declineButton', { defaultValue: 'Manage Options' })}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="flex-1 flex flex-col w-full">
+                      <h2 id="options-dialog-title" className="text-2xl font-semibold text-center">
+                        Cookie Preferences
+                      </h2>
+                      
+                      <p className="text-sm text-center text-muted-foreground my-4">
+                        You can customize which cookies you allow us to use. Essential cookies cannot be disabled as they are required for the website to function.
+                      </p>
+                      
+                      <div className="border border-border/40 rounded-md p-4 mb-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h3 className="font-medium">Essential Cookies</h3>
+                            <p className="text-xs text-muted-foreground">Required for the website to function properly</p>
+                          </div>
+                          <Switch checked={true} disabled={true} />
+                        </div>
+                      </div>
+                      
+                      <div className="border border-border/40 rounded-md p-4 mb-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h3 className="font-medium">Analytics Cookies</h3>
+                            <p className="text-xs text-muted-foreground">Help us improve the website by collecting anonymous usage data</p>
+                          </div>
+                          <Switch 
+                            checked={analyticsEnabled} 
+                            onCheckedChange={setAnalyticsEnabled}
+                            id="analytics-toggle"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-3 w-full mt-4">
+                        <Button
+                          variant="outline"
+                          className="flex-1"
+                          onClick={handleBack}
+                        >
+                          Back
+                        </Button>
+                        <Button
+                          variant="default"
+                          className="flex-1 bg-[#0284C7] hover:bg-[#0284C7]/90"
+                          onClick={handleSavePreferences}
+                        >
+                          Save Preferences
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

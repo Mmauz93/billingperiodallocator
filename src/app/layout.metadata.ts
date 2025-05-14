@@ -1,19 +1,9 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 // Define the default language metadata for the root layout
 export const metadata: Metadata = {
-  metadataBase: new URL('https://billsplitter.siempi.ch'),
-  title: {
-    template: '%s | BillSplitter',
-    default: 'BillSplitter',
-  },
+  title: 'BillSplitter',
   description: 'Invoice period allocation calculator for finance professionals',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
+  robots: 'index, follow',
+  icons: { icon: '/favicon.ico' },
 }; 
