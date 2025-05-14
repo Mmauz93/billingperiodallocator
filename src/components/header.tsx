@@ -1,6 +1,6 @@
 "use client";
 
-import { getCurrentLanguage, getLanguageFromPath } from "@/translations";
+import { SUPPORTED_LANGUAGES, getCurrentLanguage, getLanguageFromPath } from "@/translations";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,39 +19,74 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>(() => getCurrentLanguage());
   
-  // Determine language for initial render (hydration) based on pathname
-  let initialLangFromPath = 'en'; // Default language
-  if (pathname) {
-    const pathSegments = pathname.split('/');
-    if (pathSegments.length > 1 && (pathSegments[1] === 'de' || pathSegments[1] === 'en')) {
-      initialLangFromPath = pathSegments[1];
-    }
-  }
-
-  // Mark component as mounted and update language when needed
+  // Mount effect
   useEffect(() => {
-    if (!mounted) {
-      setMounted(true);
-      // On initial mount, ensure our state matches path language
-      if (pathname) {
-        const pathLang = getLanguageFromPath(pathname);
-        if (pathLang && currentLang !== pathLang) {
-          setCurrentLang(pathLang);
-        }
+    setMounted(true);
+    
+    // Initial language setup from URL path
+    const pathLanguage = getLanguageFromPath(pathname || '');
+    // Use i18n.language as a fallback if available and pathLanguage is not, then getCurrentLanguage()
+    const determinedLang = pathLanguage || i18n.language || getCurrentLanguage();
+    
+    if (currentLang !== determinedLang) { // Update only if different
+      setCurrentLang(determinedLang);
+    }
+    
+    // Ensure i18n is in sync with URL
+    if (pathLanguage && i18n.language !== pathLanguage) {
+      i18n.changeLanguage(pathLanguage);
+    }
+  }, [i18n, pathname, currentLang]); // Added currentLang to dep array
+
+  // Effect to track path/language changes
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const pathLanguage = getLanguageFromPath(pathname || '');
+    if (pathLanguage) {
+      setCurrentLang(pathLanguage);
+      
+      // Update i18n language if needed
+      if (i18n.language !== pathLanguage) {
+        i18n.changeLanguage(pathLanguage);
       }
     }
-  }, [mounted, pathname, currentLang]);
-
-  // Track i18n language changes
+  }, [pathname, mounted, i18n]);
+  
+  // Listen for language changes from outside this component
   useEffect(() => {
-    if (mounted && i18n.language && currentLang !== i18n.language) {
+    if (!mounted) return;
+    
+    const handleLanguageChanged = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const newLang = customEvent.detail?.language || customEvent.detail;
+      
+      if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
+        setCurrentLang(newLang);
+        
+        // Sync i18n if needed
+        if (i18n.language !== newLang) {
+          i18n.changeLanguage(newLang);
+        }
+      }
+    };
+    
+    document.addEventListener('languageChanged', handleLanguageChanged);
+    
+    return () => {
+      document.removeEventListener('languageChanged', handleLanguageChanged);
+    };
+  }, [mounted, i18n]);
+  
+  // Track i18n language changes directly
+  useEffect(() => {
+    if (!mounted) return;
+    
+    // Update local state when i18n language changes
+    if (i18n.language && currentLang !== i18n.language) {
       setCurrentLang(i18n.language);
     }
-  }, [mounted, i18n.language, currentLang]);
-  
-  // After mount, the language from hooks is the source of truth
-  // For initial render (mounted === false), use initialLangFromPath for consistency
-  const effectiveLang = mounted ? (i18n.language || currentLang) : initialLangFromPath;
+  }, [i18n.language, mounted, currentLang]);
   
   const rawPathname = pathname || '';
   // Normalize pathname: remove trailing slash if it's not the root itself
@@ -64,18 +99,20 @@ export function Header() {
   const showGetStartedButton = !isOnAppPage;
   const showThemeToggle = !rawPathname.includes('/legal/privacy-policy');
 
-  // Compute paths using effectiveLang to ensure consistency
-  const homePath = `/${effectiveLang}/`;
-  const appPath = `/${effectiveLang}/app/`;
+  // Only wait for actual client mount. currentLang will have an initial default.
 
-  // Compute the button text based on the effective language
-  const buttonText = effectiveLang === 'de' ? "Rechnung aufteilen" : "Split Invoice";
+  // Ensure linkLang is valid for the Link href - currentLang should always have a value now
+  const linkLangForButton = currentLang;
+  
+  // Compute paths once
+  const homePath = `/${linkLangForButton}/`;
+  const appPath = `/${linkLangForButton}/app/`;
 
   return (
     <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          {/* Use server-side rendering friendly approach with static links */}
+          {/* Changed Link to standard <a> tag for full refresh */}
           <a 
             href={homePath}
             className="flex items-center cursor-pointer"
@@ -104,7 +141,7 @@ export function Header() {
                 asChild
                 variant="outline" 
                 size="sm" 
-                className="flex items-center gap-1 text-primary border-primary hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors cursor-pointer"
+                className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
               >
                 <Link href={appPath}>
                   {t("General.getStarted", { defaultValue: "Split Invoice" })}
@@ -115,10 +152,10 @@ export function Header() {
               <Button 
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-1 text-primary border-primary hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors cursor-pointer !opacity-100"
+                className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer !opacity-100"
                 disabled
               >
-                {buttonText}
+                Split Invoice
               </Button>
             )
           )}

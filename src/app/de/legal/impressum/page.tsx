@@ -59,7 +59,7 @@ function ImpressumContentServer({ lastUpdated, lang, t }: ImpressumContentProps)
             Mauro Miotti<br />
             Birkenstrasse 47<br />
             CH-6343 Rotkreuz<br />
-            Schweiz<br />
+            Switzerland<br />
             Email: <a href="mailto:info@siempi.ch" className="text-primary hover:underline">info@siempi.ch</a>
           </p>
         </section>

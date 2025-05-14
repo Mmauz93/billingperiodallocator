@@ -2,7 +2,6 @@ import { FaqItem, FaqSection } from "@/components/faq-section";
 
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
-import Link from "next/link";
 import { Metadata } from 'next';
 import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
@@ -56,7 +55,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
     },
     {
       question: "Is BillSplitter compliant with accounting standards?",
-      answer: "Yes, BillSplitter follows the principles of accrual accounting in accordance with <a href='https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>IFRS 15</a>, <a href='https://www.gesetze-im-internet.de/hgb/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>HGB</a>, and <a href='https://www.fedlex.admin.ch/eli/cc/27/317_321_377/en' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>OR</a> standards, making it suitable for proper recognition of deferred revenue and prepaid expenses in financial statements."
+      answer: "Yes, BillSplitter follows the principles of accrual accounting in accordance with IFRS 15, HGB, and OR standards, making it suitable for proper recognition of deferred revenue and prepaid expenses in financial statements."
     },
     {
       question: "Can I split invoices by monthly, quarterly, or yearly periods?",
@@ -111,7 +110,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
 
       {/* Features Section */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <Link href="https://en.wikipedia.org/wiki/Matching_principle" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
@@ -125,10 +124,10 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             {t('Landing.feature1Title', { defaultValue: feature1Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Learn more about <span className="text-primary underline hover:opacity-80 whitespace-nowrap">expense recognition</span>.
+            {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
           </p>
-        </Link>
-        <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
+        </div>
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
@@ -142,10 +141,10 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             {t('Landing.feature2Title', { defaultValue: feature2Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In line with <span className="text-primary underline hover:opacity-80 whitespace-nowrap">IFRS 15</span> standards.
+            {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
           </p>
-        </Link>
-        <Link href="/en/legal/privacy-policy" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
+        </div>
+        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 
@@ -159,9 +158,9 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             {t('Landing.feature3Title', { defaultValue: feature3Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Read more about our <span className="text-primary underline hover:opacity-80 whitespace-nowrap">privacy policy</span>.
+            {t('Landing.feature3Desc', { defaultValue: feature3Desc })}
           </p>
-        </Link>
+        </div>
       </section>
 
       {/* Call to Action */}
@@ -173,7 +172,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
               </h2>
               <p className="text-lg mb-6 text-muted-foreground">
-                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Learn how <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">accrual accounting</a> can improve your financial reporting.
+                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
               </p>
               <LandingPageClientInteractions 
                 buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}

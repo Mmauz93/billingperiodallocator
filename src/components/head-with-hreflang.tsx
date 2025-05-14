@@ -64,14 +64,6 @@ export default function HeadWithHreflang({ currentPath, currentLanguage }: HeadW
   const urls = generateUrls();
   const canonicalUrl = getCanonicalUrl();
 
-  // Detect if we're on www subdomain
-  const isWwwHostname = () => {
-    if (typeof window !== 'undefined') {
-      return window.location.hostname.startsWith('www.');
-    }
-    return false;
-  };
-
   // Add the link tags directly to the document head
   useEffect(() => {
     // Function to create and add a link element
@@ -100,13 +92,6 @@ export default function HeadWithHreflang({ currentPath, currentLanguage }: HeadW
         addedElements.push(addLinkElement('alternate', lang, url));
       }
     });
-    
-    // Handle www vs non-www for SEO
-    if (isWwwHostname()) {
-      // If we're on www subdomain, redirect to non-www (client-side redirect as backup)
-      // This is just a client-side fallback; the server-side redirect in next.config.ts should handle most cases
-      window.location.href = canonicalUrl;
-    }
     
     // Cleanup function to remove link elements when component unmounts
     return () => {

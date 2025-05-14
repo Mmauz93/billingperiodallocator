@@ -6,22 +6,8 @@ const alternates = generateHreflangMetadata('en');
 
 export const metadata: Metadata = {
   title: 'BillSplitter – Split Invoices Across Fiscal Years',
-  description: 'Easily allocate invoices across fiscal periods. Split payments into monthly, quarterly, or yearly segments while maintaining IFRS 15, HGB, and OR compliance.',
-  alternates,
-  openGraph: {
-    title: 'BillSplitter – Split Invoices Across Fiscal Years',
-    description: 'Easily allocate invoices across fiscal periods. Split payments into monthly, quarterly, or yearly segments while maintaining IFRS 15, HGB, and OR compliance.',
-    url: 'https://billsplitter.siempi.ch/en/',
-    type: 'website',
-    images: [
-      {
-        url: 'https://billsplitter.siempi.ch/images/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'BillSplitter Invoice Allocation Tool'
-      }
-    ]
-  }
+  description: 'Split invoices across fiscal years with ease. Divide your invoices into monthly, quarterly, and yearly periods while complying with IFRS 15, HGB, and OR standards.',
+  alternates
 };
 
 export default function EnglishLayout({

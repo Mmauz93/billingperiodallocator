@@ -599,8 +599,7 @@ export function InvoiceForm({
                                             selected={tryParseDate(form.watch("startDateString") ?? '') || undefined} 
                                             onSelect={onSelectStartDate} 
                                             initialFocus 
-                                            locale={currentLocale}
-                                            defaultMonth={tryParseDate(form.watch("startDateString") ?? '') || new Date()}
+                                            locale={currentLocale} 
                                         />
                                     </PopoverContent>
                                 </Popover>
@@ -659,8 +658,7 @@ export function InvoiceForm({
                                             selected={tryParseDate(form.watch("endDateString") ?? '') || undefined} 
                                             onSelect={onSelectEndDate} 
                                             initialFocus 
-                                            locale={currentLocale}
-                                            defaultMonth={tryParseDate(form.watch("endDateString") ?? '') || tryParseDate(form.watch("startDateString") ?? '') || new Date()}
+                                            locale={currentLocale} 
                                             disabled={(date) => { 
                                                 const startDate = tryParseDate(form.watch("startDateString") ?? ''); 
                                                 return startDate ? date < startDate : false; 

@@ -17,13 +17,17 @@ import { useTranslation } from "@/translations";
 
 // Improved footer component with cleaner visual hierarchy and fixed positioning
 export function Footer() {
-  // Remove unused t variable, just use i18n
-  const { i18n: i18nFromHook } = useTranslation();
+  const { t, i18n: i18nFromHook } = useTranslation();
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [mounted, setMounted] = useState(false);
-  
-  // Determine language for initial render (hydration) based on pathname
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine language for initial render (hydration) based on pathname.
+  // This should match how server constructs links for a given page path.
   let initialLangFromPath = 'en'; // Default language
   if (pathname) {
     const pathSegments = pathname.split('/');
@@ -31,29 +35,27 @@ export function Footer() {
       initialLangFromPath = pathSegments[1];
     }
   }
+
+  // After mount, the language from the hook (driven by TranslationProvider) is the source of truth.
+  // For initial render (mounted === false), use initialLangFromPath for consistency.
+  const currentLang = mounted ? i18nFromHook.language : initialLangFromPath;
+
+  // Define labels. Use simple, hardcoded defaults based on `initialLangFromPath` for pre-mount/SSR to avoid hydration mismatch on text.
+  // After mount, `t(key)` will use the reactive language from the hook.
+  const calculatorLabel = mounted ? t("General.calculator") : (initialLangFromPath === 'de' ? "Rechner" : "Calculator");
+  const privacyLabel = mounted ? t("General.privacyPolicy") : (initialLangFromPath === 'de' ? "Datenschutzerklärung" : "Privacy Policy");
+  const termsLabel = mounted ? t("General.termsOfUse") : (initialLangFromPath === 'de' ? "Nutzungsbedingungen" : "Terms of Use");
+  const impressumLabel = mounted ? t("General.impressum") : (initialLangFromPath === 'de' ? "Impressum" : "Imprint");
+  const feedbackLabel = mounted ? t("General.feedback") : (initialLangFromPath === 'de' ? "Feedback teilen" : "Feedback");
+  const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG"; // Company name likely static or handled by t() if key exists
   
-  // Mark component as mounted
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  // For SSR, use the language from the path
-  // After hydration, use the language from i18n
-  const effectiveLang = mounted ? (i18nFromHook.language || initialLangFromPath) : initialLangFromPath;
-  
-  // Define labels based on effective language - no conditional rendering based on mounted state
-  // This ensures consistent rendering between server and client
-  const calculatorLabel = effectiveLang === 'de' ? "Rechner" : "Calculator";
-  const privacyLabel = effectiveLang === 'de' ? "Datenschutzerklärung" : "Privacy Policy";
-  const termsLabel = effectiveLang === 'de' ? "Nutzungsbedingungen" : "Terms of Use";
-  const impressumLabel = effectiveLang === 'de' ? "Impressum" : "Imprint";
-  const feedbackLabel = effectiveLang === 'de' ? "Feedback teilen" : "Share Your Feedback";
-  const companyLabel = "Siempi AG"; // Company name is the same in both languages
-  
-  const defaultCopyright = effectiveLang === 'de' 
+  const defaultCopyright = initialLangFromPath === 'de' 
     ? `© ${currentYear} Siempi AG — Alle Rechte vorbehalten.`
     : `© ${currentYear} Siempi AG — All rights reserved.`;
-  
+  const copyrightLabel = mounted 
+    ? t("Footer.copyright", { values: { year: currentYear } })
+    : defaultCopyright;
+
   // Check if we're already on the calculator page to avoid showing link to current page
   const isOnCalculatorPage = pathname?.includes('/app');
 
@@ -62,7 +64,7 @@ export function Footer() {
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Logo and Brand section - fixed width to maintain consistent positioning */}
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href={`/${effectiveLang}/`} className="flex items-center gap-2 cursor-pointer">
+          <Link href={`/${currentLang}/`} className="flex items-center gap-2 cursor-pointer">
             <Image
               src="/images/icon.svg" 
               alt="BillSplitter Logo Icon"
@@ -83,7 +85,7 @@ export function Footer() {
             </span>
           </Link>
           {/* "by Siempi AG" is now a sibling to the Link, not a child */}
-          <span className="text-gray-600 dark:text-gray-400 text-xs">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="!text-gray-600 !dark:text-gray-400 no-underline hover:underline transition-colors duration-200">{companyLabel}</a></span>
+          <span className="text-gray-600 dark:text-gray-400 text-xs">by {companyLabel}</span>
         </div>
 
         {/* Navigation Links - Grouped into two rows */}
@@ -92,7 +94,7 @@ export function Footer() {
           <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
             {/* 1. Calculator link (now always rendered, conditionally hidden) */}
             <Link
-              href={`/${effectiveLang}/app/`}
+              href={`/${currentLang}/app/`}
               className={cn(
                 "hover:underline transition-colors duration-200",
                 isOnCalculatorPage && "hidden"
@@ -100,11 +102,11 @@ export function Footer() {
             >
               {calculatorLabel}
             </Link>
-            {/* 2. Feedback Button - pass the language-specific label as children */}
+            {/* 2. Feedback Button */}
             <FeedbackButton 
               variant="link" 
               size="sm"
-              className="p-0 h-auto font-normal text-sm hover:underline transition-colors duration-200"
+              className="p-0 h-auto font-normal text-sm hover:underline text-gray-600 dark:text-gray-400 transition-colors duration-200"
             >
               {feedbackLabel}
             </FeedbackButton>
@@ -114,22 +116,22 @@ export function Footer() {
           <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
             {/* 3. Privacy Policy */}
           <Link
-            href={`/${effectiveLang}/legal/privacy-policy/`}
-            className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
+            href={`/${currentLang}/legal/privacy-policy/`}
+            className="hover:underline transition-colors duration-200"
           >
             {privacyLabel}
           </Link>
             {/* 4. Terms of Use */}
           <Link
-            href={`/${effectiveLang}/legal/terms-of-use/`}
-            className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
+            href={`/${currentLang}/legal/terms-of-use/`}
+            className="hover:underline transition-colors duration-200"
           >
             {termsLabel}
           </Link>
             {/* 5. Impressum */}
           <Link
-            href={`/${effectiveLang}/legal/impressum/`}
-            className="!text-gray-600 !dark:text-gray-400 hover:underline transition-colors duration-200"
+            href={`/${currentLang}/legal/impressum/`}
+            className="hover:underline transition-colors duration-200"
           >
             {impressumLabel}
           </Link>
@@ -138,7 +140,7 @@ export function Footer() {
 
         {/* Copyright notice - fixed width to maintain consistent positioning */}
         <div className="text-xs text-gray-600 dark:text-gray-400 mt-4 md:mt-0 md:w-1/3 md:text-right transition-colors duration-200">
-          {defaultCopyright}
+          {copyrightLabel}
         </div>
       </div>
     </footer>

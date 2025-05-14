@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { useTranslation } from "@/translations"; // Import hook
 
 // TODO: Define API endpoint for feedback submission
 // const FEEDBACK_API_ENDPOINT = "/api/feedback";
@@ -26,22 +26,17 @@ export function FeedbackButton({
   variant = "outline",
   size = "sm",
   className,
-  children, // Accept children to allow language-specific label from parent
   ...props
-}: React.ComponentProps<typeof Button> & { children?: React.ReactNode }) {
-  const pathname = usePathname();
+}: React.ComponentProps<typeof Button>) {
+  const { t } = useTranslation(); // Initialize hook
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // Mounted state
   const [message, setMessage] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // State for textarea error
 
-  // Determine language for initial render based on pathname
-  let effectiveLang = 'en'; // Default language
-  if (pathname) {
-    const pathSegments = pathname.split('/');
-    if (pathSegments.length > 1 && (pathSegments[1] === 'de' || pathSegments[1] === 'en')) {
-      effectiveLang = pathSegments[1];
-    }
-  }
+  useEffect(() => {
+    setIsMounted(true); // Set mounted after initial render
+  }, []);
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -54,15 +49,15 @@ export function FeedbackButton({
     }
   }, [isOpen]);
 
-  const handleSubmitFeedback = () => {
+  const handleSubmitFeedback = () => { // Changed to simple function, no async needed
     if (!message.trim()) {
-      setError(effectiveLang === 'de' ? "Bitte geben Sie eine Nachricht ein." : "Please enter a message.");
+      setError(t("FeedbackDialog.errorEmptyMessage"));
       return;
     }
     setError(null);
 
     // --- Open Mail Client Instead of API Call ---
-    const subject = encodeURIComponent(effectiveLang === 'de' ? "BillSplitter Feedback" : "BillSplitter Feedback");
+    const subject = encodeURIComponent(t("FeedbackDialog.emailSubject", "BillSplitter Feedback"));
     const body = encodeURIComponent(message);
     const mailtoLink = `mailto:info@siempi.ch?subject=${subject}&body=${body}`;
 
@@ -76,7 +71,7 @@ export function FeedbackButton({
     } catch (mailError) {
       console.error("Failed to open mail client:", mailError);
       // Provide fallback error message if mailto fails (e.g., browser blocks it)
-      setError(effectiveLang === 'de' ? "E-Mail-Client konnte nicht geöffnet werden." : "Could not open email client.");
+      setError(t("FeedbackDialog.errorOpenEmail", "Could not open email client."));
     }
   };
 
@@ -87,18 +82,14 @@ export function FeedbackButton({
     }
   };
 
-  // Set dialog text based on language regardless of mounted state
-  const dialogTitle = effectiveLang === 'de' ? "Feedback geben" : "Give Feedback";
-  const dialogDescription = effectiveLang === 'de' 
-    ? "Teilen Sie Ihre Gedanken, Vorschläge oder melden Sie Probleme. Dies öffnet Ihren Standard-E-Mail-Client." 
-    : "Share your thoughts, suggestions, or report issues. This will open your default email client.";
-  const messageLabel = effectiveLang === 'de' ? "Ihre Nachricht" : "Your Message";
-  const messagePlaceholder = effectiveLang === 'de' ? "Schreiben Sie Ihre Nachricht hier..." : "Type your message here...";
-  const cancelButtonLabel = effectiveLang === 'de' ? "Abbrechen" : "Cancel";
-  const openEmailButtonLabel = effectiveLang === 'de' ? "E-Mail-Client öffnen" : "Open Email Client";
-
-  // Default button text if no children provided
-  const buttonLabel = children || (effectiveLang === 'de' ? "Feedback teilen" : "Share Your Feedback");
+  // Determine labels based on mounted state
+  const triggerLabel = isMounted ? t("FeedbackDialog.sendFeedbackButton") : "Share Your Feedback";
+  const dialogTitle = isMounted ? t("FeedbackDialog.dialogTitle") : "Give Feedback";
+  const dialogDescription = isMounted ? t("Accessibility.feedbackDescription") : "Share your thoughts...";
+  const messageLabel = isMounted ? t("FeedbackDialog.messageLabel") : "Your Message";
+  const messagePlaceholder = isMounted ? t("FeedbackDialog.messagePlaceholder") : "Type your message here...";
+  const cancelButtonLabel = isMounted ? t("FeedbackDialog.cancelButton") : "Cancel";
+  const openEmailButtonLabel = isMounted ? t("FeedbackDialog.openEmailButton") : "Open Email"; // Changed label
 
   return (
     <>
@@ -107,11 +98,11 @@ export function FeedbackButton({
         size={size}
         className={cn(size !== "icon" ? "gap-2" : "", className)} 
         onClick={() => setIsOpen(true)}
-        aria-label={typeof buttonLabel === 'string' ? buttonLabel : effectiveLang === 'de' ? "Feedback teilen" : "Share Your Feedback"}
-        {...props}
+        aria-label={triggerLabel}
+        {...props} // Pass remaining props
       >
         <MessageSquare className="size-4" />
-        {size !== "icon" && buttonLabel}
+        {size !== "icon" && triggerLabel}
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
