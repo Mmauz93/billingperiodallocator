@@ -74,8 +74,8 @@ export function Header() {
     <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          {/* Root link to homepage - update to use direct <a> tag for SSR */}
-          <a 
+          {/* Changed from <a> to <Link> for proper client-side navigation */}
+          <Link 
             href={`/${effectiveLang}`}
             className="flex items-center cursor-pointer"
           >
@@ -87,7 +87,7 @@ export function Header() {
               priority
               style={{ width: 'auto' }}
             />
-          </a>
+          </Link>
         </div>
         
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
