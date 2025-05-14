@@ -30,6 +30,8 @@ const GlobeIcon = () => (
     strokeLinecap="round" 
     strokeLinejoin="round" 
     className="lucide lucide-globe h-[1.2rem] w-[1.2rem]"
+    aria-hidden="true"
+    focusable="false"
   >
     <circle cx="12" cy="12" r="10" />
     <line x1="2" y1="12" x2="22" y2="12" />

@@ -69,7 +69,6 @@ export function Footer() {
               width={24}
               height={24}
               className="w-6 h-6"
-              priority
             />
             {/* Styled span as the relative container for the logo image */}
             <span className="relative block h-7 w-[130px] cursor-pointer">
@@ -78,7 +77,6 @@ export function Footer() {
                 alt="BillSplitter Logo" 
                 fill
                 className="object-contain"
-                priority
               />
             </span>
           </Link>
@@ -94,7 +92,7 @@ export function Footer() {
             <Link
               href={`/${effectiveLang}/app`}
               className={cn(
-                "hover:underline transition-colors duration-200",
+                "text-foreground dark:text-gray-400 hover:underline transition-colors duration-200",
                 isOnCalculatorPage && "hidden"
               )}
             >
@@ -104,7 +102,7 @@ export function Footer() {
             <FeedbackButton 
               variant="link" 
               size="sm"
-              className="p-0 h-auto font-normal text-sm hover:underline transition-colors duration-200"
+              className="p-0 h-auto font-normal text-sm text-foreground dark:text-gray-400 hover:underline transition-colors duration-200"
             >
               {feedbackLabel}
             </FeedbackButton>

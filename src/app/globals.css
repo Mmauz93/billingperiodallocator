@@ -91,7 +91,7 @@ p:contains("zeitliche Abgrenzung") a {
   text-decoration: underline !important;
   text-decoration-thickness: 1.5px !important;
   text-underline-offset: 2px !important;
-  color: #0284C7 !important;
+  color: hsl(var(--primary)) !important;
   font-weight: 500 !important;
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
@@ -121,8 +121,8 @@ a[href],
 [href*="fedlex"],
 [href*="gesetze"] {
   cursor: pointer !important;
-  color: #0284C7;
-  text-decoration-color: rgba(2, 132, 199, 0.6);
+  color: hsl(var(--primary));
+  text-decoration-color: hsla(var(--primary), 0.6);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
@@ -144,6 +144,15 @@ a[href]:hover,
   color: #0ea5e9 !important;
   text-decoration-color: #0ea5e9;
   text-decoration-thickness: 2px;
+}
+
+/* AAA Fix: Ensure spans inside feature cards use muted-foreground in dark mode for contrast */
+.dark .bg-card p span.text-primary,
+.dark [class*="bg-card"] p span.text-primary,
+.dark .bg-card a.text-primary,
+.dark [class*="bg-card"] a.text-primary {
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 600 !important;
 }
 
 /* Ensure entire card has pointer cursor as it's a link */
@@ -317,13 +326,13 @@ html {
   --card-foreground: #d1d5db;
   --popover: #1e1e1e;
   --popover-foreground: #d1d5db;
-  --primary: #4a90e2;
+  --primary: 217 78% 53%; /* FIX: Use light mode's HSL for better contrast with white text (was 217 78% 61%) */
   --primary-foreground: #ffffff;
   --secondary: #2A2A2A; /* AUDIT: Use #2A2A2A (was #f5a623) */
   --secondary-foreground: #F9FAFB; /* AUDIT: Use #F9FAFB (was #121212) for contrast */
   --muted: #2a2a2a;
-  --muted-foreground: #9ca3af; /* Original dark mode value is fine */
-  --accent: #4a90e2;
+  --muted-foreground: 214 15% 70%; /* AAA Fix: Lighten for better contrast on cards (was #9ca3af) */
+  --accent: 217 78% 53%; /* Use the darker primary for accent in dark mode */
   --accent-foreground: #ffffff;
   --destructive: #f87171;
   --destructive-foreground: #ffffff;
@@ -369,9 +378,23 @@ html {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border; /* Removed outline-ring/50 */
     max-width: 100%; /* Ensure no element exceeds its container width */
   }
+
+  /* General visible focus indicator for interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  [role="link"]:focus-visible,
+  [role="tab"]:focus-visible,
+  /* Add other common interactive roles as needed */
+  [tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 2px solid transparent; /* Fallback or for spacing */
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px hsla(var(--ring), 0.6) !important; 
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-color: #121212; /* Add default dark background */
@@ -463,13 +486,16 @@ textarea {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Update input focus styles to use consistent blue color */
+/* Update input focus styles to use consistent blue color and box-shadow */
 input:focus,
 select:focus,
-textarea:focus {
-  border-color: #0284C7 !important;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
-  outline: none !important;
+textarea:focus,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: hsl(var(--ring)) !important;
+  outline: none !important; /* Explicitly remove outline for inputs */
+  box-shadow: 0 0 0 3px hsla(var(--ring), 0.6) !important; /* Consistent with general focus-visible */
 }
 
 /* Style for settings inputs */
@@ -1033,38 +1059,19 @@ privacybee-widget div > h1 + p {
     z-index: 0;
   }
 
-  /* FORCE "by Siempi AG" to use same color as copyright text in LIGHT MODE, 
-     but keep gray-400 in DARK MODE */
-  /* Target the specific span containing "by Siempi AG" */
-  html:not(.dark) footer div.container div > span:has(a[href*="siempi.ch"]) {
-    color: var(--color-gray-600) !important; /* Matches copyright text in light mode */
-    -webkit-text-fill-color: var(--color-gray-600) !important;
-  }
-
-  /* Dark mode version still uses gray-400 */
-  .dark footer div.container div > span:has(a[href*="siempi.ch"]) {
-    color: #9ca3af !important; /* Tailwind's gray-400 */
-    -webkit-text-fill-color: #9ca3af !important;
-  }
-
-  /* Target the "Siempi AG" link specifically within that span */
-  html:not(.dark) footer div.container div > span:has(a[href*="siempi.ch"]) > a.siempi-link {
-    color: var(--color-gray-600) !important; /* Matches copyright text in light mode */
-    -webkit-text-fill-color: var(--color-gray-600) !important;
-    text-decoration: none !important;
-  }
-
-  /* Dark mode version still uses gray-400 */
-  .dark footer div.container div > span:has(a[href*="siempi.ch"]) > a.siempi-link {
-    color: #9ca3af !important; /* Tailwind's gray-400 */
-    -webkit-text-fill-color: #9ca3af !important;
-    text-decoration: none !important;
-  }
-
   /* Keep the general .siempi-link for other uses if any, but footer one is more specific */
   .siempi-link {
     color: #9ca3af !important; /* Default for other .siempi-link uses */
     @apply no-underline hover:underline transition-colors duration-200;
+  }
+
+  /* Increase transparency for legal links in footer (light mode) - Language Agnostic */
+  html:not(.dark) footer div.container nav a[href*="/legal/"] {
+    opacity: 0.7 !important; /* Kept for light mode, assuming base color has high contrast */
+  }
+  /* Ensure full opacity for legal links in dark mode for better contrast */
+  .dark footer div.container nav a[href*="/legal/"] {
+    opacity: 1 !important; 
   }
 
   /* FINAL ATTEMPT: Override CSS variable for "Share Your Feedback" BUTTON AND ICON */
@@ -1111,9 +1118,22 @@ privacybee-widget div > h1 + p {
     -webkit-text-fill-color: #0284C7 !important;
   }
 
-  /* Increase transparency for legal links in footer (light mode) - Language Agnostic */
-  html:not(.dark) footer div.container nav a[href*="/legal/"] {
-    opacity: 0.7 !important;
+  /* Footer Dark Mode Contrast Fix - Overrides */
+  .dark footer,
+  .dark footer span,
+  .dark footer div,
+  .dark footer p {
+    color: hsl(var(--muted-foreground)) !important; /* #A8B3C0 for >7:1 contrast on #121212 */
+  }
+
+  .dark footer a,
+  .dark footer button[class*="text-foreground"] /* Target links and buttons that might have been text-foreground */ {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+  
+  .dark footer a:hover,
+  .dark footer button[class*="text-foreground"]:hover {
+    color: hsl(var(--foreground)) !important; /* Brighter white for hover */
   }
 }
 

@@ -192,7 +192,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
                 width={240} 
                 height={180} 
                 className="object-contain"
-                priority // Keep priority for LCP elements
+                // priority // Removed priority as it might be below the fold
               />
             </div>
           </div>

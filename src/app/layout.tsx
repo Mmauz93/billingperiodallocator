@@ -3,19 +3,25 @@
 import "@/app/globals.css";
 
 import ClientLayout from "@/components/client-layout";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import { cn } from "@/lib/utils";
 import { metadata } from "./layout.metadata";
 
+// import { Inter } from "next/font/google"; // REMOVED Inter
+
+
+
+
 // Re-export the metadata
 export { metadata };
 
+/* // REMOVED Inter font loading
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap",
+  display: "optional", 
   variable: "--font-inter",
 });
+*/
 
 export default function RootLayout({
   children,
@@ -77,52 +83,34 @@ export default function RootLayout({
                   // Performance API might not be available in all browsers
                 }
 
-                // Add preload class without hiding content completely (to maintain layout dimensions)
+                // Add preload class to disable transitions
                 document.documentElement.classList.add('loading');
-
-                // Fix content in place instead of hiding it completely
-                const style = document.createElement('style');
-                style.id = 'anti-flicker-style';
-                style.textContent = \`
-                  html.loading * {
-                    transition: none !important;
-                  }
-
-                  body {
-                    opacity: 0.99; /* Very slight transparency to prevent flicker without dimension changes */
-                  }
-                \`;
-                document.head.appendChild(style);
 
                 // Remove loading classes after content is ready
                 window.addEventListener('load', function() {
                   // Small delay to ensure all resources are loaded
                   setTimeout(function() {
-                    // First make content visible
-                    const styleElement = document.getElementById('anti-flicker-style');
-                    if (styleElement) styleElement.remove();
-
-                    // Then restore scroll position if this was a reload
+                    // Restore scroll position if this was a reload
                     if (isReload) {
                       window.scrollTo(scrollPos.x, scrollPos.y);
                     }
 
-                    // Finally re-enable transitions
+                    // Finally re-enable transitions by removing the class
                     setTimeout(function() {
                       document.documentElement.classList.remove('loading');
                       // Re-enable automatic scroll restoration for future navigations
                       if ('scrollRestoration' in history) {
                         history.scrollRestoration = 'auto';
                       }
-                    }, 100);
-                  }, 50);
+                    }, 100); // Keep a small delay for class removal
+                  }, 50); // Keep a small delay before attempting scroll restore & class removal
                 });
               })();
             `,
           }}
         />
       </head>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         <ClientLayout>{children}</ClientLayout>
         <Script
           id="privacybee-widget"
