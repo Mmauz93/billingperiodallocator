@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
   const canonicalUrl = `${siteUrl}/${currentLang}/`;
 
   return {
-    title: t('LandingPage.title', 'Startseite') + ' | BillSplitter',
+    title: t('LandingPage.title', 'BillSplitter – Rechnungen auf Geschäftsperioden aufteilen'),
     alternates: {
       canonical: canonicalUrl,
       languages: {

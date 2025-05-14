@@ -195,7 +195,7 @@
     "description": "Fill in the fields below to split invoice amounts across fiscal periods."
   },
   "LandingPage": {
-    "title": "Home"
+    "title": "BillSplitter – Split Invoices Across Fiscal Periods"
   },
   "Landing": {
     "logoAlt": "BillSplitter Logo Icon",
