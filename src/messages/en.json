@@ -195,7 +195,8 @@
     "description": "Fill in the fields below to split invoice amounts across fiscal periods."
   },
   "LandingPage": {
-    "title": "BillSplitter – Split Invoices Across Fiscal Periods"
+    "title": "BillSplitter – Split Invoices Across Fiscal Periods",
+    "metaDescription": "Easily split invoices across fiscal periods. Allocate payments monthly, quarterly, or yearly according to IFRS 15, HGB, and OR standards."
   },
   "Landing": {
     "logoAlt": "BillSplitter Logo Icon",

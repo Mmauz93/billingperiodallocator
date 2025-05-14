@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
 
   return {
     title: t('LandingPage.title', 'BillSplitter – Rechnungen auf Geschäftsperioden aufteilen'),
+    description: t('LandingPage.metaDescription', 'Rechnungen einfach auf Geschäftsperioden aufteilen. Zahlungen monatlich, vierteljährlich, jährlich splitten – gemäß IFRS 15, HGB, OR.'),
     alternates: {
       canonical: canonicalUrl,
       languages: {
@@ -186,7 +187,6 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
                 width={240} 
                 height={180} 
                 className="object-contain"
-                priority
               />
             </div>
           </div>

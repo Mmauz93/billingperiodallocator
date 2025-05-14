@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
 
   return {
     title: t('LandingPage.title', 'BillSplitter – Split Invoices Across Fiscal Periods'),
+    description: t('LandingPage.metaDescription', 'Easily split invoices across fiscal periods. Allocate payments monthly, quarterly, or yearly according to IFRS 15, HGB, and OR standards.'),
     alternates: {
       canonical: canonicalUrl,
       languages: {

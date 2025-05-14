@@ -197,7 +197,8 @@
     "description": "Füllen Sie die folgenden Felder aus, um Rechnungsbeträge über Geschäftsperioden aufzuteilen."
   },
   "LandingPage": {
-    "title": "BillSplitter – Rechnungen auf Geschäftsperioden aufteilen"
+    "title": "BillSplitter – Rechnungen auf Geschäftsperioden aufteilen",
+    "metaDescription": "Rechnungen einfach auf Geschäftsperioden aufteilen. Zahlungen monatlich, vierteljährlich, jährlich splitten – gemäß IFRS 15, HGB, OR."
   },
   "Landing": {
     "logoAlt": "BillSplitter Logo Symbol",
