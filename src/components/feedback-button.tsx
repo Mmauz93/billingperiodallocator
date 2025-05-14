@@ -139,6 +139,7 @@ export function FeedbackButton({
                 type="button" 
                 onClick={handleSubmitFeedback}
                 disabled={!message.trim()}
+                className="bg-[#0284C7] hover:bg-[#0284C7]/90 text-white"
               >
                 {openEmailButtonLabel}
               </Button>

@@ -289,10 +289,19 @@ textarea {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* Update input focus styles to use consistent blue color */
 input:focus,
 select:focus,
 textarea:focus {
-  @apply border-primary ring-2 ring-primary/20 outline-none;
+  border-color: #0284C7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
+  outline: none !important;
+}
+
+/* Style for settings inputs */
+.settings-input:focus {
+  border-color: #0284C7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
 }
 
 .input-helper-text {
@@ -1223,4 +1232,24 @@ html:not(.dark) .bg-\[\#0284C7\]:hover {
 .dark .bg-\[\#0284C7\]:hover {
   background-color: rgba(2, 132, 199, 0.9) !important;
   color: white !important;
+}
+
+/* Ensure dialog close button always shows pointer cursor */
+[data-slot="dialog-close"],
+[data-slot="dialog-close"] *,
+[aria-label="Close dialog"],
+[aria-label="Close dialog"] * {
+  cursor: pointer !important;
+}
+
+/* Ensure settings buttons and icons turn blue on hover */
+button[aria-label*="settings" i]:hover,
+button[aria-label*="Settings" i]:hover,
+[role="button"][aria-label*="settings" i]:hover,
+[role="button"][aria-label*="Settings" i]:hover,
+.settings-button:hover,
+.settings-icon:hover {
+  background-color: #0284C7 !important;
+  color: white !important;
+  cursor: pointer !important;
 }
