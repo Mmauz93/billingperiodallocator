@@ -6,9 +6,17 @@ Require all granted
 # Default document
 DirectoryIndex app.html
 
-# If no specific file is requested, serve the app.html
-RewriteEngine On
-RewriteBase /de/
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ app.html [L] 
+# Simple redirect to app.html
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /de/
+  # Only apply if the file doesn't exist
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # Redirect to app.html
+  RewriteRule ^$ app.html [L]
+</IfModule>
+
+# Fallback with meta refresh if mod_rewrite isn't available
+<IfModule !mod_rewrite.c>
+  ErrorDocument 404 /de/app.html
+</IfModule> 

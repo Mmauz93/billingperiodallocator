@@ -1,94 +1,55 @@
-# Force SSL
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Basic redirects and settings for a Next.js static site
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Force HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # Handle routes for the app
+  # First check if the file exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Handle specific language routes
+  RewriteRule ^de/app/?(.*)$ /de/app.html [L]
+  RewriteRule ^en/app/?(.*)$ /en/app.html [L]
+  
+  # Default language-specific paths
+  RewriteRule ^de/?$ /de.html [L]
+  RewriteRule ^en/?$ /en.html [L]
+  
+  # Fallback to index.html for all other routes
+  RewriteRule ^(.*)$ /index.html [L]
+</IfModule>
 
-# Important: Allow .htaccess to be read
-<Files .htaccess>
-  Order allow,deny
-  Deny from all
-</Files>
-
-# Allow directory access
-<Directory />
-  Options FollowSymLinks
-  AllowOverride All
-</Directory>
-
-# Only redirect trailing slashes for non-directory URLs
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)/$ /$1 [L,R=301]
-
-# Set proper MIME types for JavaScript and JSON files
+# Set MIME types
 <IfModule mod_mime.c>
   AddType application/javascript .js
   AddType application/json .json
   AddType text/css .css
 </IfModule>
 
-# Special case for /de/ and /en/ directories
-# Don't redirect them even if they don't exist as real directories
-RewriteCond %{REQUEST_URI} ^/(de|en)/$ [NC]
-RewriteRule ^(.*)$ - [L]
+# GZIP Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json
+</IfModule>
 
-# Handle SPA client-side routing
-# If the requested resource doesn't exist, serve the appropriate HTML file
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^de/app/(.*)$ /de/app.html [L]
-RewriteRule ^en/app/(.*)$ /en/app.html [L]
-RewriteRule ^de/legal/(.*)$ /de/legal/$1.html [L,QSA]
-RewriteRule ^en/legal/(.*)$ /en/legal/$1.html [L,QSA]
-RewriteRule ^de/?$ /de.html [L]
-RewriteRule ^en/?$ /en.html [L]
-RewriteRule ^(.*)$ /index.html [L]
-
-# Cache control for static assets
+# Cache Control
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType image/jpg "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/gif "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType text/css "access plus 1 month"
-  ExpiresByType application/pdf "access plus 1 month"
-  ExpiresByType text/javascript "access plus 1 month"
-  ExpiresByType application/javascript "access plus 1 month"
-  ExpiresByType application/x-javascript "access plus 1 month"
-  ExpiresByType application/x-font-woff "access plus 1 year"
-  ExpiresByType application/x-font-woff2 "access plus 1 year"
-  ExpiresByType application/font-woff "access plus 1 year"
-  ExpiresByType application/font-woff2 "access plus 1 year"
-  ExpiresByType font/woff "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-  ExpiresDefault "access plus 2 days"
+  ExpiresByType image/* "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType application/json "access plus 1 day"
 </IfModule>
 
-# Enable compression for text files
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-</IfModule>
-
-# Security headers
+# Basic security headers
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
-  Header set X-XSS-Protection "1; mode=block"
   Header set X-Frame-Options "SAMEORIGIN"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
-  
-  # Ensure JavaScript files are served with correct content type
-  <FilesMatch "\.js$">
-    Header set Content-Type "application/javascript"
-  </FilesMatch>
-  
-  # Ensure JSON files are served with correct content type
-  <FilesMatch "\.json$">
-    Header set Content-Type "application/json"
-  </FilesMatch>
 </IfModule>
 
-# Error documents
-ErrorDocument 403 /error500.html
+# Custom error pages
 ErrorDocument 404 /404.html
 ErrorDocument 500 /error500.html 
