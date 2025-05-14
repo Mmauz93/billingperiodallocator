@@ -10,10 +10,21 @@ import { getServerSideTranslator } from '@/lib/translation';
 // export type FaqItem = { question: string; answer: string; };
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  // Assuming lang will be 'en' for this specific page, but good to use params if generalizing
-  const { t } = getServerSideTranslator(params.lang || 'en'); 
+  const currentLang = params.lang || 'en';
+  const { t } = getServerSideTranslator(currentLang);
+  const siteUrl = 'https://billsplitter.siempi.ch';
+  const canonicalUrl = `${siteUrl}/${currentLang}/`;
+
   return {
     title: t('LandingPage.title', 'Home') + ' | BillSplitter',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en': `${siteUrl}/en/`,
+        'de': `${siteUrl}/de/`,
+        'x-default': `${siteUrl}/en/`,
+      },
+    },
   };
 }
 
@@ -56,6 +67,18 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
     }
   ];
   
+  const faqSectionTitle = t('Landing.faqTitle', { defaultValue: 'Frequently Asked Questions' });
+
+  // Prepare ldJsonMainEntity using server-side t
+  const ldJsonMainEntity = faqData.map((item, index) => ({
+    "@type": "Question" as const,
+    name: t(`Landing.faqQuestion${index + 1}`, { defaultValue: item.question }),
+    acceptedAnswer: {
+      "@type": "Answer" as const,
+      text: t(`Landing.faqAnswer${index + 1}`, { defaultValue: item.answer }),
+    },
+  }));
+
   // Demo data for pre-filling the calculator form (remains the same)
   const demoEndDate = "2025-04-29";
   const demoStartDate = "2024-11-01";
@@ -176,7 +199,11 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
       </section>
       
       {/* FAQ/Q&A Section for SEO - FaqSection is now a client component */}
-      <FaqSection faqData={faqData} />
+      <FaqSection 
+        faqData={faqData} 
+        title={faqSectionTitle}
+        ldJsonMainEntity={ldJsonMainEntity} // Pass the pre-built array
+      />
     </>
   );
 } 

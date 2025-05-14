@@ -2,9 +2,11 @@
  * Simple, direct translation system with zero eval() usage
  */
 
+import { TranslationContext } from '../components/translation-provider';
 import deTranslations from '../messages/de.json';
 import enTranslations from '../messages/en.json';
 import { safeText } from './utils';
+import { useContext } from 'react';
 
 // Type safety for translation objects
 type TranslationResource = Record<string, string | Record<string, string>>;
@@ -160,11 +162,15 @@ export const i18n = {
 
 // Export a hook-like function for React components
 export function useTranslation() {
+  const { language, t: contextT, changeLanguage: contextChangeLanguage } = useContext(TranslationContext);
+
+  // The t function from context already uses the correct language.
+  // The changeLanguage function from context will update the provider and global state.
   return { 
-    t,
+    t: contextT,
     i18n: {
-      language: currentLanguage,
-      changeLanguage
+      language: language, // Use language from context
+      changeLanguage: contextChangeLanguage // Use changeLanguage from context
     }
   };
 }

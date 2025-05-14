@@ -7,9 +7,21 @@ import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  const { t } = getServerSideTranslator(params.lang || 'de');
+  const currentLang = params.lang || 'de';
+  const { t } = getServerSideTranslator(currentLang);
+  const siteUrl = 'https://billsplitter.siempi.ch';
+  const canonicalUrl = `${siteUrl}/${currentLang}/`;
+
   return {
     title: t('LandingPage.title', 'Startseite') + ' | BillSplitter',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en': `${siteUrl}/en/`,
+        'de': `${siteUrl}/de/`,
+        'x-default': `${siteUrl}/en/`, // Default to English version
+      },
+    },
   };
 }
 
@@ -49,6 +61,18 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
       answer: "BillSplitter liefert tagesgenaue Berechnungen mit korrekter Rundung auf die Dezimalstelle Ihrer Wahl. Geringfügige Rundungsdifferenzen werden automatisch angepasst, um sicherzustellen, dass die Summe immer Ihrem Eingabebetrag entspricht."
     }
   ];
+  
+  const faqSectionTitle = t('Landing.faqTitle', { defaultValue: 'Häufig gestellte Fragen' });
+  
+  // Prepare ldJsonMainEntity using server-side t
+  const ldJsonMainEntity = faqData.map((item, index) => ({
+    "@type": "Question" as const,
+    name: t(`Landing.faqQuestion${index + 1}`, { defaultValue: item.question }),
+    acceptedAnswer: {
+      "@type": "Answer" as const,
+      text: t(`Landing.faqAnswer${index + 1}`, { defaultValue: item.answer }),
+    },
+  }));
   
   const demoEndDate = "2025-04-29";
   const demoStartDate = "2024-11-01";
@@ -168,7 +192,11 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
         </div>
       </section>
       
-      <FaqSection faqData={faqData} />
+      <FaqSection 
+        faqData={faqData} 
+        title={faqSectionTitle} 
+        ldJsonMainEntity={ldJsonMainEntity}
+      />
     </>
   );
 } 

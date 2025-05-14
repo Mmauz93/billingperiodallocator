@@ -1,164 +1,23 @@
 1:"$Sreact.fragment"
-3:I[54046,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","6232","static/chunks/6232-0770826802bdf628.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","2228","static/chunks/2228-73eee7833ddec42a.js","6781","static/chunks/6781-509c219030c2330f.js","7177","static/chunks/app/layout-9bd66234c6434482.js"],"default"]
-4:I[87555,[],""]
-5:I[31295,[],""]
-6:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
-7:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","6232","static/chunks/6232-0770826802bdf628.js","197","static/chunks/197-42ea1eb3a4d1b8f0.js","2228","static/chunks/2228-73eee7833ddec42a.js","6781","static/chunks/6781-509c219030c2330f.js","7177","static/chunks/app/layout-9bd66234c6434482.js"],""]
-8:I[90894,[],"ClientPageRoot"]
-9:I[73660,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6781","static/chunks/6781-509c219030c2330f.js","2570","static/chunks/app/de/legal/impressum/page-bab4af6b455b8ba6.js"],"default"]
-c:I[59665,[],"MetadataBoundary"]
-e:I[59665,[],"OutletBoundary"]
-11:I[74911,[],"AsyncMetadataOutlet"]
-13:I[59665,[],"ViewportBoundary"]
-15:I[26614,[],""]
-:HL["/_next/static/css/c0fa4ec23e40af53.css","style"]
+2:I[56044,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","6232","static/chunks/6232-122e00407a0f01f6.js","197","static/chunks/197-73ba3c0b37b1923e.js","2228","static/chunks/2228-456b938d79f1a9ef.js","6689","static/chunks/6689-60ebed396b27319d.js","7177","static/chunks/app/layout-1155696ee589b903.js"],"default"]
+3:I[87555,[],""]
+4:I[31295,[],""]
+5:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
+6:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","2940","static/chunks/2940-90e807814f743005.js","6232","static/chunks/6232-122e00407a0f01f6.js","197","static/chunks/197-73ba3c0b37b1923e.js","2228","static/chunks/2228-456b938d79f1a9ef.js","6689","static/chunks/6689-60ebed396b27319d.js","7177","static/chunks/app/layout-1155696ee589b903.js"],""]
+8:I[59665,[],"MetadataBoundary"]
+a:I[59665,[],"OutletBoundary"]
+d:I[74911,[],"AsyncMetadataOutlet"]
+f:I[59665,[],"ViewportBoundary"]
+11:I[26614,[],""]
+:HL["/_next/static/css/a46fa3d3551e0989.css","style"]
 :HL["/_next/static/css/c0f2b38205c98c82.css","style"]
-2:T1be6,
-              (function() {
-                // Configuration
-                const siteUrl = 'https://billsplitter.siempi.ch';
-                const supportedLanguages = ['en', 'de'];
-                const defaultLanguage = 'en';
-                
-                function setupHreflangTags() {
-                  // First remove any existing hreflang/canonical tags to avoid duplicates
-                  removeExistingTags();
-
-                  let originalPathname = window.location.pathname;
-
-                  // Normalize the pathname for canonical and hreflang generation
-                  // 1. Split by '/' and filter out empty segments (handles multiple slashes like //)
-                  // 2. Join back with single '/'
-                  // 3. Ensure it starts with a '/'
-                  let normalizedPathname = '/' + originalPathname.split('/').filter(Boolean).join('/');
-                  
-                  // 4. For language root paths (e.g., /en, /de), ensure they have a trailing slash.
-                  //    This makes them consistent with how buildAlternateUrl('en', '/') would generate https://.../en/
-                  //    Also handle the case where originalPathname might be just '/'
-                  const pathSegmentsForNormalization = normalizedPathname.split('/').filter(Boolean);
-                  if (pathSegmentsForNormalization.length === 1 && supportedLanguages.includes(pathSegmentsForNormalization[0])) {
-                      if (normalizedPathname.charAt(normalizedPathname.length - 1) !== '/') {
-                          normalizedPathname += '/';
-                      }
-                  } else if (originalPathname === '/') {
-                      // If the original path was exactly '/', filter(Boolean) + join would make it '',
-                      // so normalizedPathname would be '/'. This is correct.
-                      // No extra action needed here for the root path.
-                  }
-                  
-                  // Get current path and determine page type
-                  // Use the normalizedPathname for all subsequent logic
-                  const { pathname } = { pathname: normalizedPathname }; // Effectively 'const pathname = normalizedPathname;'
-                  const pathSegments = pathname.split('/').filter(Boolean);
-                  
-                  // Determine current language from URL path
-                  const currentLang = getLanguageFromPath(pathSegments);
-                  
-                  // Get clean path without language prefix for generating alternates
-                  const pathWithoutLang = getPathWithoutLanguage(pathSegments, currentLang);
-                  
-                  // Handle root page specially (/), as it redirects to language pages
-                  if (pathname === '/' || pathname === '') {
-                    // Root page should redirect to default language, so we don't add hreflang tags
-                    return;
-                  }
-                  
-                  // For language pages, we set the correct hreflang implementation
-                  // Set canonical to current URL (eliminate canonicalization conflicts)
-                  addCanonicalTag(siteUrl + pathname);
-                  
-                  // Add self-reference in hreflang
-                  addHreflangTag(currentLang, siteUrl + pathname);
-                  
-                  // Add references to other language versions
-                  supportedLanguages.forEach(lang => {
-                    if (lang !== currentLang) {
-                      const alternateUrl = buildAlternateUrl(lang, pathWithoutLang);
-                      addHreflangTag(lang, alternateUrl);
-                    }
-                  });
-                  
-                  // Add x-default (points to default language version)
-                  const xDefaultUrl = buildAlternateUrl(defaultLanguage, pathWithoutLang);
-                  addHreflangTag('x-default', xDefaultUrl);
-                }
-                
-                function getLanguageFromPath(pathSegments) {
-                  // Extract language from path or use default
-                  const firstSegment = pathSegments[0] || '';
-                  return supportedLanguages.includes(firstSegment) ? firstSegment : defaultLanguage;
-                }
-                
-                function getPathWithoutLanguage(pathSegments, currentLang) {
-                  // If first segment is a language code, remove it to get the rest of the path
-                  if (pathSegments.length > 0 && pathSegments[0] === currentLang) {
-                    return '/' + pathSegments.slice(1).join('/');
-                  }
-                  return '/' + pathSegments.join('/');
-                }
-                
-                function buildAlternateUrl(lang, path) {
-                  // Handle paths correctly - avoid double slashes
-                  if (path === '/') {
-                    return siteUrl + '/' + lang + '/';
-                  }
-                  return siteUrl + '/' + lang + path;
-                }
-                
-                function removeExistingTags() {
-                  // Instead of removing tags, which can conflict with React,
-                  // mark existing ones as disabled so we can replace them
-                  document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]')
-                    .forEach(el => {
-                      if (el.parentNode) {
-                        // Mark as disabled instead of removing
-                        el.setAttribute('disabled', 'true');
-                        // Move out of normal flow
-                        el.setAttribute('data-replaced', 'true');
-                      }
-                    });
-                }
-                
-                function addHreflangTag(lang, url) {
-                  const link = document.createElement('link');
-                  link.rel = 'alternate';
-                  link.hreflang = lang;
-                  link.href = url;
-                  document.head.appendChild(link);
-                }
-                
-                function addCanonicalTag(url) {
-                  const link = document.createElement('link');
-                  link.rel = 'canonical';
-                  link.href = url;
-                  document.head.appendChild(link);
-                }
-                
-                // Execute on page load and navigation
-                if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', setupHreflangTags);
-                } else {
-                  setupHreflangTags();
-                }
-                
-                // Handle SPA navigation
-                window.addEventListener('popstate', setupHreflangTags);
-                
-                // Also handle programmatic navigation via history API
-                const originalPushState = history.pushState;
-                history.pushState = function() {
-                  originalPushState.apply(this, arguments);
-                  setupHreflangTags();
-                };
-              })();
-            0:{"P":null,"b":"52o2ByXKaRGNUmQeLfLyv","p":"","c":["","de","legal","impressum",""],"i":false,"f":[[["",{"children":["de",{"children":["legal",{"children":["impressum",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/c0fa4ec23e40af53.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/c0f2b38205c98c82.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"id":"defer-non-critical-css","dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // Target stylesheets loaded by Next.js from the /_next/static/css/ directory\n                const mainStylesheets = document.querySelectorAll('head > link[rel=\"stylesheet\"][href^=\"/_next/static/css/\"]');\n                mainStylesheets.forEach(link => {\n                  // Apply deferral to all stylesheets matched by the selector\n                  // The original check for data-n-g or data-n-href might have been too restrictive\n                  link.rel = 'preload';\n                  link.as = 'style';\n                  link.onload = () => {\n                    link.onload = null;\n                    link.rel = 'stylesheet';\n                  };\n                });\n              })();\n            "}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased __className_22ceb1","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L7",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["de",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["impressum",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L8",null,{"Component":"$9","searchParams":{},"params":{},"promises":["$@a","$@b"]}],["$","$Lc",null,{"children":"$Ld"}],null,["$","$Le",null,{"children":["$Lf","$L10",["$","$L11",null,{"promise":"$@12"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","1K_z4SpLOg15AsYfsB_4q",{"children":[["$","$L13",null,{"children":"$L14"}],null]}],null]}],false]],"m":"$undefined","G":["$15","$undefined"],"s":false,"S":true}
-16:"$Sreact.suspense"
-17:I[74911,[],"AsyncMetadata"]
-a:{}
-b:{}
-d:["$","$16",null,{"fallback":null,"children":["$","$L17",null,{"promise":"$@18"}]}]
-10:null
-14:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-f:null
-18:{"metadata":[["$","title","0",{"children":"Impressum | BillSplitter"}],["$","meta","1",{"name":"description","content":"Rechtliche Informationen über den Betreiber von BillSplitter, Unternehmensdetails und Kontaktinformationen."}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","meta","3",{"name":"googlebot","content":"index, follow"}],["$","link","4",{"rel":"canonical","href":"https://billsplitter.siempi.ch/de/legal/impressum/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://billsplitter.siempi.ch/en/legal/impressum/"}],["$","link","6",{"rel":"alternate","hrefLang":"de","href":"https://billsplitter.siempi.ch/de/legal/impressum/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://billsplitter.siempi.ch/en/legal/impressum/"}],["$","link","8",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}]],"error":null,"digest":"$undefined"}
-12:{"metadata":"$18:metadata","error":null,"digest":"$undefined"}
+0:{"P":null,"b":"NSjyxI__eVMTzlqpCjLAX","p":"","c":["","de","legal","impressum",""],"i":false,"f":[[["",{"children":["de",{"children":["legal",{"children":["impressum",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/a46fa3d3551e0989.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/c0f2b38205c98c82.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n                if (localStorage.getItem('theme') === 'dark' || \n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased __className_22ceb1","children":[["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L5",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L6",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["de",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["impressum",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L7",["$","$L8",null,{"children":"$L9"}],null,["$","$La",null,{"children":["$Lb","$Lc",["$","$Ld",null,{"promise":"$@e"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","DFFy1rM_Apv0ZYbjvkC1A",{"children":[["$","$Lf",null,{"children":"$L10"}],null]}],null]}],false]],"m":"$undefined","G":["$11","$undefined"],"s":false,"S":true}
+12:"$Sreact.suspense"
+13:I[74911,[],"AsyncMetadata"]
+7:["$","main",null,{"className":"container mx-auto max-w-3xl px-6 py-16","children":["$","article",null,{"className":"prose prose-lg dark:prose-invert","aria-label":"Legal information","children":[["$","div",null,{"className":"text-center mb-10","children":[["$","h1",null,{"className":"text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent","children":"Impressum"}],["$","p",null,{"className":"text-sm text-muted-foreground mt-2","children":"Zuletzt aktualisiert am 14. Mai 2025"}]]}],["$","div",null,{"className":"space-y-8","children":[["$","section",null,{"children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent","children":"Verantwortlich für diese Website"}],["$","p",null,{"className":"mb-6 text-sm leading-relaxed","children":[["$","strong",null,{"children":"Siempi AG"}],["$","br",null,{}],"Mauro Miotti",["$","br",null,{}],"Birkenstrasse 47",["$","br",null,{}],"CH-6343 Rotkreuz",["$","br",null,{}],"Switzerland",["$","br",null,{}],"Email: ",["$","a",null,{"href":"mailto:info@siempi.ch","className":"text-primary hover:underline","children":"info@siempi.ch"}]]}]]}],["$","section",null,{"className":"border-t border-muted pt-6","children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent","children":"Handelsregister"}],["$","p",null,{"className":"text-sm leading-relaxed","children":["Eingetragen im Handelsregister des Kantons Zug",["$","br",null,{}],"UID: CHE-369.093.556",["$","br",null,{}],"Handelsregisternummer",": CH-170.3.042.725-7"]}]]}]]}]]}]}]
+9:["$","$12",null,{"fallback":null,"children":["$","$L13",null,{"promise":"$@14"}]}]
+c:null
+10:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+b:null
+14:{"metadata":[["$","title","0",{"children":"Impressum | BillSplitter"}],["$","meta","1",{"name":"description","content":"Rechtliche Informationen über den Betreiber von BillSplitter, Unternehmensdetails und Kontaktinformationen."}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","meta","3",{"name":"googlebot","content":"index, follow"}],["$","link","4",{"rel":"canonical","href":"https://billsplitter.siempi.ch/de/legal/impressum/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://billsplitter.siempi.ch/en/legal/impressum/"}],["$","link","6",{"rel":"alternate","hrefLang":"de","href":"https://billsplitter.siempi.ch/de/legal/impressum/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://billsplitter.siempi.ch/en/legal/impressum/"}],["$","link","8",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}]],"error":null,"digest":"$undefined"}
+e:{"metadata":"$14:metadata","error":null,"digest":"$undefined"}

@@ -8,43 +8,54 @@ import { FeedbackButton } from "@/components/feedback-button";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { getLanguageFromPath } from "@/translations";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
 
+// import { getLanguageFromPath } from "@/translations"; // Removed unused import
+
+
+
 // Improved footer component with cleaner visual hierarchy and fixed positioning
 export function Footer() {
-  const { t, i18n } = useTranslation();
+  const { t, i18n: i18nFromHook } = useTranslation();
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [mounted, setMounted] = useState(false);
-
-  // Get current language from URL or fall back to i18n.language (This is the local function)
-  const getCurrentLanguage = () => {
-    if (!pathname) return i18n.language || 'en';
-    
-    const pathLanguage = getLanguageFromPath(pathname);
-    return pathLanguage || i18n.language || 'en';
-  };
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Define all labels upfront to avoid conditional rendering
-  // Only use translations after mounting to prevent hydration mismatch
-  const calculatorLabel = mounted ? t("General.calculator") : "Calculator";
-  const privacyLabel = mounted ? t("General.privacyPolicy") : "Privacy Policy";
-  const termsLabel = mounted ? t("General.termsOfUse") : "Terms of Use";
-  const impressumLabel = mounted ? t("General.impressum") : "Imprint";
-  const feedbackLabel = mounted ? t("General.feedback") : "Feedback";
+  // Determine language for initial render (hydration) based on pathname.
+  // This should match how server constructs links for a given page path.
+  let initialLangFromPath = 'en'; // Default language
+  if (pathname) {
+    const pathSegments = pathname.split('/');
+    if (pathSegments.length > 1 && (pathSegments[1] === 'de' || pathSegments[1] === 'en')) {
+      initialLangFromPath = pathSegments[1];
+    }
+  }
+
+  // After mount, the language from the hook (driven by TranslationProvider) is the source of truth.
+  // For initial render (mounted === false), use initialLangFromPath for consistency.
+  const currentLang = mounted ? i18nFromHook.language : initialLangFromPath;
+
+  // Define labels. Use simple, hardcoded defaults based on `initialLangFromPath` for pre-mount/SSR to avoid hydration mismatch on text.
+  // After mount, `t(key)` will use the reactive language from the hook.
+  const calculatorLabel = mounted ? t("General.calculator") : (initialLangFromPath === 'de' ? "Rechner" : "Calculator");
+  const privacyLabel = mounted ? t("General.privacyPolicy") : (initialLangFromPath === 'de' ? "Datenschutzerklärung" : "Privacy Policy");
+  const termsLabel = mounted ? t("General.termsOfUse") : (initialLangFromPath === 'de' ? "Nutzungsbedingungen" : "Terms of Use");
+  const impressumLabel = mounted ? t("General.impressum") : (initialLangFromPath === 'de' ? "Impressum" : "Imprint");
+  const feedbackLabel = mounted ? t("General.feedback") : (initialLangFromPath === 'de' ? "Feedback teilen" : "Feedback");
+  const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG"; // Company name likely static or handled by t() if key exists
+  
+  const defaultCopyright = initialLangFromPath === 'de' 
+    ? `© ${currentYear} Siempi AG — Alle Rechte vorbehalten.`
+    : `© ${currentYear} Siempi AG — All rights reserved.`;
   const copyrightLabel = mounted 
     ? t("Footer.copyright", { values: { year: currentYear } })
-    : `© ${currentYear} Siempi AG — All rights reserved.`;
-  const companyLabel = mounted ? t("Footer.companyName") : "Siempi AG";
+    : defaultCopyright;
 
-  const currentLang = getCurrentLanguage();
-  
   // Check if we're already on the calculator page to avoid showing link to current page
   const isOnCalculatorPage = pathname?.includes('/app');
 

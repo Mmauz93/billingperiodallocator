@@ -16,23 +16,25 @@ import { useTranslation } from "@/translations";
 // import { MobileNav } from "@/components/mobile-nav"; // TODO: Resolve path or remove if not used
 // import { ThemeToggle } from "@/components/theme-toggle"; // Remove static import
 
-
-
+// Define a placeholder component
+const Placeholder = () => <div className="w-10 h-10" />;
 
 // Dynamic imports for toggles
 const DynamicLanguageToggle = dynamic(() => import("@/components/language-toggle"), {
   ssr: false,
+  loading: () => <Placeholder />,
 });
 
 const DynamicThemeToggle = dynamic(() => import("@/components/theme-toggle").then(mod => mod.ThemeToggle), {
   ssr: false,
+  loading: () => <Placeholder />,
 });
 
 export function Header() {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [currentLang, setCurrentLang] = useState<string>('');
+  const [currentLang, setCurrentLang] = useState<string>(() => getCurrentLanguage());
   
   // Mount effect
   useEffect(() => {
@@ -40,15 +42,18 @@ export function Header() {
     
     // Initial language setup from URL path
     const pathLanguage = getLanguageFromPath(pathname || '');
-    const initialLang = pathLanguage || i18n.language || getCurrentLanguage();
+    // Use i18n.language as a fallback if available and pathLanguage is not, then getCurrentLanguage()
+    const determinedLang = pathLanguage || i18n.language || getCurrentLanguage();
     
-    setCurrentLang(initialLang);
+    if (currentLang !== determinedLang) { // Update only if different
+      setCurrentLang(determinedLang);
+    }
     
     // Ensure i18n is in sync with URL
     if (pathLanguage && i18n.language !== pathLanguage) {
       i18n.changeLanguage(pathLanguage);
     }
-  }, [i18n, pathname]);
+  }, [i18n, pathname, currentLang]); // Added currentLang to dep array
 
   // Effect to track path/language changes
   useEffect(() => {
@@ -111,11 +116,10 @@ export function Header() {
   const showGetStartedButton = !isOnAppPage;
   const showThemeToggle = !rawPathname.includes('/legal/privacy-policy');
 
-  // Don't render until we're mounted and currentLang state is set (for links etc.)
-  if (!mounted || !currentLang) return null;
+  // Only wait for actual client mount. currentLang will have an initial default.
 
-  // Ensure linkLang is valid for the Link href
-  const linkLangForButton = currentLang || getCurrentLanguage();
+  // Ensure linkLang is valid for the Link href - currentLang should always have a value now
+  const linkLangForButton = currentLang;
   
   // Compute paths once
   const homePath = `/${linkLangForButton}/`;

@@ -85,7 +85,8 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         
-        {/* Script to defer non-critical CSS */}
+        {/* Script to defer non-critical CSS - Temporarily commented out to prevent FOUC */}
+        {/*
         <script
           id="defer-non-critical-css"
           dangerouslySetInnerHTML={{
@@ -96,171 +97,18 @@ export default function RootLayout({
                 mainStylesheets.forEach(link => {
                   // Apply deferral to all stylesheets matched by the selector
                   // The original check for data-n-g or data-n-href might have been too restrictive
-                  link.rel = 'preload';
-                  link.as = 'style';
-                  link.onload = () => {
-                    link.onload = null;
-                    link.rel = 'stylesheet';
-                  };
+                    link.rel = 'preload';
+                    link.as = 'style';
+                    link.onload = () => {
+                      link.onload = null;
+                      link.rel = 'stylesheet';
+                    };
                 });
               })();
             `,
           }}
         />
-        
-        {/* 
-          Clean hreflang implementation following Google\'s official guidance:
-          https://developers.google.com/search/docs/specialty/international/localized-versions
-          
-          This script:
-          1. Adds proper self-reference for current page
-          2. Adds alternate links to all language variants
-          3. Removes canonical tag to different URLs (single source of truth)
-          4. Correctly implements x-default pointing to root
         */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                // Configuration
-                const siteUrl = 'https://billsplitter.siempi.ch';
-                const supportedLanguages = ['en', 'de'];
-                const defaultLanguage = 'en';
-                
-                function setupHreflangTags() {
-                  // First remove any existing hreflang/canonical tags to avoid duplicates
-                  removeExistingTags();
-
-                  let originalPathname = window.location.pathname;
-
-                  // Normalize the pathname for canonical and hreflang generation
-                  // 1. Split by '/' and filter out empty segments (handles multiple slashes like //)
-                  // 2. Join back with single '/'
-                  // 3. Ensure it starts with a '/'
-                  let normalizedPathname = '/' + originalPathname.split('/').filter(Boolean).join('/');
-                  
-                  // 4. For language root paths (e.g., /en, /de), ensure they have a trailing slash.
-                  //    This makes them consistent with how buildAlternateUrl('en', '/') would generate https://.../en/
-                  //    Also handle the case where originalPathname might be just '/'
-                  const pathSegmentsForNormalization = normalizedPathname.split('/').filter(Boolean);
-                  if (pathSegmentsForNormalization.length === 1 && supportedLanguages.includes(pathSegmentsForNormalization[0])) {
-                      if (normalizedPathname.charAt(normalizedPathname.length - 1) !== '/') {
-                          normalizedPathname += '/';
-                      }
-                  } else if (originalPathname === '/') {
-                      // If the original path was exactly '/', filter(Boolean) + join would make it '',
-                      // so normalizedPathname would be '/'. This is correct.
-                      // No extra action needed here for the root path.
-                  }
-                  
-                  // Get current path and determine page type
-                  // Use the normalizedPathname for all subsequent logic
-                  const { pathname } = { pathname: normalizedPathname }; // Effectively 'const pathname = normalizedPathname;'
-                  const pathSegments = pathname.split('/').filter(Boolean);
-                  
-                  // Determine current language from URL path
-                  const currentLang = getLanguageFromPath(pathSegments);
-                  
-                  // Get clean path without language prefix for generating alternates
-                  const pathWithoutLang = getPathWithoutLanguage(pathSegments, currentLang);
-                  
-                  // Handle root page specially (/), as it redirects to language pages
-                  if (pathname === '/' || pathname === '') {
-                    // Root page should redirect to default language, so we don't add hreflang tags
-                    return;
-                  }
-                  
-                  // For language pages, we set the correct hreflang implementation
-                  // Set canonical to current URL (eliminate canonicalization conflicts)
-                  addCanonicalTag(siteUrl + pathname);
-                  
-                  // Add self-reference in hreflang
-                  addHreflangTag(currentLang, siteUrl + pathname);
-                  
-                  // Add references to other language versions
-                  supportedLanguages.forEach(lang => {
-                    if (lang !== currentLang) {
-                      const alternateUrl = buildAlternateUrl(lang, pathWithoutLang);
-                      addHreflangTag(lang, alternateUrl);
-                    }
-                  });
-                  
-                  // Add x-default (points to default language version)
-                  const xDefaultUrl = buildAlternateUrl(defaultLanguage, pathWithoutLang);
-                  addHreflangTag('x-default', xDefaultUrl);
-                }
-                
-                function getLanguageFromPath(pathSegments) {
-                  // Extract language from path or use default
-                  const firstSegment = pathSegments[0] || '';
-                  return supportedLanguages.includes(firstSegment) ? firstSegment : defaultLanguage;
-                }
-                
-                function getPathWithoutLanguage(pathSegments, currentLang) {
-                  // If first segment is a language code, remove it to get the rest of the path
-                  if (pathSegments.length > 0 && pathSegments[0] === currentLang) {
-                    return '/' + pathSegments.slice(1).join('/');
-                  }
-                  return '/' + pathSegments.join('/');
-                }
-                
-                function buildAlternateUrl(lang, path) {
-                  // Handle paths correctly - avoid double slashes
-                  if (path === '/') {
-                    return siteUrl + '/' + lang + '/';
-                  }
-                  return siteUrl + '/' + lang + path;
-                }
-                
-                function removeExistingTags() {
-                  // Instead of removing tags, which can conflict with React,
-                  // mark existing ones as disabled so we can replace them
-                  document.querySelectorAll('link[rel="alternate"][hreflang], link[rel="canonical"]')
-                    .forEach(el => {
-                      if (el.parentNode) {
-                        // Mark as disabled instead of removing
-                        el.setAttribute('disabled', 'true');
-                        // Move out of normal flow
-                        el.setAttribute('data-replaced', 'true');
-                      }
-                    });
-                }
-                
-                function addHreflangTag(lang, url) {
-                  const link = document.createElement('link');
-                  link.rel = 'alternate';
-                  link.hreflang = lang;
-                  link.href = url;
-                  document.head.appendChild(link);
-                }
-                
-                function addCanonicalTag(url) {
-                  const link = document.createElement('link');
-                  link.rel = 'canonical';
-                  link.href = url;
-                  document.head.appendChild(link);
-                }
-                
-                // Execute on page load and navigation
-                if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', setupHreflangTags);
-                } else {
-                  setupHreflangTags();
-                }
-                
-                // Handle SPA navigation
-                window.addEventListener('popstate', setupHreflangTags);
-                
-                // Also handle programmatic navigation via history API
-                const originalPushState = history.pushState;
-                history.pushState = function() {
-                  originalPushState.apply(this, arguments);
-                  setupHreflangTags();
-                };
-              })();
-            `,
-          }}
-        />
         
         {/* Prevent theme flickering */}
         <script

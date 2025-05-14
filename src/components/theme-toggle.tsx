@@ -10,10 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { AccessibleIcon } from "@/components/ui/accessible-icon";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "@/translations";
 
@@ -22,9 +21,10 @@ export function ThemeToggle() {
   const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [sunIconStyle, setSunIconStyle] = useState({});
 
   // Add effect to detect system preference on first load
-  React.useEffect(() => {
+  useEffect(() => {
     setIsMounted(true);
 
     // Add a class when transitioning to prevent multiple layout shifts
@@ -76,11 +76,16 @@ export function ThemeToggle() {
             e.stopPropagation();
           }}
         >
-          <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center">
-          <AccessibleIcon label={toggleLabel}>
-              <Sun className="h-[1.2rem] w-[1.2rem] absolute rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0" />
-              <Moon className="h-[1.2rem] w-[1.2rem] absolute rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100" />
-          </AccessibleIcon>
+          <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
+            {/* <AccessibleIcon label={toggleLabel}> */}
+              <Sun 
+                className="h-[1.2rem] w-[1.2rem] absolute rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0 pointer-events-none" 
+                style={sunIconStyle}
+                onMouseEnter={() => setSunIconStyle({ color: 'red' })} 
+                onMouseLeave={() => setSunIconStyle({})} 
+              />
+              <Moon className="h-[1.2rem] w-[1.2rem] absolute rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100 pointer-events-none" />
+            {/* </AccessibleIcon> */}
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -103,21 +108,21 @@ export function ThemeToggle() {
               >
         <DropdownMenuItem
           onClick={() => handleThemeChange("light")}
-          className={`cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
+          className={`!cursor-pointer hover:text-primary ${theme === "light" ? "font-medium" : ""}`}
         >
-          {t("ThemeToggle.light")}
+          <span className="pointer-events-none">{t("ThemeToggle.light")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("dark")}
-          className={`cursor-pointer hover:text-primary ${theme === "dark" ? "font-medium" : ""}`}
+          className={`!cursor-pointer hover:text-primary ${theme === "dark" ? "font-medium" : ""}`}
         >
-          {t("ThemeToggle.dark")}
+          <span className="pointer-events-none">{t("ThemeToggle.dark")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("system")}
-          className={`cursor-pointer hover:text-primary ${theme === "system" ? "font-medium" : ""}`}
+          className={`!cursor-pointer hover:text-primary ${theme === "system" ? "font-medium" : ""}`}
         >
-          {t("ThemeToggle.system")}
+          <span className="pointer-events-none">{t("ThemeToggle.system")}</span>
         </DropdownMenuItem>
               </motion.div>
             </DropdownMenuContent>

@@ -66,10 +66,13 @@ type InputDataForDisplay = Pick<
 // Define a more specific type for the error parameter
 type CalculationErrorType = string | Error | { message?: string; [key: string]: unknown } | null | undefined;
 
-export default function InvoiceCalculatorClient() {
+interface InvoiceCalculatorClientProps {
+  pageTitle: string; // Add pageTitle prop
+}
+
+export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  const [dynamicTitle, setDynamicTitle] = useState<string>('');
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [calculationError, setCalculationError] = useState<string | null>(null);
   const [storedInputData, setStoredInputData] = useState<CalculationCallbackData>(null);
@@ -114,12 +117,11 @@ export default function InvoiceCalculatorClient() {
   // Effect just for setting mounted state and title
   useEffect(() => {
     setMounted(true);
-    setDynamicTitle(t('InvoiceForm.title'));
 
     // Check consent cookie
     const consentGiven = Cookies.get(consentCookieName) === "true";
     setHasConsent(consentGiven);
-  }, [t, consentCookieName]);
+  }, []);
 
   // Separate effect ONLY for reading demo data
   useEffect(() => {
@@ -244,8 +246,8 @@ export default function InvoiceCalculatorClient() {
         <div className="text-center mb-8">
           {/* Remove !mounted condition for h2 and paragraphs */}
           <h1 className="text-3xl font-bold text-center mb-4">
-            {/* Render dynamicTitle directly; it will update from useEffect. Or use a placeholder if empty initially. */}
-            {dynamicTitle || t('InvoiceForm.title')}{/* Or a more generic placeholder like "..." */}
+            {/* Render pageTitle prop directly */}
+            {pageTitle}
           </h1>
           <div className="max-w-2xl mx-auto space-y-2 px-4">
             <p>{t('InvoiceForm.description_p1')}</p>

@@ -49,13 +49,6 @@ export default function LanguageToggle() {
       return;
     }
     
-    // First check if we're on a legal page that requires special handling
-    const isLegalPage = pathname && (
-      pathname.includes('/legal/privacy-policy') || 
-      pathname.includes('/legal/terms-of-use') ||
-      pathname.includes('/legal/impressum')
-    );
-    
     // Save language in localStorage for persistence
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     // Set cookie for middleware persistence
@@ -79,38 +72,24 @@ export default function LanguageToggle() {
         newPath = pathname.replace(`/${currentLang}`, `/${lang}`);
       } else {
         // If no language in URL, add it
+        // This case should ideally not happen if all pages are under /en or /de
         newPath = `/${lang}${pathname}`;
       }
       
-      // Different handling based on page type
-      if (isLegalPage) {
-        // For legal pages:
-        // 1. Update URL without a full page reload
-        window.history.pushState(null, '', newPath);
-        
-        // 2. Change the language after URL is updated
-        // This sequence is important to prevent the race condition
-        setTimeout(() => {
-          changeLanguage(lang);
-          
-          // 3. Dispatch event so other components know to update
-          document.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: lang, source: 'language-toggle' } 
-          }));
-        }, 0);
-      } else {
-        // For regular pages, use router navigation
-        // Change language first to avoid flashing
-        changeLanguage(lang);
-        router.push(newPath);
-      }
+      // Use router navigation for all pages
+      // The NEXT_LOCALE cookie will be used by the server to render the correct language
+      router.push(newPath);
+
     } else {
-      // If no pathname available, just change the language
-      changeLanguage(lang);
+      // If no pathname available, just change the language (fallback, less ideal)
+      // This might still rely on client-side changeLanguage if no navigation occurs.
+      // For full SC compatibility, a navigation is preferred.
+      // Consider if this case is still needed or can be removed if pathname is always available.
+      changeLanguage(lang); 
     }
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="w-10 h-10" />;
 
   const isEnglish = i18n.language === "en";
   const isGerman = i18n.language === "de";
@@ -118,8 +97,10 @@ export default function LanguageToggle() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("LanguageToggle.toggleLanguage")}>
-          <Globe className="size-5" />
+        <Button variant="ghost" size="icon" aria-label={t("LanguageToggle.toggleLanguage")} className="text-foreground hover:text-primary relative w-10 h-10">
+          <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
+            <Globe className="h-[1.2rem] w-[1.2rem] pointer-events-none" />
+          </div>
           <span className="sr-only">{t("LanguageToggle.toggleLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
@@ -142,7 +123,7 @@ export default function LanguageToggle() {
               >
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("en")}
-                  className={`cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
+                  className={`!cursor-pointer hover:text-primary ${isEnglish ? "font-medium" : ""}`}
                 >
                   <ReactCountryFlag
                     countryCode="GB"
@@ -153,12 +134,13 @@ export default function LanguageToggle() {
                       marginRight: "0.5rem",
                     }}
                     title="English"
+                    className="pointer-events-none"
                   />
-                  <span className={isEnglish ? "font-bold" : ""}>English</span>
+                  <span className={`${isEnglish ? "font-bold" : ""} pointer-events-none`}>English</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("de")}
-                  className={`cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
+                  className={`!cursor-pointer hover:text-primary ${isGerman ? "font-medium" : ""}`}
                 >
                   <ReactCountryFlag
                     countryCode="DE"
@@ -169,8 +151,9 @@ export default function LanguageToggle() {
                       marginRight: "0.5rem",
                     }}
                     title="Deutsch"
+                    className="pointer-events-none"
                   />
-                  <span className={isGerman ? "font-bold" : ""}>Deutsch</span>
+                  <span className={`${isGerman ? "font-bold" : ""} pointer-events-none`}>Deutsch</span>
                 </DropdownMenuItem>
               </motion.div>
             </DropdownMenuContent>

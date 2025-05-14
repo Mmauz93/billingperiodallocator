@@ -15,6 +15,7 @@ const InvoiceCalculatorClient = lazy(() =>
 // German version of app page
 export default function AppPageDE() {
   const { t, i18n } = useTranslation();
+  const pageTitleForCalculator = t("InvoiceForm.title");
 
   useEffect(() => {
     // Force German language
@@ -38,7 +39,7 @@ export default function AppPageDE() {
       {/* The surrounding layout.tsx provides structure, header, footer */}
       {/* This page only needs to render the core calculator component with proper suspense */}
       <Suspense fallback={<Loading />}>
-        <InvoiceCalculatorClient />
+        <InvoiceCalculatorClient pageTitle={pageTitleForCalculator} />
       </Suspense>
       
       {/* Add SEO content for better discoverability and word count */}

@@ -1,130 +1,74 @@
-"use client";
+import { ForceDarkTheme } from '@/components/force-dark-theme';
+import { Metadata } from 'next';
+import PrivacyWidgetClientWrapper from '@/components/privacy-widget-client-wrapper';
+import React from 'react';
+import { ThemeProvider } from "next-themes"; // Keep for forced dark theme
+import { getServerSideTranslator } from '@/lib/translation';
 
-import { SUPPORTED_LANGUAGES, getLanguageFromPath } from '@/translations';
-import { useEffect, useState } from 'react';
+export async function generateMetadata(/* { params }: { params: { lang: string } } */): Promise<Metadata> {
+  const currentLang = 'en'; // For this specific /en/ page
+  const { t } = getServerSideTranslator(currentLang);
+  const pageTitle = t("Legal.privacyPolicyTitle", "Privacy Policy");
+  const siteUrl = 'https://billsplitter.siempi.ch';
+  const pagePath = `legal/privacy-policy/`;
+  const canonicalUrl = `${siteUrl}/${currentLang}/${pagePath}`;
 
-import PrivacyWidgetSkeleton from '@/components/privacy-widget-skeleton';
-import { ThemeProvider } from "next-themes";
-import dynamic from 'next/dynamic';
-import { usePathname } from 'next/navigation';
-import { useTranslation } from '@/translations';
-
-// Define interface for component props
-interface PrivacyWidgetProps {
-  lang: string;
+  return {
+    title: pageTitle + ' | BillSplitter',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en': `${siteUrl}/en/${pagePath}`,
+        'de': `${siteUrl}/de/${pagePath}`,
+        'x-default': `${siteUrl}/en/${pagePath}`,
+      },
+    },
+  };
 }
 
-// Use dynamic import with ssr: false and loading skeleton
-const PrivacyWidget = dynamic<PrivacyWidgetProps>(() => 
-  Promise.resolve(({ lang }: PrivacyWidgetProps) => {
-    const widgetHtml = `<privacybee-widget website-id="cmama28x0005vjo8hyyznlmon" type="dsgvo" lang="${lang}" data-theme="dark"></privacybee-widget>`;
-    return <div dangerouslySetInnerHTML={{ __html: widgetHtml }} />;
-  }), 
-  {
-    ssr: false,
-    loading: () => <PrivacyWidgetSkeleton />
-  }
-);
+// Optional: Client component to enforce body dark mode if ThemeProvider on main isn't enough
+// For now, we assume ThemeProvider on the main div is sufficient.
+// If not, this could be added:
+// "use client";
+// import { useEffect } from 'react';
+// export function BodyDarkModeSetter() {
+//   useEffect(() => {
+//     document.body.classList.add('dark');
+//     document.documentElement.classList.add('dark'); // Ensure html tag also has it
+//     document.documentElement.style.colorScheme = 'dark';
+//     return () => {
+//       document.body.classList.remove('dark');
+//       document.documentElement.classList.remove('dark');
+//       document.documentElement.style.colorScheme = '';
+//     };
+//   }, []);
+//   return null;
+// }
 
-export default function PrivacyPolicyPageEN() {
-  const { i18n, t } = useTranslation();
-  const pathname = usePathname();
+export default async function PrivacyPolicyPageEN(/* { params }: { params: { lang: string }} */) {
+  const lang = 'en'; // Explicitly 'en' for this page
+  const { t } = getServerSideTranslator(lang);
   
-  const [isMounted, setIsMounted] = useState(false);
-  const [pageLanguage, setPageLanguage] = useState(() => pathname ? getLanguageFromPath(pathname) || 'en' : 'en');
-  const [translationsReady, setTranslationsReady] = useState(false);
-
-  // Effect for mounting and initial setup
-  useEffect(() => {
-    setIsMounted(true);
-
-    // Force dark mode for entire page including header and footer
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.colorScheme = 'dark';
-    document.body.classList.add('dark');
-
-    // Initial language setup based on path
-    const initialPathLanguage = getLanguageFromPath(pathname || '');
-    if (initialPathLanguage && initialPathLanguage !== i18n.language) {
-      i18n.changeLanguage(initialPathLanguage);
-      document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
-      setTranslationsReady(true);
-      // Update pageLanguage state if needed, although already set initially
-      if (pageLanguage !== initialPathLanguage) {
-         setPageLanguage(initialPathLanguage);
-      }
-    } else {
-       document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
-       setTranslationsReady(true);
-    }
-
-    // Cleanup function to remove styles when the component unmounts
-    return () => {
-      console.log("Cleaning up dark mode styles from Privacy Policy EN");
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-      document.documentElement.style.colorScheme = ''; // Reset color scheme
-    };
-  }, [pathname, i18n, t, pageLanguage]); // Dependencies for initial setup
-
-  // Effect for handling language changes triggered by the language toggle
-  useEffect(() => {
-    if (!isMounted) return; // Ensure component is mounted
-
-    const handleLanguageChanged = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      const newLang = customEvent.detail?.language || customEvent.detail;
-
-      if (newLang && typeof newLang === 'string' && SUPPORTED_LANGUAGES.includes(newLang)) {
-        // Update state and i18n only if the language actually changed
-        if (newLang !== pageLanguage) {
-           setPageLanguage(newLang);
-           if (i18n.language !== newLang) {
-             setTranslationsReady(false); // Set loading state for translation change
-             i18n.changeLanguage(newLang);
-             document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
-             setTranslationsReady(true);
-           } else {
-             // If i18n language is already correct, just update title
-             document.title = t("Legal.privacyPolicyTitle") + " | BillSplitter";
-           }
-        }
-      }
-    };
-
-    document.addEventListener('languageChanged', handleLanguageChanged);
-
-    return () => {
-      document.removeEventListener('languageChanged', handleLanguageChanged);
-    };
-    // Dependencies: isMounted, i18n, t, and pageLanguage (to compare against newLang)
-  }, [isMounted, i18n, t, pageLanguage]); 
-
-  // Show loading state until fully mounted and translations ready
-  if (!isMounted || !translationsReady) {
-    return (
-      <div className="flex justify-center items-center py-16 min-h-[500px]">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <ThemeProvider attribute="class" forcedTheme="dark">
-      <div className="container mx-auto max-w-3xl px-6 py-16 dark" style={{ backgroundColor: "#121212" }}>
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-            {t("Legal.privacyPolicyTitle", "Privacy Policy")}
-          </h1>
-          <p className="text-sm text-white opacity-70 mt-2">
-            {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
-          </p>
-        </div>
-        <PrivacyWidget lang={pageLanguage} />
-      </div>
-    </ThemeProvider>
+    <>
+      <ForceDarkTheme />
+      <ThemeProvider attribute="class" forcedTheme="dark"> {/* Applies dark theme to this page context */}
+        {/* <BodyDarkModeSetter /> */}{/* Uncomment if explicit body/html styling is needed beyond ThemeProvider */}
+        <main className="container mx-auto max-w-3xl px-6 py-16 dark" style={{ backgroundColor: "#121212" }}>
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+              {t("Legal.privacyPolicyTitle", "Privacy Policy")}
+            </h1>
+            <p className="text-sm text-white opacity-70 mt-2">
+              {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
+            </p>
+          </div>
+          <PrivacyWidgetClientWrapper lang={lang} />
+        </main>
+      </ThemeProvider>
+    </>
   );
 } 

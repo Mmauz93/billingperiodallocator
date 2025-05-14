@@ -2,25 +2,42 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-import { useTranslation } from "@/translations";
-
 // FAQ data type
 export type FaqItem = {
   question: string;
   answer: string;
 };
 
+// For ld+json
+export type LdJsonFaqItem = {
+  "@type": "Question";
+  name: string;
+  acceptedAnswer: {
+    "@type": "Answer";
+    text: string;
+  };
+};
+
 interface FaqSectionProps {
-  faqData: FaqItem[];
+  faqData: FaqItem[]; // For display
+  title: string;
+  ldJsonMainEntity: LdJsonFaqItem[]; // Pre-translated for ld+json
 }
 
-export function FaqSection({ faqData }: FaqSectionProps) {
-  const { t } = useTranslation();
+export function FaqSection({ 
+  faqData, 
+  title, 
+  ldJsonMainEntity
+}: FaqSectionProps) {
+  // const { t } = useTranslation(); // t might still be needed for items if not passed directly
+  // For simplicity, let's assume faqData items are already translated or use their defaults.
+  // If faqData items *also* use keys that need translation by this component's t, that's more complex.
+  // The immediate issue is the title and the ld+json content.
 
   return (
     <section className="py-16 px-6 max-w-3xl mx-auto bg-background mb-10">
       <h2 className="text-3xl font-bold mb-10 text-center text-foreground">
-        {t('Landing.faqTitle', { defaultValue: 'Häufig gestellte Fragen' })}
+        {title} {/* Use passed title */}
       </h2>
       <Accordion type="single" collapsible className="space-y-4">
         {faqData.map((faq, index) => (
@@ -29,11 +46,12 @@ export function FaqSection({ faqData }: FaqSectionProps) {
             value={`item-${index}`}
             className="bg-muted/30 rounded-xl px-6 py-2 border border-border cursor-default"
           >
+            {/* Assuming faq.question and faq.answer are pre-translated or fine as defaults */}
             <AccordionTrigger className="text-xl font-semibold text-foreground hover:no-underline cursor-pointer">
-              {t(`Landing.faqQuestion${index + 1}`, { defaultValue: faq.question })}
+              {faq.question}
             </AccordionTrigger>
             <AccordionContent className="text-muted-foreground">
-              {t(`Landing.faqAnswer${index + 1}`, { defaultValue: faq.answer })}
+              {faq.answer}
             </AccordionContent>
           </AccordionItem>
         ))}
@@ -46,14 +64,7 @@ export function FaqSection({ faqData }: FaqSectionProps) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": faqData.map((item, index) => ({
-              "@type": "Question",
-              "name": t(`Landing.faqQuestion${index + 1}`, { defaultValue: item.question }),
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": t(`Landing.faqAnswer${index + 1}`, { defaultValue: item.answer })
-              }
-            }))
+            "mainEntity": ldJsonMainEntity // Use the pre-built prop
           })
         }}
       />
