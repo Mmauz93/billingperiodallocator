@@ -11,12 +11,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES, changeLanguage } from "@/translations";
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
+
+// Direct SVG implementation as fallback
+const GlobeIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className="lucide lucide-globe h-[1.2rem] w-[1.2rem]"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
 
 // Helper function to set a cookie
 function setCookie(name: string, value: string, days: number) {
@@ -35,8 +54,12 @@ export default function LanguageToggle() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Use static labels for server render and initial hydration
+  const toggleLanguageLabel = mounted 
+    ? t("LanguageToggle.toggleLanguage", { defaultValue: "Toggle language" })
+    : "Toggle language"; // Static fallback for server rendering
 
   // Ensure hydration works properly
   useEffect(() => {
@@ -56,8 +79,10 @@ export default function LanguageToggle() {
     
     // Save language in localStorage for persistence
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+    
     // Set cookie for middleware persistence
-    setCookie('NEXT_LOCALE', lang, 365); 
+    setCookie('NEXT_LOCALE', lang, 365);
+    setCookie('billingperiodallocator-language', lang, 365);
     
     // Close dropdown menu
     setOpen(false);
@@ -81,20 +106,21 @@ export default function LanguageToggle() {
         newPath = `/${lang}${pathname}`;
       }
       
-      // Use router navigation for all pages
-      // The NEXT_LOCALE cookie will be used by the server to render the correct language
-      router.push(newPath);
+      // Call changeLanguage directly before navigation to ensure client components update immediately
+      changeLanguage(lang);
 
+      // Always do a hard navigation when changing languages to ensure complete refresh
+      // This ensures all components get properly re-rendered with the new language
+      window.location.href = newPath;
+      
       // Remove focus from button to reset its visual state
       if (buttonRef.current) {
         buttonRef.current.blur();
       }
     } else {
-      // If no pathname available, just change the language (fallback, less ideal)
-      // This might still rely on client-side changeLanguage if no navigation occurs.
-      // For full SC compatibility, a navigation is preferred.
-      // Consider if this case is still needed or can be removed if pathname is always available.
-      changeLanguage(lang); 
+      // If no pathname available, just change the language and refresh
+      changeLanguage(lang);
+      window.location.reload();
       
       // Remove focus from button to reset its visual state
       if (buttonRef.current) {
@@ -103,25 +129,23 @@ export default function LanguageToggle() {
     }
   };
 
+  // Server-side and first render - use static content that won't change during hydration
   if (!mounted) {
-    // Instead of returning a placeholder div, render the full button structure for SSR
-    // with exact same styling as the mounted version
     return (
       <Button 
         variant="ghost" 
         size="icon" 
-        disabled
         aria-label="Toggle language"
-        className="header-toggle-button relative w-10 h-10 text-foreground !opacity-100"
+        className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none"
+        style={{ border: 'none' }}
       >
-        <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
-          <Globe className="h-[1.2rem] w-[1.2rem] pointer-events-none text-foreground" />
-        </div>
+        <GlobeIcon />
         <span className="sr-only">Toggle language</span>
       </Button>
     );
   }
 
+  // Client-side only - safe to use dynamic content
   const isEnglish = i18n.language === "en";
   const isGerman = i18n.language === "de";
 
@@ -132,13 +156,12 @@ export default function LanguageToggle() {
           variant="ghost" 
           size="icon" 
           ref={buttonRef}
-          aria-label={t("LanguageToggle.toggleLanguage")} 
-          className="header-toggle-button relative w-10 h-10 text-foreground"
+          aria-label={toggleLanguageLabel}
+          style={open ? { backgroundColor: '#0284C7', color: 'white' } : {}}
+          className={`header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none`}
         >
-          <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
-            <Globe className="h-[1.2rem] w-[1.2rem] pointer-events-none" />
-          </div>
-          <span className="sr-only">{t("LanguageToggle.toggleLanguage")}</span>
+          <GlobeIcon />
+          <span className="sr-only">{toggleLanguageLabel}</span>
         </Button>
       </DropdownMenuTrigger>
       <LazyMotion features={domAnimation}>

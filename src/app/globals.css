@@ -3,6 +3,169 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Theme Transition Handling - improved version */
+/* Smooth icon transitions in theme toggle */
+.header-toggle-button .sun-icon,
+.header-toggle-button .moon-icon,
+.header-toggle-button svg {
+  transition: opacity 0.15s ease;
+}
+
+/* Both sun and moon icons should be present with one hidden */
+.header-toggle-button .relative svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0; /* Default to hidden */
+}
+
+/* Show the appropriate icon when theme is initialized */
+html[data-theme-initialized="true"] .header-toggle-button .sun-icon.opacity-100,
+html[data-theme-initialized="true"] .header-toggle-button .moon-icon.opacity-100 {
+  opacity: 1 !important;
+}
+
+/* Remove redundant opacity transitions that are no longer needed */
+/* Prevent flash during loading */
+html.loading * {
+  transition: none !important;
+}
+
+/* Smooth theme transitions but only after initial load */
+html:not(.loading) {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Give a consistent hover style to header toggle buttons */
+.header-toggle-button {
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.header-toggle-button:hover {
+  background-color: #0284C7 !important;
+  color: #ffffff !important;
+}
+
+/* Make icons inside buttons have the same color as text */
+.header-toggle-button:hover svg {
+  color: #ffffff !important;
+}
+
+/* Fix for Globe icon in language toggle */
+.header-toggle-button .lucide-globe,
+button svg.lucide-globe,
+svg.lucide.lucide-globe {
+  color: currentColor !important;
+  stroke: currentColor !important;
+  stroke-width: 2px !important;
+  fill: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Fix header icons alignment */
+header nav .header-toggle-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  width: 40px !important;
+  position: relative !important;
+}
+
+header nav .header-toggle-button > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: static !important;
+}
+
+/* Accrual accounting specific styles */
+a[href*="accrualaccounting"],
+p a[href*="accrualaccounting"],
+a:has(span:contains("accrual accounting")),
+p:contains("accrual accounting") a,
+p:contains("zeitliche Abgrenzung") a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 2px !important;
+  color: #0284C7 !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+a[href*="accrualaccounting"]:hover,
+p a[href*="accrualaccounting"]:hover,
+a:has(span:contains("accrual accounting")):hover,
+p:contains("accrual accounting") a:hover,
+p:contains("zeitliche Abgrenzung") a:hover {
+  color: #0ea5e9 !important;
+  text-decoration-color: #0ea5e9 !important;
+  text-decoration-thickness: 2px !important;
+}
+
+/* Feature card links styling */
+.text-primary.underline,
+span.text-primary.underline,
+a.text-primary,
+span.text-primary,
+p a,
+p span.text-primary,
+a[href],
+[href*="IFRS"],
+[href*="expense"],
+[href*="privacy"],
+[href*="wikipedia"],
+[href*="fedlex"],
+[href*="gesetze"] {
+  cursor: pointer !important;
+  color: #0284C7;
+  text-decoration-color: rgba(2, 132, 199, 0.6);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.text-primary.underline:hover,
+span.text-primary.underline:hover,
+a.text-primary:hover,
+span.text-primary:hover,
+p a:hover,
+p span.text-primary:hover,
+a[href]:hover,
+[href*="IFRS"]:hover,
+[href*="expense"]:hover,
+[href*="privacy"]:hover,
+[href*="wikipedia"]:hover,
+[href*="fedlex"]:hover,
+[href*="gesetze"]:hover {
+  color: #0ea5e9 !important;
+  text-decoration-color: #0ea5e9;
+  text-decoration-thickness: 2px;
+}
+
+/* Ensure entire card has pointer cursor as it's a link */
+.p-6.rounded-lg.group[href] {
+  cursor: pointer !important;
+}
+
+/* FORCE ALL CALENDAR BUTTONS TO HAVE TRANSPARENT BACKGROUND */
+.rdp-button,
+.rdp-day,
+.rdp button,
+.rdp table button,
+.rdp tbody button,
+.rdp td button,
+[role="grid"] button,
+[role="gridcell"] button,
+[data-radix-popper-content-wrapper] [role="grid"] button:not([aria-selected="true"]):not(:hover),
+button.day,
+.calendar button {
+  background-color: transparent !important; 
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -55,7 +218,7 @@
   --popover-foreground: 222.2 84% 4.9%;  /* almost black */
 
   /* Primary - Use the blue from dark mode */
-  --primary: 217 78% 53%; /* hsl for a slightly darker #4285D6 (was 58% #4a90e2) */
+  --primary: 217 78% 53%; /* hsl for a slightly darker #0284C7 (was #4285D6 and #4a90e2) */
   --primary-foreground: 0 0% 100%;      /* white (contrasts with blue) */
 
   /* Secondary - Use a more distinct light gray */
@@ -77,10 +240,10 @@
   /* Border/Input/Ring - Improve definition */
   --border: 215 20% 90%;              /* slightly bluer light gray for borders */
   --input: 220 13% 95.7%;             /* very light gray hsl for #f3f4f6 */
-  --ring: 217 78% 53%;                /* hsl for a slightly darker #4285D6 (was 58% #4a90e2) */
+  --ring: 217 78% 53%;                /* hsl for a slightly darker #0284C7 (was #4285D6 and #4a90e2) */
 
   /* Base Chart Colors */
-  --chart-1: #2e5a8c; /* Original dark blue might be ok for charts */
+  --chart-1: #0284C7; /* Original dark blue might be ok for charts */
   --chart-2: #f5a623; /* Orange */
   --chart-3: #22c55e; /* Green */
   --chart-4: #5a6271; /* Gray */
@@ -98,12 +261,12 @@
   /* Sidebar Colors */
   --sidebar: #ffffff;
   --sidebar-foreground: #374151;
-  --sidebar-primary: #2e5a8c;
+  --sidebar-primary: #0284C7;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f9fafb;
-  --sidebar-accent-foreground: #2e5a8c;
+  --sidebar-accent-foreground: #0284C7;
   --sidebar-border: #e5e7eb;
-  --sidebar-ring: #2e5a8c;
+  --sidebar-ring: #0284C7;
 
   --pulse-highlight-color: rgba(74, 144, 226, 0.12);
 
@@ -367,7 +530,7 @@ textarea:focus {
     140,
     0.1
   ); /* Proportion Highlight Background in light mode */
-  color: #2e5a8c; /* Proportion Text in light mode */
+  color: #0284C7; /* Proportion Text in light mode */
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
 }
@@ -608,7 +771,7 @@ body * {
 
 /* Overrides for react-cookie-consent buttons */
 #rcc-confirm-button {
-  background-color: #2e5a8c !important; /* Primary Blue */
+  background-color: #0284C7 !important; /* Primary Blue */
   color: white !important;
   border: 1px solid hsl(var(--border)) !important;
   padding: 0.5rem 0.75rem !important;
@@ -858,6 +1021,89 @@ privacybee-widget div > h1 + p {
     isolation: isolate;
     z-index: 0;
   }
+
+  /* FORCE "by Siempi AG" to use same color as copyright text in LIGHT MODE, 
+     but keep gray-400 in DARK MODE */
+  /* Target the specific span containing "by Siempi AG" */
+  html:not(.dark) footer div.container div > span:has(a[href*="siempi.ch"]) {
+    color: var(--color-gray-600) !important; /* Matches copyright text in light mode */
+    -webkit-text-fill-color: var(--color-gray-600) !important;
+  }
+
+  /* Dark mode version still uses gray-400 */
+  .dark footer div.container div > span:has(a[href*="siempi.ch"]) {
+    color: #9ca3af !important; /* Tailwind's gray-400 */
+    -webkit-text-fill-color: #9ca3af !important;
+  }
+
+  /* Target the "Siempi AG" link specifically within that span */
+  html:not(.dark) footer div.container div > span:has(a[href*="siempi.ch"]) > a.siempi-link {
+    color: var(--color-gray-600) !important; /* Matches copyright text in light mode */
+    -webkit-text-fill-color: var(--color-gray-600) !important;
+    text-decoration: none !important;
+  }
+
+  /* Dark mode version still uses gray-400 */
+  .dark footer div.container div > span:has(a[href*="siempi.ch"]) > a.siempi-link {
+    color: #9ca3af !important; /* Tailwind's gray-400 */
+    -webkit-text-fill-color: #9ca3af !important;
+    text-decoration: none !important;
+  }
+
+  /* Keep the general .siempi-link for other uses if any, but footer one is more specific */
+  .siempi-link {
+    color: #9ca3af !important; /* Default for other .siempi-link uses */
+    @apply no-underline hover:underline transition-colors duration-200;
+  }
+
+  /* FINAL ATTEMPT: Override CSS variable for "Share Your Feedback" BUTTON AND ICON */
+  button:has(svg.lucide-message-square) {
+    --primary: #0284C7 !important; /* Override the --primary variable for this button */
+    color: #0284C7 !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  button:has(svg.lucide-message-square) svg {
+    --primary: #0284C7 !important; /* Also for SVG, in case it's read directly */
+    color: #0284C7 !important;
+    stroke: #0284C7 !important;
+    fill: none !important;       /* CORRECTED: Ensure icon is not filled */
+  }
+
+  /* Force Feedback button & icon to #0284C7 in LIGHT mode - Language Agnostic */
+  html:not(.dark) footer div.container nav button:has(svg.lucide-message-square),
+  html:not(.dark) footer div.container nav button:has(svg.lucide-message-square) svg {
+    color: #0284C7 !important;
+    stroke: #0284C7 !important;
+    fill: none !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  /* Force Feedback button & icon to #0284C7 in DARK mode (for consistency) - Language Agnostic */
+  .dark footer div.container nav button:has(svg.lucide-message-square),
+  .dark footer div.container nav button:has(svg.lucide-message-square) svg {
+    color: #0284C7 !important;
+    stroke: #0284C7 !important;
+    fill: none !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  /* Force "Calculator" link to #0284C7 in LIGHT mode - Language Agnostic */
+  html:not(.dark) footer div.container nav a[href$="/app/"] {
+    color: #0284C7 !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  /* Force "Calculator" link to #0284C7 in DARK mode (for consistency) - Language Agnostic */
+  .dark footer div.container nav a[href$="/app/"] {
+    color: #0284C7 !important;
+    -webkit-text-fill-color: #0284C7 !important;
+  }
+
+  /* Increase transparency for legal links in footer (light mode) - Language Agnostic */
+  html:not(.dark) footer div.container nav a[href*="/legal/"] {
+    opacity: 0.7 !important;
+  }
 }
 
 /* Also force calendar background within popovers */
@@ -877,7 +1123,7 @@ privacybee-widget div > h1 + p {
 }
 
 .header-toggle-button:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: #ffffff !important;
 }
 
@@ -892,7 +1138,7 @@ privacybee-widget div > h1 + p {
 }
 
 .header-dropdown-item:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: #ffffff !important;
 }
 
@@ -901,15 +1147,19 @@ html.loading * {
   transition: none !important;
 }
 
-/* Improve font loading behavior */
-@font-face {
-  font-display: swap !important; /* Use swap to prevent FOUT */
+/* Smooth theme transitions but only after initial load */
+html:not(.loading) {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Prevent flicker of unstyled content */
-html {
-  visibility: visible;
-  opacity: 1;
+/* Theme toggle button transitions */
+.header-toggle-button {
+  transition: opacity 0.15s ease-in-out;
+}
+
+/* Ensure no transition flickers during initial page load */
+[data-theme-initialized="true"] .header-toggle-button {
+  opacity: 1 !important;
 }
 
 /* Simple clean fix for dropdown hover styles - matches header approach */
@@ -924,7 +1174,7 @@ html {
 [data-slot="select-item"]:hover,
 [data-radix-select-item]:hover,
 [role="option"]:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: #ffffff !important;
 }
 
@@ -978,7 +1228,7 @@ html {
 [data-radix-select-item]:hover,
 [role="option"]:hover,
 [id^="select-item-"]:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: white !important;
   --tw-bg-opacity: 1 !important;
 }
@@ -1014,7 +1264,7 @@ html {
 [id^="select-item-"]:focus,
 [data-radix-select-item][data-highlighted="true"],
 [data-radix-select-item]:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: white !important;
   cursor: pointer !important;
 }
@@ -1023,7 +1273,7 @@ html {
 html:not(.dark) [id^="select-item-"]:hover,
 html:not(.dark) [data-radix-select-item]:hover,
 html:not(.dark) [data-radix-select-item][data-highlighted="true"] {
-  background-color: #4a90e2 !important; /* Fixed blue color for light mode */
+  background-color: #0284C7 !important; /* Fixed blue color for light mode */
   color: white !important;
   cursor: pointer !important;
 }
@@ -1044,7 +1294,7 @@ html:not(.dark) [data-radix-select-item][data-highlighted="true"] {
 /* Light mode hover */
 html:not(.dark) .select-dropdown-item:hover,
 html:not(.dark) .select-dropdown-item[data-highlighted="true"] {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: white !important;
 }
 
@@ -1082,33 +1332,18 @@ html:not(.dark) [data-slot="switch-thumb"] {
 
 /* Special styling for the Include Final Day toggle */
 .include-end-date-switch[data-state="checked"] {
-  background-color: #4a90e2 !important;
-  border: 1px solid #3a7bc8 !important;
-  box-shadow: 0 0 0 1px rgba(74, 144, 226, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08) !important;
-  position: relative; /* Ensure positioning context for absolute pseudo-element */
-  z-index: 1; /* Proper stacking context */
-  overflow: hidden; /* Constrain the ::before element within boundaries */
+  background-color: #0284C7 !important;
+  border: 1px solid #0284C7 !important;
+  box-shadow: 0 0 0 1px rgba(2, 132, 199, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08) !important;
 }
 
-.include-end-date-switch[data-state="checked"]::before {
-  content: '';
-  position: absolute;
-  inset: 0; /* Keep within the boundaries of the switch */
-  border-radius: 999px;
-  background: linear-gradient(to right, rgba(74, 144, 226, 0.2), rgba(74, 144, 226, 0)) !important;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: -1; /* Ensure it's behind the switch content */
-}
-
-.include-end-date-switch[data-state="checked"]:hover::before {
-  opacity: 1;
+.include-end-date-switch[data-state="checked"]:hover {
+  background-color: #0284C7 !important;
 }
 
 /* Ensure calendar icon buttons have blue hover backgrounds in both light and dark modes */
 button[aria-label="Pick a date"]:hover {
-  background-color: #4a90e2 !important;
+  background-color: #0284C7 !important;
   color: white !important;
 }
 
@@ -1127,129 +1362,427 @@ button[aria-label="Pick a date"]:hover svg {
   color: white !important;
 }
 
-/* Ensure header language and theme toggle buttons always show pointer cursor */
-.header-toggle-button,
-.header-dropdown-item,
-[data-slot="dropdown-menu-trigger"],
-[data-slot="dropdown-menu-content"] * {
-  cursor: pointer !important;
+/* Make sure calendar buttons have blue background when popover is open - LIGHT AND DARK MODE FIXED RULES */
+html:not(.dark) button[aria-label="Pick a date"],
+.dark button[aria-label="Pick a date"] {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease !important;
 }
 
-/* Add hover effect to header toggle buttons in light mode */
-html:not(.dark) .header-toggle-button:hover,
-html:not(.dark) .header-dropdown-item:hover {
-  background-color: #4a90e2 !important;
+/* Force common hover behavior */
+html:not(.dark) button[aria-label="Pick a date"]:hover,
+.dark button[aria-label="Pick a date"]:hover {
+  background-color: #0284C7 !important;
   color: white !important;
 }
 
-/* Make absolutely sure all header elements have cursor pointer */
-header button:not([disabled]),
-header [role="button"]:not([disabled]),
-.header-toggle-button:not([disabled]),
+/* Force common active behavior */
+html:not(.dark) button[aria-label="Pick a date"]:active,
+.dark button[aria-label="Pick a date"]:active {
+  transform: scale(0.95) !important;
+}
+
+/* FORCE OPEN STATE STYLES - IDENTICAL IN BOTH LIGHT AND DARK MODES */
+html:not(.dark) .Popover[data-state="open"] button[aria-label="Pick a date"],
+html:not(.dark) [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"],
+html:not(.dark) [role="dialog"] ~ button[aria-label="Pick a date"],
+html:not(.dark) button[aria-label="Pick a date"][data-state="open"],
+html:not(.dark) [open="true"] button[aria-label="Pick a date"],
+.dark .Popover[data-state="open"] button[aria-label="Pick a date"],
+.dark [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"],
+.dark [role="dialog"] ~ button[aria-label="Pick a date"],
+.dark button[aria-label="Pick a date"][data-state="open"],
+.dark [open="true"] button[aria-label="Pick a date"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+/* FORCE ICON COLOR IN OPEN STATE - IDENTICAL IN BOTH MODES */
+html:not(.dark) .Popover[data-state="open"] button[aria-label="Pick a date"] svg,
+html:not(.dark) [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"] svg,
+html:not(.dark) [role="dialog"] ~ button[aria-label="Pick a date"] svg,
+html:not(.dark) button[aria-label="Pick a date"][data-state="open"] svg,
+html:not(.dark) [open="true"] button[aria-label="Pick a date"] svg,
+.dark .Popover[data-state="open"] button[aria-label="Pick a date"] svg,
+.dark [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"] svg,
+.dark [role="dialog"] ~ button[aria-label="Pick a date"] svg,
+.dark button[aria-label="Pick a date"][data-state="open"] svg,
+.dark [open="true"] button[aria-label="Pick a date"] svg {
+  color: white !important;
+}
+
+/* CALENDAR DATE STYLING - RESET ALL DATES TO HAVE NO BACKGROUND FIRST */
+.rdp button,
+.rdp-button,
+.rdp-day,
+[role="grid"] button,
+[role="gridcell"] button,
+.day,
+.calendar button,
+[data-radix-popper-content-wrapper] [role="grid"] button {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* CALENDAR DATE HOVER - CRUCIAL FIX FOR LIGHT MODE HOVER */
+/* OVERRIDE FOR LIGHT MODE - EXACT SAME BEHAVIOR AS DARK MODE */
+html:not(.dark) .rdp-day:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
+html:not(.dark) .rdp-button:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
+html:not(.dark) [role="grid"] button:hover:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) [role="gridcell"] button:hover:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) .day:hover:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) .calendar button:hover:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) .rdp-cell:hover button:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) .rdp-table button:hover:not([disabled]):not([aria-selected="true"]),
+html:not(.dark) [data-radix-popper-content-wrapper] [role="grid"] button:hover:not([disabled]):not([aria-label="Previous month"]):not([aria-label="Next month"]):not([aria-selected="true"]) {
+  background-color: #0284C7 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  outline: none !important;
+}
+
+/* Ensure day buttons have proper dimensions */
+.rdp-day,
+.rdp-button,
+[role="grid"] button,
+[role="gridcell"] button,
+.calendar button {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0.5rem !important;
+  padding: 0 !important;
+}
+
+/* Light mode calendar button specific fix */
+html:not(.dark) .rdp-button {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0.5rem !important;
+  transition: background-color 0.15s, color 0.15s !important;
+}
+
+/* Force proper hover state */
+html:not(.dark) button[class*="rdp-button"]:hover:not([disabled]):not([aria-selected="true"]) {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+/* SELECTED DATE STYLING - ONLY APPLY TO SPECIFICALLY SELECTED DATE */
+.rdp-day[aria-selected="true"],
+.rdp button[aria-selected="true"],
+[role="grid"] button[aria-selected="true"],
+[role="gridcell"] button[aria-selected="true"],
+html:not(.dark) .rdp-day_selected,
+html:not(.dark) .rdp-day_selected:not(.rdp-day_disabled),
+html:not(.dark) [role="grid"] button[aria-selected="true"],
+html:not(.dark) [role="gridcell"] button[aria-selected="true"],
+.dark .rdp-day_selected,
+.dark .rdp-day_selected:not(.rdp-day_disabled),
+.dark [role="grid"] button[aria-selected="true"],
+.dark [role="gridcell"] button[aria-selected="true"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Ensure hover effect on selected date is the same */
+.rdp-day_selected:hover,
+html:not(.dark) .rdp-day_selected:hover,
+.dark .rdp-day_selected:hover,
+[role="grid"] button[aria-selected="true"]:hover,
+html:not(.dark) [role="grid"] button[aria-selected="true"]:hover,
+.dark [role="grid"] button[aria-selected="true"]:hover,
+[class*="selected"]:hover,
+html:not(.dark) [class*="selected"]:hover,
+.dark [class*="selected"]:hover {
+  background-color: #3a80d2 !important; /* Slightly darker blue on hover */
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* LANGUAGE TOGGLE - ENSURE BLUE BACKGROUND IN LIGHT MODE */
+/* Direct inline styling is now used in component */
+/* Add additional CSS for redundancy */
+.header-toggle-button[aria-expanded="true"],
+html:not(.dark) .header-toggle-button[aria-expanded="true"],
+button:has(.Globe)[aria-expanded="true"],
+html:not(.dark) button:has(.Globe)[aria-expanded="true"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+.header-toggle-button[aria-expanded="true"] svg,
+html:not(.dark) .header-toggle-button[aria-expanded="true"] svg,
+button:has(.Globe)[aria-expanded="true"] svg,
+html:not(.dark) button:has(.Globe)[aria-expanded="true"] svg {
+  color: white !important;
+}
+
+/* Ensure hover effect on selected date is the same */
+.rdp-day_selected:hover,
+html:not(.dark) .rdp-day_selected:hover,
+.dark .rdp-day_selected:hover,
+[role="grid"] button[aria-selected="true"]:hover,
+html:not(.dark) [role="grid"] button[aria-selected="true"]:hover,
+.dark [role="grid"] button[aria-selected="true"]:hover,
+[class*="selected"]:hover,
+html:not(.dark) [class*="selected"]:hover,
+.dark [class*="selected"]:hover {
+  background-color: #3a80d2 !important; /* Slightly darker blue on hover */
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* CALENDAR STYLING - MINIMAL SOLUTION */
+/* Hover effect for calendar dates - same in both light and dark mode */
+.rdp-day:hover:not(.rdp-day_disabled),
+.rdp-button:hover:not(.rdp-day_disabled),
+.rdp-cell button:hover:not([disabled]),
+.rdp-button:not([disabled]).rdp-day_today:hover,
+[role="grid"] button:hover:not([disabled]),
+[role="gridcell"] button:hover:not([disabled]),
+html:not(.dark) .rdp-day:hover:not(.rdp-day_disabled),
+html:not(.dark) .rdp-button:hover:not(.rdp-day_disabled),
+html:not(.dark) [role="grid"] button:hover:not([disabled]),
+html:not(.dark) [role="gridcell"] button:hover:not([disabled]),
+.dark .rdp-day:hover:not(.rdp-day_disabled),
+.dark .rdp-button:hover:not(.rdp-day_disabled),
+.dark [role="grid"] button:hover:not([disabled]),
+.dark [role="gridcell"] button:hover:not([disabled]) {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+/* Reset ALL calendar buttons to transparent background FIRST */
+.rdp-day,
+.rdp-button,
+[role="grid"] button,
+[role="gridcell"] button {
+  background-color: transparent !important;
+  color: inherit !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+/* Style for the selected date - same in both light and dark mode */
+.rdp-day_selected,
+.rdp-day_selected:not(.rdp-day_disabled),
+[role="grid"] button[aria-selected="true"],
+[role="gridcell"] button[aria-selected="true"],
+html:not(.dark) .rdp-day_selected,
+html:not(.dark) .rdp-day_selected:not(.rdp-day_disabled),
+html:not(.dark) [role="grid"] button[aria-selected="true"],
+html:not(.dark) [role="gridcell"] button[aria-selected="true"],
+.dark .rdp-day_selected,
+.dark .rdp-day_selected:not(.rdp-day_disabled),
+.dark [role="grid"] button[aria-selected="true"],
+.dark [role="gridcell"] button[aria-selected="true"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Today's date styling - subtle highlight, not blue background */
+.rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
+html:not(.dark) .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
+.dark .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
+[role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]),
+html:not(.dark) [role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]),
+.dark [role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]) {
+  background-color: rgba(74, 144, 226, 0.15) !important;
+  font-weight: bold !important;
+}
+
+/* Fix for Split Period dropdown - remove blue background from already selected item */
+[data-radix-select-item][data-state="checked"],
+[data-slot="select-item"][data-state="checked"],
+.select-dropdown-item[data-state="checked"] {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Ensure check icon remains visible */
+[data-radix-select-item][data-state="checked"] svg,
+[data-slot="select-item"][data-state="checked"] svg,
+.select-dropdown-item[data-state="checked"] svg {
+  color: #0284C7 !important;
+  opacity: 1 !important;
+}
+
+/* Only apply blue background on hover */
+[data-radix-select-item]:hover,
+[data-slot="select-item"]:hover,
+.select-dropdown-item:hover {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+/* ENSURE CONSISTENT THEME TOGGLE AND DROPDOWN BEHAVIOR BETWEEN LIGHT AND DARK MODES */
+/* These rules force light mode to behave like dark mode for toggles and dropdowns */
+
+/* 1. Make theme toggle button have same hover and open state in both themes */
+.header-toggle-button,
+html:not(.dark) .header-toggle-button {
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.header-toggle-button:hover,
+html:not(.dark) .header-toggle-button:hover {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+.header-toggle-button[data-state="open"],
+html:not(.dark) .header-toggle-button[data-state="open"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+/* 2. Force all dropdown menus to have same hover effect in both themes */
 .header-dropdown-item,
-[data-radix-select-item],
+html:not(.dark) .header-dropdown-item,
 [data-radix-dropdown-menu-item],
-[data-slot="dropdown-menu-trigger"],
-[data-slot="dropdown-menu-content"] button,
-[data-slot="dropdown-menu-content"] [role="menuitem"] {
+html:not(.dark) [data-radix-dropdown-menu-item],
+.select-dropdown-item,
+html:not(.dark) .select-dropdown-item {
   cursor: pointer !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
 }
 
-/* Ensure header dropdown icons and flags also get pointer */
-.header-dropdown-item *,
-header [role="menuitem"] * {
-  cursor: pointer !important;
+.header-dropdown-item:hover,
+html:not(.dark) .header-dropdown-item:hover,
+[data-radix-dropdown-menu-item]:hover,
+html:not(.dark) [data-radix-dropdown-menu-item]:hover,
+.select-dropdown-item:hover,
+html:not(.dark) .select-dropdown-item:hover {
+  background-color: #0284C7 !important;
+  color: white !important;
 }
 
-/* Ensure error messages are red in both light and dark modes */
-html:not(.dark) .text-destructive,
+/* 3. Ensure sun/moon theme toggle and language toggle behave the same in light and dark modes */
+/* Theme toggle */
+button:has(svg.Sun, svg.Moon),
+html:not(.dark) button:has(svg.Sun, svg.Moon) {
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+button:has(svg.Sun, svg.Moon)[data-state="open"],
+html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"],
+button:has(svg.Sun, svg.Moon)[aria-expanded="true"],
+html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
+html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
+button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg,
+html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg {
+  color: white !important;
+}
+
+/* Language toggle */
+button:has(svg.Globe),
+html:not(.dark) button:has(svg.Globe) {
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+button:has(svg.Globe)[data-state="open"],
+html:not(.dark) button:has(svg.Globe)[data-state="open"],
+button:has(svg.Globe)[aria-expanded="true"],
+html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] {
+  background-color: #0284C7 !important;
+  color: white !important;
+}
+
+button:has(svg.Globe)[data-state="open"] svg,
+html:not(.dark) button:has(svg.Globe)[data-state="open"] svg,
+button:has(svg.Globe)[aria-expanded="true"] svg,
+html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] svg {
+  color: white !important;
+}
+
+/* ERROR STYLING - ENSURE CONSISTENT RED COLOR IN BOTH THEMES */
+/* Light mode error text */
+html:not(.dark) p[class*="error"],
+html:not(.dark) span[class*="error"],
+html:not(.dark) div[class*="error"],
 html:not(.dark) [data-error="true"],
-html:not(.dark) [aria-invalid="true"] + p[role="alert"],
-html:not(.dark) p[id$="-error"],
-html:not(.dark) .text-sm.font-medium.text-destructive {
-  color: #ef4444 !important; /* Bright red in light mode */
-}
-
-/* Ensure error icons are red in light mode */
-html:not(.dark) .AlertCircle.text-destructive,
-html:not(.dark) .h-4.w-4.text-destructive {
-  color: #ef4444 !important;
-}
-
-/* Ensure form validation messages in the invoice form are red in light mode */
-html:not(.dark) [aria-labelledby="amounts-section-label"] .text-destructive,
-html:not(.dark) [aria-labelledby="amounts-section-label"] .text-sm.font-medium.text-destructive {
-  color: #ef4444 !important;
-  font-weight: 500 !important;
-}
-
-/* Apply to all form error messages */
-.error-message,
+html:not(.dark) [data-invalid="true"] + p,
+html:not(.dark) [aria-invalid="true"] + p,
+html:not(.dark) [aria-invalid="true"] ~ p,
+html:not(.dark) label + div [aria-invalid="true"] ~ p,
+html:not(.dark) p:has(+ [aria-invalid="true"]),
+html:not(.dark) [aria-invalid="true"] ~ span,
+html:not(.dark) .text-destructive, 
+html:not(.dark) [class*="text-red"],
 html:not(.dark) .error-message {
   color: #ef4444 !important;
 }
 
-/* Ensure proper text selection behavior in all input fields */
-input, textarea {
-  user-select: text !important; /* Ensures text can be selected */
+/* Light mode error icons */
+html:not(.dark) [aria-invalid="true"] ~ div svg,
+html:not(.dark) [aria-invalid="true"] + div svg,
+html:not(.dark) [data-invalid="true"] ~ div svg,
+html:not(.dark) [data-error="true"] svg,
+html:not(.dark) svg[class*="AlertCircle"],
+html:not(.dark) [aria-invalid="true"] > svg,
+html:not(.dark) svg.text-destructive {
+  color: #ef4444 !important;
 }
 
-/* Add a more visible text selection style */
-::selection {
-  background-color: #4a90e2 !important;
-  color: white !important;
+/* Ensure validation error messages use consistent destructive color */
+html:not(.dark) [aria-invalid="true"],
+html:not(.dark) [data-invalid="true"] {
+  border-color: #ef4444 !important;
 }
 
-/* Firefox specific selection style */
-::-moz-selection {
-  background-color: #4a90e2 !important;
-  color: white !important;
+/* Ensure "Amount is required" and "Start date is required" text in light mode is red */
+html:not(.dark) p:has(span.text-destructive),
+html:not(.dark) div > p.text-destructive,
+html:not(.dark) p.text-destructive,
+html:not(.dark) p.text-red-500 {
+  color: #ef4444 !important;
 }
 
-/* Ensure landing page "Test with Demo Data" button is consistent in both themes */
-html:not(.dark) button.bg-\[\#0284C7\],
-html:not(.dark) .bg-\[\#0284C7\] {
-  background-color: #0284C7 !important;
-  color: white !important;
-  border: none !important;
+/* Target specific error messages we see in the screenshots */
+html:not(.dark) p:contains("Amount is required"),
+html:not(.dark) p:contains("Start date is required") {
+  color: #ef4444 !important;
 }
 
-html:not(.dark) button.bg-\[\#0284C7\]:hover,
-html:not(.dark) .bg-\[\#0284C7\]:hover {
-  background-color: rgba(2, 132, 199, 0.9) !important;
-  color: white !important;
+/* FORCE ERROR TEXT COLORS FOR SPECIFIC VALIDATION MESSAGES */
+/* Target validation error messages seen in screenshots */
+html:not(.dark) div + p:contains("Amount is required"),
+html:not(.dark) div + p:contains("Start date is required"),
+html:not(.dark) form p:contains("Amount is required"),
+html:not(.dark) form p:contains("Start date is required"),
+html:not(.dark) input + p:contains("Amount is required"),
+html:not(.dark) input + p:contains("Start date is required"),
+html:not(.dark) input ~ p:contains("Amount is required"),
+html:not(.dark) input ~ p:contains("Start date is required") {
+  color: #ef4444 !important;
 }
 
-/* Dark mode also needs to use the same color */
-.dark button.bg-\[\#0284C7\],
-.dark .bg-\[\#0284C7\] {
-  background-color: #0284C7 !important;
-  color: white !important;
-  border: none !important;
-}
-
-.dark button.bg-\[\#0284C7\]:hover,
-.dark .bg-\[\#0284C7\]:hover {
-  background-color: rgba(2, 132, 199, 0.9) !important;
-  color: white !important;
-}
-
-/* Ensure dialog close button always shows pointer cursor */
-[data-slot="dialog-close"],
-[data-slot="dialog-close"] *,
-[aria-label="Close dialog"],
-[aria-label="Close dialog"] * {
-  cursor: pointer !important;
-}
-
-/* Ensure settings buttons and icons turn blue on hover */
-button[aria-label*="settings" i]:hover,
-button[aria-label*="Settings" i]:hover,
-[role="button"][aria-label*="settings" i]:hover,
-[role="button"][aria-label*="Settings" i]:hover,
-.settings-button:hover,
-.settings-icon:hover {
-  background-color: #0284C7 !important;
-  color: white !important;
-  cursor: pointer !important;
+/* Extremely specific selectors targeting the exact validation messages in screenshots */
+html:not(.dark) p[id*="react-aria"][class*="validation"],
+html:not(.dark) p[id*="form-validation"],
+html:not(.dark) p[class*="validation"],
+html:not(.dark) p[class*="error"],
+html:not(.dark) input ~ p[class*="text-destructive"],
+html:not(.dark) input ~ p[class*="text-red"],
+html:not(.dark) input + p[class*="text-destructive"],
+html:not(.dark) input + p[class*="text-red"] {
+  color: #ef4444 !important;
 }

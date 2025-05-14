@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // Extract the current path from the URL
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+        
+        // Construct the new URL without www
+        const hostname = window.location.hostname.replace('www.', '');
+        const protocol = window.location.protocol;
+        
+        // Redirect to the non-www version
+        window.location.href = `${protocol}//${hostname}${path}${search}${hash}`;
+    </script>
+</head>
+<body>
+    <h1>Redirecting to canonical domain...</h1>
+    <p>If you are not redirected automatically, please <a id="redirect-link" href="#">click here</a>.</p>
+    <script>
+        // Update the fallback link
+        const redirectLink = document.getElementById('redirect-link');
+        if (redirectLink) {
+            redirectLink.href = window.location.href.replace('www.', '');
+        }
+    </script>
+</body>
+</html> 

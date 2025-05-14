@@ -2,6 +2,7 @@ import { FaqItem, FaqSection } from "@/components/faq-section";
 
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
+import Link from "next/link";
 import { Metadata } from 'next';
 import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
@@ -32,9 +33,9 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
   const heroSubtitle = "BillSplitter hilft Ihnen, Rechnungen über Geschäftsjahre hinweg genau und mühelos abzugrenzen. Entwickelt für Finanzfachleute und Unternehmen. Schnell, einfach, präzise.";
   const feature1Title = "Genaue Periodenabgrenzung";
   const feature1Desc = "Berechnen Sie automatisch, wie viel einer Rechnung zu jedem Geschäftsjahr gehört – keine manuellen Fehler mehr.";
-  const feature2Title = "Rechnungsabgrenzungsposten"; // Adjusted for German context
+  const feature2Title = "Vorauszahlungen & Rechnungsabgrenzung"; // Updated to match image
   const feature2Desc = "Unterstützt die Abgrenzung nach IFRS 15, HGB und OR Standards für eine saubere, konforme Buchhaltung.";
-  const feature3Title = "Kein Login. Keine Datenspeicherung.";
+  const feature3Title = "Keine Anmeldung. Keine Datenspeicherung.";
   const feature3Desc = "Nutzen Sie BillSplitter sofort, ohne ein Konto zu erstellen. Ihre Daten bleiben sicher und privat.";
   const ctaTitle = "Rechnungen jetzt abgrenzen";
   const ctaSubtitle = "Starten Sie den Rechner und automatisieren Sie Ihre Ertrags- und Aufwandsabgrenzungen in Sekunden.";
@@ -50,7 +51,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
     },
     {
       question: "Ist BillSplitter konform mit Rechnungslegungsstandards?",
-      answer: "Ja, BillSplitter folgt den Grundsätzen der periodengerechten Rechnungslegung gemäss IFRS 15, HGB und OR Standards und eignet sich somit für die korrekte Erfassung von passiven und aktiven Rechnungsabgrenzungsposten in der Finanzbuchhaltung."
+      answer: "Ja, BillSplitter folgt den Grundsätzen der periodengerechten Rechnungslegung gemäss <a href='https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>IFRS 15</a>, <a href='https://www.gesetze-im-internet.de/hgb/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>HGB</a>, und <a href='https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>OR</a> Standards, und eignet sich somit für die korrekte Erfassung von passiven und aktiven Rechnungsabgrenzungsposten in der Finanzbuchhaltung."
     },
     {
       question: "Kann ich Rechnungen nach monatlichen, vierteljährlichen oder jährlichen Perioden aufteilen?",
@@ -104,7 +105,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
 
       {/* Features Section */}
       <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
+        <Link href="https://de.wikipedia.org/wiki/Rechnungsabgrenzung" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-1.svg" 
@@ -118,10 +119,10 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             {t('Landing.feature1Title', { defaultValue: feature1Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature1Desc', { defaultValue: feature1Desc })}
+            {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Mehr über <span className="text-primary underline hover:opacity-80 whitespace-nowrap">Aufwandsabgrenzung</span>.
           </p>
-        </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
+        </Link>
+        <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-2.svg" 
@@ -135,10 +136,10 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             {t('Landing.feature2Title', { defaultValue: feature2Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature2Desc', { defaultValue: feature2Desc })}
+            {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In Übereinstimmung mit <span className="text-primary underline hover:opacity-80 whitespace-nowrap">IFRS 15</span> Standards.
           </p>
-        </div>
-        <div className="group p-6 rounded-lg transition-colors duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60">
+        </Link>
+        <Link href="/de/legal/privacy-policy" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
           <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <Image 
               src="/feature-icon-3.svg" 
@@ -152,9 +153,9 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             {t('Landing.feature3Title', { defaultValue: feature3Title })}
           </h2>
           <p className="text-muted-foreground">
-            {t('Landing.feature3Desc', { defaultValue: feature3Desc })}
+            {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <span className="text-primary underline hover:opacity-80 whitespace-nowrap">Datenschutzerklärung</span>.
           </p>
-        </div>
+        </Link>
       </section>
 
       {/* Call to Action */}
@@ -166,7 +167,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
               </h2>
               <p className="text-lg mb-6 text-muted-foreground">
-                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })}
+                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Erfahren Sie, wie <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">zeitliche Abgrenzung</a> Ihre Finanzberichterstattung verbessern kann.
               </p>
               <LandingPageClientInteractions 
                 buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}

@@ -51,7 +51,21 @@ export function FaqSection({
               {faq.question}
             </AccordionTrigger>
             <AccordionContent className="text-muted-foreground pt-2">
-              {faq.answer}
+              {/* Ensure links within FAQ answers have underlines */}
+              <div 
+                dangerouslySetInnerHTML={{ __html: faq.answer }}
+                className="faq-content" 
+              />
+              <style jsx global>{`
+                .faq-content a {
+                  text-decoration: underline;
+                  color: var(--primary);
+                  transition: opacity 0.2s;
+                }
+                .faq-content a:hover {
+                  opacity: 0.8;
+                }
+              `}</style>
             </AccordionContent>
           </AccordionItem>
         ))}

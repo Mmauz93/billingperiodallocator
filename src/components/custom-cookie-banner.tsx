@@ -71,7 +71,9 @@ export function CustomCookieConsentBanner({
   useEffect(() => {
     if (!visible) return;
     
+    // Add class to prevent scrolling while modal is open
     document.documentElement.classList.add('prevent-scrollbar-shift');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
     
     const scrollPos = window.scrollY;
     const preventScrollJump = () => {
@@ -87,7 +89,7 @@ export function CustomCookieConsentBanner({
     const modal = modalRef.current;
     if (!modal) return;
     const focusableEls = modal.querySelectorAll<HTMLElement>(focusableSelectors);
-    // if (focusableEls.length) focusableEls[0].focus(); // Temporarily remove auto-focus
+    if (focusableEls.length) focusableEls[0].focus(); // Auto-focus first element
     
     function handleTab(e: KeyboardEvent) {
       if (e.key !== 'Tab') return;
@@ -106,9 +108,10 @@ export function CustomCookieConsentBanner({
       }
     }
     
+    // Disable escape key to force a choice
     function handleEscape(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        handleDecline();
+        e.preventDefault(); // Prevent escape from closing the modal
       }
     }
     
@@ -119,77 +122,87 @@ export function CustomCookieConsentBanner({
       modal.removeEventListener('keydown', handleTab);
       document.removeEventListener('keydown', handleEscape);
       document.documentElement.classList.remove('prevent-scrollbar-shift');
+      document.body.style.overflow = ''; // Restore scrolling
     }
-  }, [visible, handleDecline]);
-
-  // Always use the default (right side) positioning
-  const getPositionClass = () => {
-    // Use responsive positioning for better mobile view
-    // Removed the invalid !important modifier
-    return "fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[2000] w-full max-w-sm pointer-events-none";
-  };
+  }, [visible]);
 
   return (
     <LazyMotion features={domAnimation}>
       <AnimatePresence>
         {visible && (
-          <motion.div 
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className={getPositionClass()}
-            aria-label="Cookie consent banner"
-            aria-live="polite"
-            role="region"
-          >
-            <div className="pointer-events-auto bg-card text-card-foreground rounded-lg shadow-xl border border-border/40 p-6 flex flex-col items-center space-y-5 outline-none max-w-xs sm:max-w-sm w-full mx-4 md:mx-0">
-              <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center space-y-5">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-                    <path d="M8.5 8.5v.01" />
-                    <path d="M16 15.5v.01" />
-                    <path d="M12 12v.01" />
-                  </svg>
+          <>
+            {/* Full-screen overlay with higher opacity */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-[1999]"
+              aria-hidden="true"
+            />
+            
+            {/* Centered Cookie Modal */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="fixed inset-0 z-[2000] pointer-events-none flex items-center justify-center p-4"
+              aria-label="Cookie consent banner"
+              aria-live="polite"
+              role="region"
+            >
+              <div className="pointer-events-auto bg-card text-card-foreground shadow-xl border border-border/40 rounded-lg p-8 flex flex-col items-center w-full max-w-md mx-auto">
+                <div ref={modalRef} role="alertdialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center gap-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary cookie-icon">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
+                        <path d="M8.5 8.5v.01" />
+                        <path d="M16 15.5v.01" />
+                        <path d="M12 12v.01" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 flex flex-col items-center w-full">
+                    <h2 id="cookie-dialog-title" className="text-2xl font-semibold text-center">
+                      {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
+                    </h2>
+                    
+                    <p className="text-base text-center text-muted-foreground my-4 max-w-sm">
+                      {t('ConsentBanner.message')}
+                    </p>
+                    
+                    <button
+                      type="button"
+                      onClick={onOpenPrivacyAction}
+                      className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mb-4 cookie-privacy"
+                    >
+                      {t('ConsentBanner.learnMoreButton')}
+                    </button>
+                    
+                    <div className="flex flex-col space-y-3 w-full mt-2">
+                      <Button
+                        variant="default"
+                        className="w-full text-base py-6 bg-[#0284C7] hover:bg-[#0284C7]/90 cookie-accept text-lg font-medium"
+                        onClick={handleAccept}
+                        autoFocus
+                      >
+                        {t('ConsentBanner.acceptButton')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full text-base py-4"
+                        onClick={handleDecline}
+                      >
+                        {t('ConsentBanner.declineButton', { defaultValue: 'Manage Options' })}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                
-                <h2 id="cookie-dialog-title" className="text-lg font-semibold text-center">
-                  {t('ConsentBanner.headline', { defaultValue: 'We use cookies' })}
-                </h2>
-                
-                <p className="text-sm text-center text-muted-foreground">
-                  {t('ConsentBanner.message')}
-                </p>
-                
-                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 justify-center w-full mt-1">
-                  <Button
-                    variant="default"
-                    className="w-full sm:w-auto"
-                    onClick={handleAccept}
-                    autoFocus
-                  >
-                    {t('ConsentBanner.acceptButton')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={handleDecline}
-                  >
-                    {t('ConsentBanner.declineButton')}
-                  </Button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={onOpenPrivacyAction}
-                  className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-sm mt-3"
-                >
-                  {t('ConsentBanner.learnMoreButton')}
-                </button>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </LazyMotion>
