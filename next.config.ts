@@ -1,183 +1,104 @@
-import { Redirect, RouteHas } from "next/dist/lib/load-custom-routes";
-
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-const isStaticExport = !isDevelopment;
 
 const nextConfig: NextConfig = {
   // Configure Next.js to output static files
-  output: isDevelopment ? undefined : "export",
-  // Add trailingSlash option for directory-based HTML files
-  trailingSlash: true,
+  output: 'export',
+  distDir: '.next',
+  // Tell Next.js that we need to transpile our i18n folders
+  transpilePackages: ['@/app'],
+
+  // Disable image optimization during static export (it's not supported)
   images: {
-    // Optional: Configure device sizes for responsive images
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    // Optional: Configure image sizes for srcset generation
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Optional: Add remote domains if using external images
-    domains: [], // Add domains like ['example.com'] if needed
-    // Ensure default loader is used for static export
+    unoptimized: true,
+    remotePatterns: [],
     loader: "default",
     path: "/_next/image",
   },
-  
-  // Only include redirects in development (not in static export)
-  ...(isStaticExport ? {} : {
-    // In development, forward to default rewrites function
-    async redirects() {
-      // Define redirects for any environment
-      const commonRedirects: Redirect[] = [
-        {
-          source: '/app',
-          destination: '/en/app',
-          permanent: true,
-        },
-        {
-          source: '/',
-          destination: '/en/',
-          permanent: true,
-        },
-        // Handle www to non-www redirects
-        {
-          source: '/:path*',
-          has: [
-            {
-              type: 'host',
-              key: 'host',
-              value: 'www.billsplitter.siempi.ch',
-            },
-          ] as RouteHas[],
-          destination: 'https://billsplitter.siempi.ch/:path*',
-          permanent: true,
-        },
-      ];
-
-      return commonRedirects;
-    },
-  }),
-  
-  // Optimize bundling and reduce HTTP requests
+  // In development, allow React to catch and display errors
+  reactStrictMode: true,
   experimental: {
-    // Enable optimizations
-    optimizePackageImports: ['next', 'react', 'react-dom'],
-    
-    // Improve bundling for faster load times
-    optimizeCss: true, // Minimize CSS
-    
-    // Remove unsupported property
-    // craCompression: true,
+    // Add experimental features as needed
+    scrollRestoration: false,
   },
-  
-  // Production-specific optimizations
-  poweredByHeader: false, // Remove X-Powered-By header for security
-  compress: true, // Enable compression
-  reactStrictMode: true, // Ensure strict mode for better code
+  // Don't expose the Next.js version in headers
+  poweredByHeader: false,
 
-  // Enable page bundling to reduce HTTP requests
-  webpack: (config, { dev, isServer }) => {
-    // Only apply these optimizations for production client-side bundles
-    if (!dev && !isServer) {
-      // Ensure chunks are properly bundled
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            // Bundle all UI components together
-            ui: {
-              test: /[\\/]components[\\/]ui[\\/]/,
-              name: 'ui-components',
-              chunks: 'all',
-              priority: 10,
-            },
-            // Bundle all vendor modules together
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-            },
-          },
-        },
-        // Minimize all JS files
-        minimize: true,
-      };
+  // Webpack configuration (similar to what was in .mjs)
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Use a safe source map that doesn't use eval for development
+      config.devtool = 'source-map';
+    } else {
+      config.devtool = 'source-map'; // Production source maps
     }
-    
     return config;
   },
 
-  // Only include headers in development (not in static export)
-  ...(isStaticExport ? {} : {
-    // Add custom headers for security policies
-    async headers() {
-      // Base CSP directives (Keep this tight and specific)
-      const cspDirectives = {
-        'default-src': "'self'",
-        'script-src': [
-          "'self'", 
-          "'unsafe-inline'", // Needed for inline scripts and Next.js hydration
-          "https://app.privacybee.io", // Privacy management tool
-          "https://www.googletagmanager.com", // Google Tag Manager
-          // Add 'unsafe-eval' ONLY in development for HMR/Fast Refresh
-          isDevelopment ? "'unsafe-eval'" : "", 
-        ].filter(Boolean).join(' '), // Filter out empty strings and join
-        'style-src': "'self' 'unsafe-inline' https://app.privacybee.io", // Allow inline styles and PrivacyBee styles
-        'img-src': "'self' data: blob: https://cdn.jsdelivr.net", // Allow self, data URLs, blobs, and flag CDN
-        'font-src': "'self' data:", // Allow self and data URLs for fonts
-        'connect-src': [
-          "'self'", 
-          "https://app.privacybee.io",
-          "https://www.google-analytics.com",
-          "https://region1.google-analytics.com",
-          // Allow WebSocket and HTTP connections for development tooling
-          isDevelopment ? "ws://localhost:*" : "",
-          isDevelopment ? "http://localhost:*" : "",
-        ].filter(Boolean).join(' '),
-        'worker-src': "'self' blob:", // Allow self and blobs for workers
-        'frame-src': "'self'", // Allow framing only from self
-        'manifest-src': "'self'", // Allow manifest from self
-        'object-src': "'none'", // Disallow plugins like Flash
-        'base-uri': "'self'", // Restrict base tag
-        'form-action': "'self'", // Restrict form submissions
-      };
+  // Add custom headers for security policies
+  async headers() {
+    // Base CSP directives (Keep this tight and specific)
+    const cspDirectives = {
+      'default-src': "'self'",
+      'script-src': [
+        "'self'",
+        "'unsafe-inline'", // Needed for inline scripts and Next.js hydration
+        "https://app.privacybee.io", // Privacy management tool
+        "https://www.googletagmanager.com", // Google Tag Manager
+        // Add 'unsafe-eval' ONLY in development for HMR/Fast Refresh
+        isDevelopment ? "'unsafe-eval'" : "",
+      ].filter(Boolean).join(' '), // Filter out empty strings and join
+      'style-src': "'self' 'unsafe-inline' https://app.privacybee.io", // Allow inline styles and PrivacyBee styles
+      'img-src': "'self' data: blob: https://cdn.jsdelivr.net", // Allow self, data URLs, blobs, and flag CDN
+      'font-src': "'self' data:", // Allow self and data URLs for fonts
+      'connect-src': [
+        "'self'",
+        "https://app.privacybee.io",
+        "https://www.google-analytics.com",
+        "https://region1.google-analytics.com",
+        // Allow WebSocket and HTTP connections for development tooling
+        isDevelopment ? "ws://localhost:*" : "",
+        isDevelopment ? "http://localhost:*" : "",
+      ].filter(Boolean).join(' '),
+      'worker-src': "'self' blob:", // Allow self and blobs for workers
+      'frame-src': "'self'", // Allow framing only from self
+      'manifest-src': "'self'", // Allow manifest from self
+      'object-src': "'none'", // Disallow plugins like Flash
+      'base-uri': "'self'", // Restrict base tag
+      'form-action': "'self'", // Restrict form submissions
+    };
 
-      // Format the CSP string
-      const cspString = Object.entries(cspDirectives)
-        .map(([key, value]) => `${key} ${value}`)
-        .join('; ');
+    // Format the CSP string
+    const cspString = Object.entries(cspDirectives)
+      .map(([key, value]) => `${key} ${value}`)
+      .join('; ');
 
-      return [
-        {
-          // Apply these headers to all routes in your application.
-          source: '/:path*',
-          headers: [
-            {
-              key: 'Content-Security-Policy',
-              value: cspString,
-            },
-            {
-              key: 'X-Content-Type-Options',
-              value: 'nosniff',
-            },
-            {
-              key: 'Referrer-Policy',
-              value: 'strict-origin-when-cross-origin',
-            },
-            {
-              key: 'X-Frame-Options',
-              value: 'SAMEORIGIN',
-            },
-            {
-              // Add canonical header for SEO
-              key: 'Link',
-              value: '<https://billsplitter.siempi.ch:path*>; rel="canonical"',
-            },
-          ],
-        },
-      ];
-    },
-  }),
+    return [
+      {
+        // Apply these headers to all routes in your application.
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspString,
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
