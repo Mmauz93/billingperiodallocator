@@ -2,7 +2,6 @@
 
 import * as React from "react";
 
-import { AnimatePresence, LazyMotion, domAnimation, motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
@@ -18,134 +16,98 @@ import { useTranslation } from "@/translations";
 
 export function ThemeToggle() {
   const { setTheme, theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  // We'll handle translation in a way that avoids hydration mismatches
+  // Instead of using the dynamic translation during server rendering,
+  // we'll use a static default and only apply translation after mount
   const { t } = useTranslation();
-  const [isMounted, setIsMounted] = useState(false);
-  const [open, setOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  
+  // Save the translated string only after component is mounted
+  const toggleLabel = mounted 
+    ? t("ThemeToggle.toggleTheme", { defaultValue: "Toggle theme" })
+    : "Toggle theme"; // Static fallback for server rendering
+    
+  const lightLabel = mounted 
+    ? t("ThemeToggle.light", { defaultValue: "Light" })
+    : "Light";
+    
+  const darkLabel = mounted 
+    ? t("ThemeToggle.dark", { defaultValue: "Dark" })
+    : "Dark";
+    
+  const systemLabel = mounted 
+    ? t("ThemeToggle.system", { defaultValue: "System" })
+    : "System";
 
-  // Add effect to detect system preference on first load
-  useEffect(() => {
-    setIsMounted(true);
+  // Immediately check if we're mounted on the client
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    // Add a class when transitioning to prevent multiple layout shifts
-    if (theme !== undefined) {
-      document.documentElement.classList.add('transitioning');
-      
-      // Remove the class after transition completes
-      const transitionTimeout = setTimeout(() => {
-        document.documentElement.classList.remove('transitioning');
-      }, 500); // Match this to your transition duration
-      
-      return () => {
-        clearTimeout(transitionTimeout);
-        document.documentElement.classList.remove('transitioning');
-      };
-    }
-
-    // Debug info
-    console.log('Theme state:', { theme, resolvedTheme });
-    console.log('HTML dataset theme:', document.documentElement.dataset.theme);
-    console.log('HTML classList contains dark:', document.documentElement.classList.contains('dark'));
-  }, [theme, resolvedTheme]);
-
+  // Handle theme changes
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
-    setOpen(false); // Close dropdown after selection
-    
-    // Remove focus from button to reset its visual state
-    if (buttonRef.current) {
-      buttonRef.current.blur();
-    }
   };
 
-  // Determine the label text, use default English on server/pre-mount
-  const toggleLabel = isMounted ? t("ThemeToggle.toggleTheme") : "Toggle theme";
-
-  // Render the full button structure even before mounting, but disable interactivity
-  if (!isMounted) {
+  // On server or during hydration, show a simplified button
+  // with a predetermined icon that won't change during hydration
+  if (!mounted) {
     return (
       <Button
         variant="ghost"
         size="icon"
-        disabled
         aria-label="Toggle theme"
-        className="header-toggle-button relative w-10 h-10 text-foreground !opacity-100"
+        className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0"
+        style={{ border: 'none' }}
       >
-        <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
-          <Sun className="h-[1.2rem] w-[1.2rem] absolute pointer-events-none text-foreground" />
+        <div className="h-5 w-5 flex items-center justify-center">
+          <Moon className="h-5 w-5" />
         </div>
       </Button>
     );
   }
 
-  // Render the full dropdown menu once mounted
+  // Only on the client after hydration, render the full component
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          ref={buttonRef}
           aria-label={toggleLabel}
-          className="header-toggle-button relative w-10 h-10 text-foreground"
-          onClick={(e) => {
-            // Prevent event propagation to avoid layout shifts
-            e.stopPropagation();
-          }}
+          className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0"
+          style={{ border: 'none' }}
         >
-          <div className="relative w-[1.2rem] h-[1.2rem] overflow-hidden flex items-center justify-center pointer-events-none">
-            {/* <AccessibleIcon label={toggleLabel}> */}
-              <Sun 
-                className="h-[1.2rem] w-[1.2rem] absolute rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0 pointer-events-none" 
-              />
-              <Moon className="h-[1.2rem] w-[1.2rem] absolute rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100 pointer-events-none" />
-            {/* </AccessibleIcon> */}
+          <div className="h-5 w-5 flex items-center justify-center">
+            {resolvedTheme === 'dark' ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <LazyMotion features={domAnimation}>
-        <AnimatePresence>
-          {open && (
-            <DropdownMenuContent 
-              align="end" 
-              side="top" 
-              sideOffset={4} 
-              className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
-              asChild
-              forceMount
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                transition={{ duration: 0.15 }}
-              >
+      <DropdownMenuContent align="end" side="top" sideOffset={4} className="bg-popover border border-border">
         <DropdownMenuItem
           onClick={() => handleThemeChange("light")}
           className={`header-dropdown-item ${theme === "light" ? "font-medium" : ""}`}
-          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.light")}</span>
+          {lightLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("dark")}
           className={`header-dropdown-item ${theme === "dark" ? "font-medium" : ""}`}
-          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.dark")}</span>
+          {darkLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("system")}
           className={`header-dropdown-item ${theme === "system" ? "font-medium" : ""}`}
-          style={{ cursor: 'pointer' }}
         >
-          <span className="pointer-events-none" style={{ cursor: 'pointer' }}>{t("ThemeToggle.system")}</span>
+          {systemLabel}
         </DropdownMenuItem>
-              </motion.div>
-            </DropdownMenuContent>
-          )}
-        </AnimatePresence>
-      </LazyMotion>
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 }
