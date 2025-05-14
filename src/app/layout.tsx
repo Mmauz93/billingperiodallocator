@@ -28,6 +28,10 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
 
+        {/* Preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://app.privacybee.io" />
+        <link rel="dns-prefetch" href="https://app.privacybee.io" />
+
         {/* Prevent theme flickering */}
         <script
           dangerouslySetInnerHTML={{
