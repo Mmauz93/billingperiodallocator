@@ -7,6 +7,25 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)/$ /$1 [L,R=301]
 
+# Set proper MIME types for JavaScript and JSON files
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType application/json .json
+  AddType text/css .css
+</IfModule>
+
+# Handle SPA client-side routing
+# If the requested resource doesn't exist, serve the appropriate HTML file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^de/app/(.*)$ /de/app.html [L]
+RewriteRule ^en/app/(.*)$ /en/app.html [L]
+RewriteRule ^de/legal/(.*)$ /de/legal/$1.html [L,QSA]
+RewriteRule ^en/legal/(.*)$ /en/legal/$1.html [L,QSA]
+RewriteRule ^de/(.*)$ /de.html [L]
+RewriteRule ^en/(.*)$ /en.html [L]
+RewriteRule ^(.*)$ /index.html [L]
+
 # Cache control for static assets
 <IfModule mod_expires.c>
   ExpiresActive On
@@ -29,12 +48,27 @@ RewriteRule ^(.*)/$ /$1 [L,R=301]
   ExpiresDefault "access plus 2 days"
 </IfModule>
 
+# Enable compression for text files
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
 # Security headers
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   Header set X-XSS-Protection "1; mode=block"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  
+  # Ensure JavaScript files are served with correct content type
+  <FilesMatch "\.js$">
+    Header set Content-Type "application/javascript"
+  </FilesMatch>
+  
+  # Ensure JSON files are served with correct content type
+  <FilesMatch "\.json$">
+    Header set Content-Type "application/json"
+  </FilesMatch>
 </IfModule>
 
 # Error documents

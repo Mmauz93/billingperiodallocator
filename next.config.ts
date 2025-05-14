@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // Configure Next.js to output static files
   output: 'export',
   distDir: '.next',
+  // Add trailing slashes to ensure consistent URLs in static exports
+  trailingSlash: false,
   // Tell Next.js that we need to transpile our i18n folders
   transpilePackages: ['@/app'],
 
