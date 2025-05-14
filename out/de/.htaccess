@@ -1,0 +1,14 @@
+# Allow access to this directory
+Options +Indexes
+Allow from all
+Require all granted
+
+# Default document
+DirectoryIndex app.html
+
+# If no specific file is requested, serve the app.html
+RewriteEngine On
+RewriteBase /de/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ app.html [L] 

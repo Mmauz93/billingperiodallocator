@@ -3,7 +3,19 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Remove trailing slashes
+# Important: Allow .htaccess to be read
+<Files .htaccess>
+  Order allow,deny
+  Deny from all
+</Files>
+
+# Allow directory access
+<Directory />
+  Options FollowSymLinks
+  AllowOverride All
+</Directory>
+
+# Only redirect trailing slashes for non-directory URLs
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)/$ /$1 [L,R=301]
 
@@ -14,6 +26,11 @@ RewriteRule ^(.*)/$ /$1 [L,R=301]
   AddType text/css .css
 </IfModule>
 
+# Special case for /de/ and /en/ directories
+# Don't redirect them even if they don't exist as real directories
+RewriteCond %{REQUEST_URI} ^/(de|en)/$ [NC]
+RewriteRule ^(.*)$ - [L]
+
 # Handle SPA client-side routing
 # If the requested resource doesn't exist, serve the appropriate HTML file
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -22,8 +39,8 @@ RewriteRule ^de/app/(.*)$ /de/app.html [L]
 RewriteRule ^en/app/(.*)$ /en/app.html [L]
 RewriteRule ^de/legal/(.*)$ /de/legal/$1.html [L,QSA]
 RewriteRule ^en/legal/(.*)$ /en/legal/$1.html [L,QSA]
-RewriteRule ^de/(.*)$ /de.html [L]
-RewriteRule ^en/(.*)$ /en.html [L]
+RewriteRule ^de/?$ /de.html [L]
+RewriteRule ^en/?$ /en.html [L]
 RewriteRule ^(.*)$ /index.html [L]
 
 # Cache control for static assets
@@ -72,4 +89,6 @@ RewriteRule ^(.*)$ /index.html [L]
 </IfModule>
 
 # Error documents
-ErrorDocument 404 /404.html 
+ErrorDocument 403 /error500.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /error500.html 
