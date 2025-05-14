@@ -210,7 +210,7 @@ button.day,
 :root {
   --radius: 0.5rem; /* 8px border-radius as per design style */
   /* --- Light Mode --- */
-  --background: #F9FBFC;               /* Subtle blue tint instead of pure white */
+  --background: #F2F6F9;               /* AUDIT: Use #F2F6F9 (was #F9FBFC) */
   --foreground: 222.2 84% 4.9%;         /* almost black */
   --card: #FFFFFF;                     /* Keep cards pure white for layering */
   --card-foreground: 222.2 84% 4.9%;     /* almost black */
@@ -222,15 +222,15 @@ button.day,
   --primary-foreground: 0 0% 100%;      /* white (contrasts with blue) */
 
   /* Secondary - Use a more distinct light gray */
-  --secondary: 210 40% 96.1%;           /* light gray */
+  --secondary: #F3F4F6;           /* AUDIT: Use #F3F4F6 (was HSL 210 40% 96.1%) */
   --secondary-foreground: 222.2 47.4% 11.2%; /* dark blue/black (keep existing) */
 
   /* Muted - Make more pronounced for better contrast */
-  --muted: 218 30% 94%;               /* slightly bluer gray for better definition */
+  --muted: 215 24% 92%;               /* AUDIT: Use HSL components 215 24% 92% (was 218 30% 94%) */
   --muted-foreground: 215.4 16.3% 46.9%; /* mid-gray */
 
   /* Accent - Use a softer but visible accent */
-  --accent: 217 78% 97%;               /* very light blue that's visible but subtle */
+  --accent: 217 78% 97%;               /* very light blue that\'s visible but subtle */
   --accent-foreground: 217 78% 30%;    /* darker blue for text on accent backgrounds */
 
   /* Destructive - Keep existing */
@@ -241,6 +241,10 @@ button.day,
   --border: 215 20% 90%;              /* slightly bluer light gray for borders */
   --input: 220 13% 95.7%;             /* very light gray hsl for #f3f4f6 */
   --ring: 217 78% 53%;                /* hsl for a slightly darker #0284C7 (was #4285D6 and #4a90e2) */
+
+  /* Disabled States - AUDIT: New */
+  --disabled: #E5E7EB;
+  --disabled-foreground: #9CA3AF;
 
   /* Base Chart Colors */
   --chart-1: #0284C7; /* Original dark blue might be ok for charts */
@@ -315,8 +319,8 @@ html {
   --popover-foreground: #d1d5db;
   --primary: #4a90e2;
   --primary-foreground: #ffffff;
-  --secondary: #f5a623;
-  --secondary-foreground: #121212;
+  --secondary: #2A2A2A; /* AUDIT: Use #2A2A2A (was #f5a623) */
+  --secondary-foreground: #F9FAFB; /* AUDIT: Use #F9FAFB (was #121212) for contrast */
   --muted: #2a2a2a;
   --muted-foreground: #9ca3af; /* Original dark mode value is fine */
   --accent: #4a90e2;
@@ -326,6 +330,13 @@ html {
   --border: #3a3a3a;
   --input: #2a2a2a;
   --ring: #4a90e2;
+
+  /* AUDIT: New card-muted for dark theme layering */
+  --card-muted: #242424;
+
+  /* Disabled States - AUDIT: New */
+  --disabled: #2A2A2A;
+  --disabled-foreground: #6B7280;
 
   /* Base Chart Colors (Dark) */
   --chart-1: #4a90e2;
