@@ -6,37 +6,26 @@
     /* max-width: 100%; */ /* REMOVED - too broad, better to apply to specific elements like img if needed */
   }
 
-  /* Enhanced focus indicators for keyboard navigation and accessibility */
-  /* This is the standard focus-visible style used across the app */
-  a:focus-visible,
-  button:focus-visible,
-  input:focus-visible,
-  [role="button"]:focus-visible,
-  [role="link"]:focus-visible,
-  [role="tab"]:focus-visible,
-  [role="menuitem"]:focus-visible {
-    outline: 0.125rem solid hsl(var(--ring));
-    outline-offset: 0.1875rem;
-    box-shadow: 0 0 0 0.1875rem hsla(var(--ring), 0.6);
-    transition: outline-color 0.2s ease, box-shadow 0.2s ease;
+  /* Default link styling */
+  a {
+    @apply text-foreground underline cursor-pointer;
+    text-decoration-color: hsl(var(--muted-foreground));
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.2s ease;
   }
-
-  /* Custom Radix UI component focus states */
-  [data-radix-menu-item]:focus-visible,
-  [data-radix-dropdown-menu-item]:focus-visible,
-  [data-radix-dialog-content]:focus-visible {
-    outline: 0.125rem solid hsl(var(--ring));
-    outline-offset: 0.125rem;
-    box-shadow: 0 0 0 0.1875rem hsla(var(--ring), 0.6);
+  
+  /* Ensure all interactive elements AND their contents have the correct cursor */
+  a, button, [role="button"], 
+  a *, button *, [role="button"] * {
+    cursor: pointer;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-size: 1rem; /* Explicitly use rem instead of px */
-    line-height: 1.5; /* Improved line-height for better readability (was 1.4) */
-    overflow-x: hidden; /* Prevent horizontal scrolling at body level */
-    width: 100%; /* Ensure body takes exactly viewport width */
-    isolation: isolate; /* Create a new stacking context */
+    @apply bg-background text-foreground antialiased;
+    @apply selection:bg-secondary/10 selection:text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Do not set position here; Radix handles it. */
   }
 
   h1 {
@@ -166,19 +155,126 @@
   }
 }
 
+@layer components {
+  a:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    
+    /* Explicitly set Tailwind's internal CSS variables for ring color and offset color.
+       These will use the CSS variables defined in themes.css, which are theme-aware. */
+    --tw-ring-color: hsl(var(--ring));
+    --tw-ring-offset-color: hsl(var(--background)); /* Default offset for most links */
+
+    /* For dark mode, ensure these variables re-evaluate based on .dark themed CSS vars. */
+    .dark & { /* Targets '.dark a:focus-visible' */
+      --tw-ring-color: hsl(var(--ring)); /* Will use .dark --ring */
+      --tw-ring-offset-color: hsl(var(--background)); /* Will use .dark --background */
+    }
+  }
+
+  /* The following explicit focus style ensures all interactive elements with focus use the same system */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-ring ring-offset-background;
+  }
+
+  /* Ensure all icons within links and buttons maintain pointer cursor behavior */
+  a svg, a img, a span,
+  button svg, button img, button span,
+  [role="button"] svg, [role="button"] img, [role="button"] span {
+    cursor: inherit;
+  }
+  
+  /* Ensure button icons in various nesting levels inherit pointer cursor */
+  button > * > svg,
+  button > * > img,
+  button > * > span,
+  a > * > svg,
+  a > * > img,
+  a > * > span {
+    cursor: inherit;
+  }
+  
+  /* Extra specific selectors for the arrow icon in feature cards */
+  a span:has(> svg),
+  button span:has(> svg),
+  a div:has(> svg),
+  button div:has(> svg),
+  a > div > span > svg,
+  button > div > span > svg {
+    cursor: pointer !important;
+  }
+  
+  /* Handle the specific case of the → arrow icon in different contexts */
+  svg[data-arrow="true"],
+  svg.arrow-icon,
+  button svg,
+  a svg,
+  .group:hover svg,
+  button .group:hover svg,
+  a .group:hover svg,
+  .group:hover > div > svg,
+  .group:hover > span > svg {
+    cursor: pointer !important;
+  }
+}
+
+@layer utilities {
+  /* Global link hover style - ONLY the underline becomes blue */
+  a:hover {
+    @apply text-foreground;
+    text-decoration-color: #0284C7;
+    text-decoration-thickness: 2px;
+  }
+  
+  /* Make sure text color remains unchanged on hover */
+  a:hover * {
+    color: inherit;
+  }
+}
+
 /* Ensure text elements don't display text editor cursor */
-p, h1, h2, h3, h4, h5, h6, span, div:not([contenteditable="true"]), li, a:not([href]), section, header, footer {
-  cursor: default;
+input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, [contenteditable="true"] {
+  cursor: text;
 }
 
 /* Interactive elements should maintain their appropriate cursor */
-a[href], button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer {
+a[href],
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+.cursor-pointer {
   cursor: pointer;
 }
 
-/* Input elements should show text cursor */
-input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, [contenteditable="true"] {
-  cursor: text;
+/* Ensure common icon/content elements within interactive elements also show pointer cursor */
+button > svg,
+button > img,
+button > span,
+button > i,
+a[href] > svg,
+a[href] > img,
+a[href] > span,
+a[href] > i,
+[role="button"] > svg,
+[role="button"] > img,
+[role="button"] > span,
+[role="button"] > i {
+  cursor: inherit; /* Inherit cursor from parent button/link */
+}
+
+/* Fallback for any direct children of a button, if not an input */
+/* This is a bit broad, but helps catch edge cases. Inputs will override this. */
+button > * {
+    cursor: inherit;
+}
+
+/* Media query for improving small screen spacing */
+@media (max-width: 640px) {
+  /* Maintain touch-friendly spacing on mobile */
+  main {
+    @apply px-4 py-6;
+  }
 }
 
 /* Prevent layout shifts due to scrollbar appearing/disappearing */

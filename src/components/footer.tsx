@@ -42,7 +42,7 @@ export function Footer() {
   const isOnCalculatorPage = pathname?.includes('/app');
 
   return (
-    <footer className="w-full border-t border-border text-sm text-muted-foreground py-6 px-4 transition-colors duration-300">
+    <footer className="w-full border-t border-border bg-card text-sm text-muted-foreground py-6 px-4 transition-colors duration-300">
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
           <Link href={`/${effectiveLang}`} className="flex items-center gap-2 cursor-pointer">
@@ -62,7 +62,7 @@ export function Footer() {
               />
             </span>
           </Link>
-          <span className="text-muted-foreground text-xs">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground no-underline hover:underline transition-colors duration-200">{companyLabel}</a></span>
+          <span className="text-muted-foreground text-xs">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground no-underline hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">{companyLabel}</a></span>
         </div>
 
         <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3">
@@ -71,7 +71,8 @@ export function Footer() {
               href={`/${effectiveLang}/app`}
               className={cn(
                 "text-foreground hover:underline transition-colors duration-200",
-                isOnCalculatorPage && "hidden"
+                isOnCalculatorPage && "hidden",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               )}
             >
               {calculatorLabel}
@@ -79,7 +80,7 @@ export function Footer() {
             <FeedbackButton
               variant="link"
               size="sm"
-              className="p-0 h-auto font-normal text-sm text-foreground hover:underline transition-colors duration-200"
+              className="p-0 h-auto font-normal text-sm text-foreground hover:underline transition-colors duration-200 focus-visible:ring-offset-card"
             >
               {feedbackLabel}
             </FeedbackButton>
@@ -88,19 +89,28 @@ export function Footer() {
           <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
             <Link
               href={`/${effectiveLang}/legal/privacy-policy`}
-              className="text-muted-foreground hover:underline transition-colors duration-200"
+              className={cn(
+                "text-muted-foreground hover:underline transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+              )}
             >
               {privacyLabel}
             </Link>
             <Link
               href={`/${effectiveLang}/legal/terms-of-use`}
-              className="text-muted-foreground hover:underline transition-colors duration-200"
+              className={cn(
+                "text-muted-foreground hover:underline transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+              )}
             >
               {termsLabel}
             </Link>
             <Link
               href={`/${effectiveLang}/legal/impressum`}
-              className="text-muted-foreground hover:underline transition-colors duration-200"
+              className={cn(
+                "text-muted-foreground hover:underline transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+              )}
             >
               {impressumLabel}
             </Link>

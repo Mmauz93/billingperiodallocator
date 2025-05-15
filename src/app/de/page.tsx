@@ -1,6 +1,7 @@
 import { FaqItem, FaqSection } from "@/components/faq-section";
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
 
+import { FeatureCard } from "@/components/feature-card";
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
 import Link from "next/link";
@@ -115,58 +116,37 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <Link href="https://de.wikipedia.org/wiki/Rechnungsabgrenzung" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-1.svg" 
-              alt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature1Title', { defaultValue: feature1Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Mehr über <span className="text-primary underline hover:opacity-80 whitespace-nowrap">Aufwandsabgrenzung</span>.
-          </p>
-        </Link>
-        <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-2.svg" 
-              alt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature2Title', { defaultValue: feature2Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In Übereinstimmung mit <span className="text-primary underline hover:opacity-80 whitespace-nowrap">IFRS 15</span> Standards.
-          </p>
-        </Link>
-        <Link href="/de/legal/privacy-policy" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-3.svg" 
-              alt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature3Title', { defaultValue: feature3Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <span className="text-primary underline hover:opacity-80 whitespace-nowrap">Datenschutzerklärung</span>.
-          </p>
-        </Link>
+      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16">
+        <FeatureCard
+          iconSrc="/feature-icon-1.svg"
+          iconAlt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })}
+          title={t('Landing.feature1Title', { defaultValue: feature1Title })}
+          description={
+            <>
+              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Mehr über <Link href="https://de.wikipedia.org/wiki/Rechnungsabgrenzung" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">Aufwandsabgrenzung</Link>.
+            </>
+          }
+        />
+        <FeatureCard
+          iconSrc="/feature-icon-2.svg"
+          iconAlt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })}
+          title={t('Landing.feature2Title', { defaultValue: feature2Title })}
+          description={
+            <>
+              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In Übereinstimmung mit <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">IFRS 15</Link> Standards.
+            </>
+          }
+        />
+        <FeatureCard
+          iconSrc="/feature-icon-3.svg"
+          iconAlt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })}
+          title={t('Landing.feature3Title', { defaultValue: feature3Title })}
+          description={
+            <>
+              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">Datenschutzerklärung</Link>.
+            </>
+          }
+        />
       </section>
 
       {/* Call to Action */}

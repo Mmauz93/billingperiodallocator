@@ -1,6 +1,7 @@
 import { FaqItem, FaqSection } from "@/components/faq-section";
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
 
+import { FeatureCard } from "@/components/feature-card";
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
 import Link from "next/link";
@@ -121,58 +122,37 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 text-center bg-background mb-16">
-        <Link href="https://en.wikipedia.org/wiki/Matching_principle" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-1.svg" 
-              alt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature1Title', { defaultValue: feature1Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Learn more about <span className="text-primary underline hover:opacity-80 whitespace-nowrap">expense recognition</span>.
-          </p>
-        </Link>
-        <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-2.svg" 
-              alt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature2Title', { defaultValue: feature2Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In line with <span className="text-primary underline hover:opacity-80 whitespace-nowrap">IFRS 15</span> standards.
-          </p>
-        </Link>
-        <Link href="/en/legal/privacy-policy" className="group p-6 rounded-lg transition-all duration-200 bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 hover:-translate-y-1 cursor-pointer">
-          <div className="mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Image 
-              src="/feature-icon-3.svg" 
-              alt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })} 
-              width={28} 
-              height={28} 
-              className="text-primary transition-colors duration-200"
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">
-            {t('Landing.feature3Title', { defaultValue: feature3Title })}
-          </h2>
-          <p className="text-muted-foreground">
-            {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Read more about our <span className="text-primary underline hover:opacity-80 whitespace-nowrap">privacy policy</span>.
-          </p>
-        </Link>
+      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16">
+        <FeatureCard
+          iconSrc="/feature-icon-1.svg"
+          iconAlt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })}
+          title={t('Landing.feature1Title', { defaultValue: feature1Title })}
+          description={
+            <>
+              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Learn more about <Link href="https://en.wikipedia.org/wiki/Matching_principle" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">expense recognition</Link>.
+            </>
+          }
+        />
+        <FeatureCard
+          iconSrc="/feature-icon-2.svg"
+          iconAlt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })}
+          title={t('Landing.feature2Title', { defaultValue: feature2Title })}
+          description={
+            <>
+              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In line with <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">IFRS 15</Link> standards.
+            </>
+          }
+        />
+        <FeatureCard
+          iconSrc="/feature-icon-3.svg"
+          iconAlt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })}
+          title={t('Landing.feature3Title', { defaultValue: feature3Title })}
+          description={
+            <>
+              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Read more about our <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">privacy policy</Link>.
+            </>
+          }
+        />
       </section>
 
       {/* Call to Action */}

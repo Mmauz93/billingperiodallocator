@@ -61,7 +61,7 @@ export function Header() {
   const buttonText = effectiveLang === 'de' ? "Rechnung aufteilen" : "Split Invoice";
 
   return (
-    <header className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
+    <header className="fixed top-0 z-[var(--z-sticky)] w-full border-b border-border/40 bg-background/95 dark:bg-background/90 backdrop-blur-sm will-change-transform">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
           {/* Changed from <a> to <Link> for proper client-side navigation */}

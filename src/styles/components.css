@@ -11,8 +11,7 @@ header nav .header-toggle-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--spacing-10, 40px);
-  width: var(--spacing-10, 40px);
+  @apply h-10 w-10; /* Replaced height and width with Tailwind classes */
   position: relative;
 }
 
@@ -35,13 +34,13 @@ header.fixed {
 }
 
 .header-toggle-button:hover {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: hsl(var(--background));
 }
 
 /* Icon color inheritance for consistent appearance */
 .header-toggle-button:hover svg {
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--background));
 }
 
 /* Maintain visual appearance for disabled state */
@@ -55,8 +54,8 @@ header.fixed {
 }
 
 .header-dropdown-item:hover {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: hsl(var(--background));
 }
 
 /* 
@@ -86,15 +85,15 @@ button:has(svg.Sun, svg.Moon)[data-state="open"],
 html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"],
 button:has(svg.Sun, svg.Moon)[aria-expanded="true"],
 html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: hsl(var(--background));
 }
 
 button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
 html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
 button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg,
 html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg {
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--background));
 }
 
 /* Fix for Globe icon to ensure consistent appearance */
@@ -120,15 +119,15 @@ button:has(svg.Globe)[data-state="open"],
 html:not(.dark) button:has(svg.Globe)[data-state="open"],
 button:has(svg.Globe)[aria-expanded="true"],
 html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: hsl(var(--background));
 }
 
 button:has(svg.Globe)[data-state="open"] svg,
 html:not(.dark) button:has(svg.Globe)[data-state="open"] svg,
 button:has(svg.Globe)[aria-expanded="true"] svg,
 html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] svg {
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--background));
 }
 
 /* Header-specific expanded state styles */
@@ -136,15 +135,15 @@ html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] svg {
 html:not(.dark) .header-toggle-button[aria-expanded="true"],
 button:has(.Globe)[aria-expanded="true"],
 html:not(.dark) button:has(.Globe)[aria-expanded="true"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: hsl(var(--background));
 }
 
 .header-toggle-button[aria-expanded="true"] svg,
 html:not(.dark) .header-toggle-button[aria-expanded="true"] svg,
 button:has(.Globe)[aria-expanded="true"] svg,
 html:not(.dark) button:has(.Globe)[aria-expanded="true"] svg {
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--background));
 }
 
 /*
@@ -171,109 +170,197 @@ body:has([data-radix-popper-content-wrapper][data-state="open"]) {
 /*
  * FOOTER STYLING
  * Improve consistency and accessibility of footer links and components
+ * CRITICAL: All dimensional properties must be theme-agnostic
  */
-.siempi-link {
-  color: hsl(var(--foreground)); /* Improved contrast from previous muted-foreground */
-  font-weight: 500; /* Better legibility */
-  @apply no-underline hover:underline transition-colors duration-200;
-}
 
-/* Footer navigation alignment */
+/* Footer navigation alignment - THEME AGNOSTIC */
 footer div.container nav {
   display: flex;
-  align-items: center; /* Changed from baseline for better vertical alignment */
-  gap: var(--spacing-4); /* Using var instead of hardcoded 16px */
+  align-items: center;
+  gap: var(--spacing-4);
 }
 
-/* Alignment for special footer elements (Calculator and Feedback button) */
+/* Alignment for special footer elements - THEME AGNOSTIC */
 footer div.container nav a[href$="/app/"],
 footer div.container nav a[href*="rechner"],
 footer div.container nav button:has(svg.lucide-message-square) {
   display: inline-flex;
   align-items: center;
-  height: var(--spacing-6); /* Using var instead of hardcoded 24px */
-  line-height: var(--spacing-6); /* Using var instead of hardcoded 24px */
+  height: var(--spacing-6);
+  line-height: var(--spacing-6);
 }
 
-/* Feedback button icon alignment */
+/* Footer link transitions - THEME AGNOSTIC */
+footer a, 
+footer button[class*="text-foreground"] {
+  @apply transition-colors duration-200;
+  font-weight: 500; /* CONSISTENT weight across themes */
+  text-decoration-color: hsl(var(--muted-foreground));
+}
+
+/* Cursor behavior - THEME AGNOSTIC */
+footer a *, 
+footer button[class*="text-foreground"] * {
+  cursor: pointer;
+}
+
+/* Feedback button alignment - THEME AGNOSTIC */
 footer div.container nav button:has(svg.lucide-message-square) {
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
+  text-decoration: none;
+}
+
+/* Feedback button hover - no underline */
+footer div.container nav button:has(svg.lucide-message-square):hover {
+  text-decoration: none;
 }
 
 /*
- * LIGHT/DARK MODE FOOTER CONTRAST
- * Ensure all footer links have appropriate contrast in both modes
+ * FOOTER LINK COLORS - ONLY COLORS DIFFER BETWEEN THEMES, NOT DIMENSIONS
  */
 
-/* Light mode contrast improvements for legal links */
-html:not(.dark) footer div.container nav a[href*="/legal/"] {
-  color: hsl(var(--muted-foreground)); /* Darker than original for better contrast */
-  font-weight: 500;
+/* Calculator link - blue in both themes - NO UNDERLINES */
+a[href*="calculator"],
+a[href*="Calculator"],
+a:link:has(span:contains("Calculator")),
+footer a:contains("Calculator"),
+nav a:contains("Calculator"),
+a.calculator-link,
+a[href$="/calculator/"],
+a[href$="/calculator"],
+footer div.container nav a[href*="calculator"],
+footer div.container nav a[href*="Calculator"],
+footer div.container nav a:contains("Calculator"),
+footer div.container nav a[href*="rechner"] {
+  color: #0284C7 !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
-html:not(.dark) footer div.container nav a[href*="/legal/"]:hover {
-  color: hsl(var(--foreground));
-  text-decoration: underline;
+a[href*="calculator"]:hover,
+a[href*="Calculator"]:hover,
+a:link:has(span:contains("Calculator")):hover,
+footer a:contains("Calculator"):hover,
+nav a:contains("Calculator"):hover,
+a.calculator-link:hover,
+a[href$="/calculator/"]:hover,
+a[href$="/calculator"]:hover,
+footer div.container nav a[href*="calculator"]:hover,
+footer div.container nav a[href*="Calculator"]:hover,
+footer div.container nav a:contains("Calculator"):hover,
+footer div.container nav a[href*="rechner"]:hover {
+  color: #0284C7 !important;
+  opacity: 0.9;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
-/* Light mode contrast for Siempi AG link */
+/* Light mode legal links color - simplified */
+html:not(.dark) footer div.container nav a[href*="/legal/"],
+html:not(.dark) footer div.container nav a[href*="privacy-policy"],
+html:not(.dark) footer div.container nav a[href*="terms-of-use"],
+html:not(.dark) footer div.container nav a[href*="impressum"],
+html:not(.dark) footer div.container nav a[href*="imprint"] {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+}
+
+html:not(.dark) footer div.container nav a[href*="/legal/"]:hover,
+html:not(.dark) footer div.container nav a[href*="privacy-policy"]:hover,
+html:not(.dark) footer div.container nav a[href*="terms-of-use"]:hover,
+html:not(.dark) footer div.container nav a[href*="impressum"]:hover,
+html:not(.dark) footer div.container nav a[href*="imprint"]:hover {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+/* Light mode Siempi AG link color */
 html:not(.dark) footer div.container a[href*="siempi.ch"] {
   color: hsl(var(--muted-foreground));
-  font-weight: 500;
+  text-decoration: none;
 }
 
 html:not(.dark) footer div.container a[href*="siempi.ch"]:hover {
-  color: hsl(var(--foreground));
-  text-decoration: underline;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+  text-decoration: none;
 }
 
-/* Dark mode footer text contrast */
+/* Dark mode footer text color */
 .dark footer,
 .dark footer span,
 .dark footer div,
 .dark footer p {
-  color: hsl(var(--foreground)); /* Brighter text for better contrast */
+  color: hsl(var(--foreground));
 }
 
-/* Dark mode footer links contrast */
+/* Dark mode footer link colors */
 .dark footer a,
 .dark footer button[class*="text-foreground"] {
   color: hsl(var(--foreground));
-  font-weight: 500;
 }
 
 .dark footer a:hover,
 .dark footer button[class*="text-foreground"]:hover {
-  color: hsl(var(--primary));
-  text-decoration: underline;
-}
-
-/* Dark mode legal links contrast */
-.dark footer div.container nav a[href*="/legal/"] {
   color: hsl(var(--foreground));
-  font-weight: 500;
+  opacity: 0.8;
 }
 
-.dark footer div.container nav a[href*="/legal/"]:hover {
-  color: hsl(var(--primary));
-  text-decoration: underline;
+/* Dark mode footer legal links colors */
+.dark footer div.container nav a[href*="/legal/"],
+.dark footer div.container nav a[href*="privacy-policy"],
+.dark footer div.container nav a[href*="terms-of-use"],
+.dark footer div.container nav a[href*="impressum"],
+.dark footer div.container nav a[href*="imprint"] {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
 }
 
-/* Special buttons in dark mode footer - ensure consistent styling */
+.dark footer div.container nav a[href*="/legal/"]:hover,
+.dark footer div.container nav a[href*="privacy-policy"]:hover,
+.dark footer div.container nav a[href*="terms-of-use"]:hover,
+.dark footer div.container nav a[href*="impressum"]:hover,
+.dark footer div.container nav a[href*="imprint"]:hover {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+/* Dark mode footer button & icon colors */
 .dark footer div.container nav button:has(svg.lucide-message-square),
 .dark footer div.container nav button:has(svg.lucide-message-square) svg {
-  color: hsl(var(--primary));
-  stroke: hsl(var(--primary));
+  color: hsl(var(--foreground));
+  stroke: currentColor;
   fill: none;
-  -webkit-text-fill-color: hsl(var(--primary));
+  text-decoration: none;
 }
 
-/* Calculator link in dark mode footer */
-.dark footer div.container nav a[href$="/app/"] {
-  color: hsl(var(--primary));
-  -webkit-text-fill-color: hsl(var(--primary));
+.dark footer div.container nav button:has(svg.lucide-message-square):hover {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+/* Dark mode calculator link colors */
+.dark footer div.container nav a[href*="calculator"],
+.dark footer div.container nav a[href*="Calculator"],
+.dark footer div.container nav a:contains("Calculator"),
+.dark footer div.container nav a[href*="rechner"] {
+  color: #0284C7;
+  text-decoration: none;
+}
+
+.dark footer div.container nav a[href*="calculator"]:hover,
+.dark footer div.container nav a[href*="Calculator"]:hover,
+.dark footer div.container nav a:contains("Calculator"):hover,
+.dark footer div.container nav a[href*="rechner"]:hover {
+  color: #0284C7;
+  opacity: 0.9;
+  text-decoration: none;
 }
 
 /*
@@ -308,11 +395,6 @@ input[type="submit"].no-transform:hover,
 input[type="button"].no-transform:hover {
   transform: none;
 }
-
-/*
- * BUTTON STYLING CONSISTENCY
- * Ensure buttons maintain consistent appearance in all themes
- */
 
 /*
  * CUSTOM TOOLTIP IMPLEMENTATION
@@ -375,24 +457,26 @@ input[type="button"].no-transform:hover {
 /*
  * LINK STYLING
  * Consistent link styling across different contexts
+ * Only the underline becomes orange on hover
  */
 
 /* Specialized link styling for accrual accounting links */
 a[href*="accrualaccounting"],
 .accrual-accounting-link {
   text-decoration: underline;
-  text-decoration-thickness: calc(-1 * var(--text-decoration-medium));
+  text-decoration-thickness: 1px;
+  text-decoration-color: hsl(var(--muted-foreground));
   text-underline-offset: var(--text-decoration-offset);
-  color: hsl(var(--primary));
-  font-weight: 500;
+  color: hsl(var(--foreground));
+  font-weight: 400;
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
 
 a[href*="accrualaccounting"]:hover,
 .accrual-accounting-link:hover {
-  color: hsl(var(--primary));
-  text-decoration-color: hsl(var(--primary));
-  text-decoration-thickness: var(--text-decoration-thick);
+  color: hsl(var(--foreground));
+  text-decoration-color: #0284C7;
+  text-decoration-thickness: 2px;
 }
 
 /* Feature card and content links */
@@ -410,9 +494,11 @@ a[href],
 [href*="imprint"],
 [href*="compliance"],
 [href*="invoice"] {
-  text-decoration-thickness: var(--text-decoration-thin);
+  text-decoration-thickness: 1px;
+  text-decoration-color: hsl(var(--muted-foreground));
   text-underline-offset: var(--text-decoration-offset);
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+  color: hsl(var(--foreground));
 }
 
 .text-primary.underline:hover,
@@ -429,21 +515,20 @@ a[href]:hover,
 [href*="imprint"]:hover,
 [href*="compliance"]:hover,
 [href*="invoice"]:hover {
-  color: hsl(var(--primary));
-  text-decoration-color: hsl(var(--primary));
-  @apply decoration-2;
+  color: hsl(var(--foreground));
+  text-decoration-color: #0284C7;
+  text-decoration-thickness: 2px;
 }
 
-/* Dark mode contrast fix for feature card text */
+/* Dark mode contrast fix for feature card text - COLOR ONLY */
 .dark .bg-card p span.text-primary,
 .dark [class*="bg-card"] p span.text-primary,
 .dark .bg-card a.text-primary,
 .dark [class*="bg-card"] a.text-primary {
-  color: hsl(var(--muted-foreground));
-  font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
-/* Dark mode contrast for feature card paragraphs */
+/* Dark mode contrast for feature card paragraphs - COLOR ONLY */
 .dark section a.group p.text-muted-foreground {
   color: hsl(var(--muted-foreground));
 }
@@ -454,8 +539,8 @@ a[href]:hover,
  */
 #rcc-confirm-button {
   border: var(--border-width) solid hsl(var(--border));
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
   font-weight: 600;
   font-size: var(--font-size-sm, 0.875rem); /* Using var instead of hardcoded 13px */
   border-radius: var(--radius-sm);
@@ -478,14 +563,16 @@ a[href]:hover,
 
 #rcc-decline-button:hover {
   text-decoration: underline;
+  text-decoration-color: #0284C7;
 }
 
 /*
  * HIGH CONTRAST DARK MODE FIXES
  * Additional overrides to ensure WCAG contrast compliance
+ * ONLY COLORS are changed, not dimensions
  */
 
-/* Fix for various text items in dark mode that need higher contrast */
+/* Fix for various text items in dark mode that need higher contrast - COLOR ONLY */
 .dark a.!text-gray-600,
 .dark a.!text-gray-400,
 .dark .text-gray-600,
@@ -495,114 +582,42 @@ a[href]:hover,
 .dark footer div.container div.flex span.text-gray-600 a,
 .dark footer div.container nav.flex div.flex a {
   color: hsl(var(--foreground)); /* White text for max contrast */
-  font-weight: 500;
 }
 
-/* Demo data button contrast improvement */
+/* Demo data button contrast improvement - COLOR ONLY */
 div.max-w-4xl > div.flex > div.text-left > button.justify-center,
 button.bg-primary[class*="justify-center"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: #0284C7;
+  color: white;
+  border: none;
   font-weight: 600;
 }
 
-/* Footer links in dark mode */
-.dark footer a,
-.dark footer div.container a,
-.dark footer div.container nav a,
-.dark footer div.container div a {
-  color: hsl(var(--foreground)); /* White text for max contrast */
-  font-weight: 500;
-}
-
-/* Primary buttons text in dark mode */
+/* Primary buttons text in dark mode - COLOR ONLY */
 .dark .bg-primary {
   color: hsl(var(--secondary-foreground));
+}
+
+/* "Test with Demo Data" button - COLOR ONLY except font-weight */
+div.max-w-4xl > div.flex > div.text-left > button.justify-center {
+  background-color: #0284C7;
+  color: white;
+  border: none;
   font-weight: 600;
 }
 
-/*
- * ULTRA-SPECIFIC CONTRAST FIXES
- * These target specific elements that require extra contrast attention
- * Based on accessibility audit findings
- */
-
-/* "Siempi AG" link in dark mode */
-.dark div.container > div.flex > span.text-gray-600 > a.\!text-gray-600,
-.dark div.container > div.flex > span.text-gray-600 > a.\!text-gray-400 {
-  color: hsl(var(--foreground));
-  font-weight: 700;
-  background-color: hsl(var(--background));
-  text-decoration: underline;
-}
-
-/* Legal links in dark mode */
-.dark div.container > nav.flex > div.flex > a.\!text-gray-600,
-.dark div.container > nav.flex > div.flex > a.\!text-gray-400 {
-  color: hsl(var(--foreground));
-  font-weight: 700;
-  background-color: hsl(var(--background));
-  text-decoration: underline;
-}
-
-/* "Test with Demo Data" button */
-div.max-w-4xl > div.flex > div.text-left > button.justify-center {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 700;
-  border: 0.125rem solid hsl(var(--primary-foreground));
-}
-
-/* "Split Invoice" link in dark mode */
+/* "Split Invoice" link in dark mode - COLOR ONLY */
 .dark div.container > div.flex > nav.flex > a.justify-center {
   background-color: var(--card);
   color: hsl(var(--card-foreground));
-  font-weight: 700;
   border: 0.125rem solid var(--card);
 }
 
-/* Cookie consent button contrast */
+/* Cookie consent button contrast - COLOR ONLY */
 div.w-full > div.flex-1 > div.flex > button.inline-flex {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 700;
-  border: 0.125rem solid hsl(var(--primary-foreground));
-}
-
-/* Additional footer links fixes in dark mode */
-.dark a[href*="siempi.ch"],
-.dark a[href*="legal"],
-.dark div.container > div.flex > span.text-gray-600 > a,
-.dark div.container > nav.flex > div.flex > a,
-.dark footer a.\!text-gray-600,
-.dark footer a.\!text-gray-400 {
-  color: hsl(var(--foreground));
-  font-weight: 700;
-  text-decoration: underline;
-  background-color: hsl(var(--background));
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.125rem;
-}
-
-/* Most specific dark mode footer links target */
-.dark a[href*="siempi.ch"],
-.dark a[href*="legal/privacy-policy"],
-.dark a[href*="legal/terms-of-use"],
-.dark a[href*="legal/impressum"],
-.dark div.container > div.flex > span.text-gray-600 > a,
-.dark div.container > nav.flex > div.flex > a {
-  color: hsl(var(--foreground));
-  font-weight: 900;
-  background-color: hsl(var(--background));
-  text-decoration: underline;
-  text-shadow: 0 0 2px hsl(var(--black));
-  padding: 0.25rem 0.5rem;
-  @apply border border-[hsl(var(--foreground))];
-  border-radius: 0.25rem;
-  display: inline-block;
-  margin: 0.125rem;
-  position: relative;
-  z-index: var(--z-base);
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 0.125rem solid hsl(var(--secondary-foreground));
 }
 
 /*
@@ -689,7 +704,7 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
   padding: 2rem;
 }
 
-/* Dark mode card styling */
+/* Dark mode card styling - ONLY COLORS */
 .dark .card-level-1,
 .dark .card-level-2,
 .dark .card-level-3,
@@ -699,110 +714,88 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
   @apply border border-[var(--border)];
 }
 
-/* Muted card variant for layering in dark mode */
+/* Muted card variant for layering in dark mode - ONLY COLORS */
 .dark .card-muted {
   background-color: hsl(var(--muted));
   border-color: hsl(var(--border));
 }
 
-/* 
- * FINAL ULTRA-SPECIFIC CONTRAST FIXES
- * These target the exact selectors from accessibility audit reports
- * Using extremely specific selectors to guarantee override
- */
-html.dark div.container > div.flex > span.text-gray-600 > a.\\!text-gray-600,
-html.dark div.container > nav.flex > div.flex > a.\\!text-gray-600 {
-  background-color: hsl(var(--black));
-  color: hsl(var(--foreground));
-  font-weight: 900;
-  text-decoration: underline;
-  text-shadow: none;
-  padding: 0.25rem 0.5rem;
-  @apply border border-[hsl(var(--foreground))];
-  border-radius: 0.25rem;
-  display: inline-block;
-  margin: 0.125rem;
-  position: relative;
-  z-index: var(--z-base);
-  font-size: 1rem;
-}
-
-/* Primary button hover state - REMOVE: Redundant with Tailwind's hover:bg-primary/opacity utilities */
-/*
-.bg-primary:hover {
-  background-color: hsl(var(--primary));
-  opacity: 0.9;
-  color: hsl(var(--primary-foreground));
-}
-*/
-
-/* Consistent primary button colors in both themes - REMOVE: Redundant, bg-primary from Tailwind config handles this */
-/*
-.bg-primary, 
-html:not(.dark) .bg-primary,
-.dark .bg-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-*/
-
-/* Secondary button styles - REMOVE: Redundant */
-/*
-.bg-secondary, 
-html:not(.dark) .bg-secondary,
-.dark .bg-secondary {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-}
-
-.bg-secondary:hover {
-  background-color: hsl(var(--secondary));
-  opacity: 0.9;
-  color: hsl(var(--secondary-foreground));
-}
-*/
-
-/* Special premium button with gradient */
-.premium-button {
-/* ... rest of .premium-button and subsequent styles ... */
-}
-
-/* Dark mode footer links contrast */
-.dark footer a,
-.dark footer button[class*="text-foreground"] {
-  color: hsl(var(--foreground));
-  font-weight: 500;
-}
-
-.dark footer a:hover,
-.dark footer button[class*="text-foreground"]:hover {
-  color: hsl(var(--primary));
-  text-decoration: underline;
-}
-
-/* TODO: Review if these dark-specific bg rules are still needed after theme variable setup */
-/* .dark .bg-primary { background-color: hsl(var(--primary)); } */
-/* .dark .bg-secondary { background-color: hsl(var(--secondary)); } */
-
-/* Ensure footer links and text have sufficient contrast in dark mode */
-.dark footer div.container nav a[href*="/legal/"] {
-  /* color: hsl(var(--foreground)); */ /* Re-evaluate if needed */
-}
-
-/* .dark .bg-primary { background-color: hsl(var(--primary)); } */
-
-.card-level-1 {
-  /* ... existing code ... */
-  .dark .card-muted {
-    background-color: hsl(var(--muted));
-    border-color: hsl(var(--border));
-  }
-
-  /* .dark .bg-secondary { background-color: hsl(var(--secondary));} */
-}
-
-/* .dark .bg-secondary { background-color: hsl(var(--secondary));} */
-
 .tooltip-custom {
-  /* ... existing code ... */
+  /* ... existing tooltip code ... */
+}
+
+/* Header "Split Invoice" button styling */
+header nav a[href$="/app"],
+header button:has(a[href$="/app"]),
+.text-primary.border-primary.hover\:bg-primary\/10 {
+  background-color: #0284C7;
+  color: white;
+  border: none;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+header nav a[href$="/app"]:hover,
+header button:has(a[href$="/app"]):hover,
+.text-primary.border-primary.hover\:bg-primary\/10:hover {
+  background-color: #0284C7;
+  opacity: 0.9;
+  color: white;
+  border: none;
+  text-decoration: none;
+}
+
+/* Update header button specifics in header.tsx component styling */
+nav .flex.items-center.gap-1.text-primary.border-primary.hover\:bg-primary\/10,
+button.flex.items-center.gap-1.text-primary.border-primary {
+  background-color: #0284C7 !important;
+  color: white !important;
+  border: none !important;
+}
+
+nav .flex.items-center.gap-1.text-primary.border-primary.hover\:bg-primary\/10:hover,
+button.flex.items-center.gap-1.text-primary.border-primary:hover {
+  opacity: 0.9;
+}
+
+/* Dark mode Siempi AG link color */
+.dark footer div.container a[href*="siempi.ch"],
+.dark footer div.container a[href*="Siempi"] {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+}
+
+.dark footer div.container a[href*="siempi.ch"]:hover,
+.dark footer div.container a[href*="Siempi"]:hover {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+/* DIRECT CALCULATOR LINK OVERRIDE - SINGLE SOURCE OF TRUTH */
+a.text-foreground.hover\:underline[href="/en/app/"],
+a[href="/en/app/"] {
+  color: #0284C7 !important;
+  text-decoration: none !important;
+}
+
+a.text-foreground.hover\:underline[href="/en/app/"]:hover,
+a[href="/en/app/"]:hover {
+  color: #0284C7 !important;
+  text-decoration: none !important;
+  opacity: 0.9;
+}
+
+/* Backup for any language variation */
+a.text-foreground.hover\:underline[href$="/app/"],
+a[href$="/app/"] {
+  color: #0284C7 !important;
+  text-decoration: none !important;
+}
+
+a.text-foreground.hover\:underline[href$="/app/"]:hover,
+a[href$="/app/"]:hover {
+  color: #0284C7 !important;
+  text-decoration: none !important;
+  opacity: 0.9;
 } 
