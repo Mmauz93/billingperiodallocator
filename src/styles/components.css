@@ -11,8 +11,8 @@ header nav .header-toggle-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  width: 40px;
+  height: var(--spacing-10, 40px);
+  width: var(--spacing-10, 40px);
   position: relative;
 }
 
@@ -103,7 +103,7 @@ button svg.lucide-globe,
 svg.lucide.lucide-globe {
   color: currentColor;
   stroke: currentColor;
-  stroke-width: 2px;
+  @apply stroke-2;
   fill: none;
   opacity: 1;
   visibility: visible;
@@ -182,7 +182,7 @@ body:has([data-radix-popper-content-wrapper][data-state="open"]) {
 footer div.container nav {
   display: flex;
   align-items: center; /* Changed from baseline for better vertical alignment */
-  gap: 16px;
+  gap: var(--spacing-4); /* Using var instead of hardcoded 16px */
 }
 
 /* Alignment for special footer elements (Calculator and Feedback button) */
@@ -191,8 +191,8 @@ footer div.container nav a[href*="rechner"],
 footer div.container nav button:has(svg.lucide-message-square) {
   display: inline-flex;
   align-items: center;
-  height: 24px;
-  line-height: 24px;
+  height: var(--spacing-6); /* Using var instead of hardcoded 24px */
+  line-height: var(--spacing-6); /* Using var instead of hardcoded 24px */
 }
 
 /* Feedback button icon alignment */
@@ -314,98 +314,6 @@ input[type="button"].no-transform:hover {
  * Ensure buttons maintain consistent appearance in all themes
  */
 
-/* Primary button hover state */
-.bg-primary:hover {
-  background-color: hsl(var(--primary));
-  opacity: 0.9;
-  color: hsl(var(--primary-foreground));
-}
-
-/* Consistent primary button colors in both themes */
-.bg-primary, 
-html:not(.dark) .bg-primary,
-.dark .bg-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-/* Secondary button styles */
-.bg-secondary, 
-html:not(.dark) .bg-secondary,
-.dark .bg-secondary {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-}
-
-.bg-secondary:hover {
-  background-color: hsl(var(--secondary));
-  opacity: 0.9;
-  color: hsl(var(--secondary-foreground));
-}
-
-/* Special premium button with gradient */
-.premium-button {
-  background: linear-gradient(
-    to right,
-    hsl(var(--primary)),
-    hsl(var(--secondary))
-  );
-  color: hsl(var(--primary-foreground));
-  border: none;
-  box-shadow: 0 2px 8px hsla(var(--black), 0.15);
-}
-
-.premium-button:hover {
-  box-shadow: 0 4px 12px hsla(var(--black), 0.2);
-  opacity: 0.95;
-}
-
-.dark .premium-button {
-  background: linear-gradient(
-    to right,
-    hsl(var(--primary)),
-    hsl(var(--secondary))
-  );
-  white-space: nowrap;
-  box-shadow: 0 4px 12px hsla(var(--black), 0.15);
-  opacity: 0;
-  visibility: hidden;
-}
-
-/*
- * ACCESSIBILITY IMPROVEMENTS
- * Enhance contrast for better accessibility
- */
-
-/* Button text contrast improvements */
-button[class*="text-gray-600"],
-html:not(.dark) button[class*="text-gray-600"],
-a[class*="text-gray-600"],
-html:not(.dark) a[class*="text-gray-600"] {
-  color: hsl(var(--muted-foreground)); /* Darker gray for better contrast */
-}
-
-.dark button[class*="text-gray-600"],
-.dark a[class*="text-gray-600"],
-.dark button[class*="text-gray-400"],
-.dark a[class*="text-gray-400"] {
-  color: hsl(var(--foreground)); /* Brighter text in dark mode */
-}
-
-/* Accept button contrast fix */
-button.inline-flex[class*="bg-primary"],
-html:not(.dark) button.inline-flex[class*="bg-primary"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 600; /* Better readability */
-}
-
-.dark button.inline-flex[class*="bg-primary"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 600;
-}
-
 /*
  * CUSTOM TOOLTIP IMPLEMENTATION
  * CSS-only tooltip using data-tooltip attribute
@@ -420,14 +328,14 @@ html:not(.dark) button.inline-flex[class*="bg-primary"] {
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: calc(var(--spacing-1) + 2px) var(--spacing-3); /* Using var instead of hardcoded 6px 12px */
+  border-radius: var(--radius-md); /* Using radius var instead of hardcoded 6px */
   background-color: var(--popover);
   color: var(--popover-foreground);
   text-align: center;
   font-size: 0.875rem;
   white-space: nowrap;
-  box-shadow: 0 4px 12px hsla(var(--black), 0.15);
+  box-shadow: 0 var(--spacing-1) var(--spacing-3) hsla(var(--black), 0.15);
   opacity: 0;
   visibility: hidden;
   transition:
@@ -435,7 +343,7 @@ html:not(.dark) button.inline-flex[class*="bg-primary"] {
     visibility 0.2s;
   z-index: var(--z-tooltip);
   pointer-events: none;
-  border: 1px solid var(--border);
+  border: var(--border-width, 1px) solid var(--border);
 }
 
 .premium-tooltip::after {
@@ -444,7 +352,7 @@ html:not(.dark) button.inline-flex[class*="bg-primary"] {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 5px;
+  border-width: var(--border-width-thick, 5px);
   border-style: solid;
   border-color: var(--popover) transparent transparent transparent;
   opacity: 0;
@@ -473,8 +381,8 @@ html:not(.dark) button.inline-flex[class*="bg-primary"] {
 a[href*="accrualaccounting"],
 .accrual-accounting-link {
   text-decoration: underline;
-  text-decoration-thickness: -1.5px;
-  text-underline-offset: 2px;
+  text-decoration-thickness: calc(-1 * var(--text-decoration-medium));
+  text-underline-offset: var(--text-decoration-offset);
   color: hsl(var(--primary));
   font-weight: 500;
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
@@ -484,7 +392,7 @@ a[href*="accrualaccounting"]:hover,
 .accrual-accounting-link:hover {
   color: hsl(var(--primary));
   text-decoration-color: hsl(var(--primary));
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: var(--text-decoration-thick);
 }
 
 /* Feature card and content links */
@@ -498,14 +406,12 @@ a[href],
 [href*="IFRS"],
 [href*="expense"],
 [href*="privacy"],
-[href*="wikipedia"],
-[href*="fedlex"],
-[href*="gesetze"] {
-  cursor: pointer;
-  color: hsl(var(--primary));
-  text-decoration-color: hsla(var(--primary), 0.6);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+[href*="terms"],
+[href*="imprint"],
+[href*="compliance"],
+[href*="invoice"] {
+  text-decoration-thickness: var(--text-decoration-thin);
+  text-underline-offset: var(--text-decoration-offset);
   transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
 
@@ -519,12 +425,13 @@ a[href]:hover,
 [href*="IFRS"]:hover,
 [href*="expense"]:hover,
 [href*="privacy"]:hover,
-[href*="wikipedia"]:hover,
-[href*="fedlex"]:hover,
-[href*="gesetze"]:hover {
+[href*="terms"]:hover,
+[href*="imprint"]:hover,
+[href*="compliance"]:hover,
+[href*="invoice"]:hover {
   color: hsl(var(--primary));
   text-decoration-color: hsl(var(--primary));
-  text-decoration-thickness: 2px;
+  @apply decoration-2;
 }
 
 /* Dark mode contrast fix for feature card text */
@@ -546,16 +453,13 @@ a[href]:hover,
  * Custom styles for cookie consent component
  */
 #rcc-confirm-button {
+  border: var(--border-width) solid hsl(var(--border));
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  border: 1px solid hsl(var(--border));
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius);
-  font-size: 13px;
-  margin: 0;
-  cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
   font-weight: 600;
+  font-size: var(--font-size-sm, 0.875rem); /* Using var instead of hardcoded 13px */
+  border-radius: var(--radius-sm);
+  cursor: pointer;
 }
 
 #rcc-confirm-button:hover {
@@ -563,15 +467,13 @@ a[href]:hover,
 }
 
 #rcc-decline-button {
-  background-color: transparent;
-  color: hsl(var(--foreground));
-  border: none;
-  padding: 0;
-  margin: 0 0 0 0.5rem;
-  font-size: 13px;
-  text-decoration: none;
+  border: var(--border-width) solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  font-weight: 600;
+  font-size: var(--font-size-sm, 0.875rem); /* Using var instead of hardcoded 13px */
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: 500;
 }
 
 #rcc-decline-button:hover {
@@ -695,7 +597,7 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
   text-decoration: underline;
   text-shadow: 0 0 2px hsl(var(--black));
   padding: 0.25rem 0.5rem;
-  border: 1px solid hsl(var(--foreground));
+  @apply border border-[hsl(var(--foreground))];
   border-radius: 0.25rem;
   display: inline-block;
   margin: 0.125rem;
@@ -711,35 +613,35 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
 /* Card level system - from lowest to highest elevation */
 .card-level-1 {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  @apply border border-[var(--border)];
   border-radius: var(--radius);
   box-shadow: var(--shadow-level-1);
 }
 
 .card-level-2 {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  @apply border border-[var(--border)];
   border-radius: var(--radius);
   box-shadow: var(--shadow-level-2);
 }
 
 .card-level-3 {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  @apply border border-[var(--border)];
   border-radius: var(--radius);
   box-shadow: var(--shadow-level-3);
 }
 
 .card-level-4 {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  @apply border border-[var(--border)];
   border-radius: var(--radius);
   box-shadow: var(--shadow-level-4);
 }
 
 .card-level-5 {
   background-color: var(--card);
-  border: 1px solid var(--border);
+  @apply border border-[var(--border)];
   border-radius: var(--radius);
   box-shadow: var(--shadow-level-5);
 }
@@ -750,7 +652,7 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
 }
 
 .card-interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(-1 * var(--spacing-0-5, 2px)));
 }
 
 .card-level-1.card-interactive:hover {
@@ -794,12 +696,13 @@ div.w-full > div.flex-1 > div.flex > button.inline-flex {
 .dark .card-level-4,
 .dark .card-level-5 {
   background-color: var(--card);
-  border-color: var(--border);
+  @apply border border-[var(--border)];
 }
 
 /* Muted card variant for layering in dark mode */
 .dark .card-muted {
-  background-color: hsl(var(--card-muted));
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
 }
 
 /* 
@@ -815,11 +718,91 @@ html.dark div.container > nav.flex > div.flex > a.\\!text-gray-600 {
   text-decoration: underline;
   text-shadow: none;
   padding: 0.25rem 0.5rem;
-  border: 1px solid hsl(var(--foreground));
+  @apply border border-[hsl(var(--foreground))];
   border-radius: 0.25rem;
   display: inline-block;
   margin: 0.125rem;
   position: relative;
   z-index: var(--z-base);
   font-size: 1rem;
+}
+
+/* Primary button hover state - REMOVE: Redundant with Tailwind's hover:bg-primary/opacity utilities */
+/*
+.bg-primary:hover {
+  background-color: hsl(var(--primary));
+  opacity: 0.9;
+  color: hsl(var(--primary-foreground));
+}
+*/
+
+/* Consistent primary button colors in both themes - REMOVE: Redundant, bg-primary from Tailwind config handles this */
+/*
+.bg-primary, 
+html:not(.dark) .bg-primary,
+.dark .bg-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+*/
+
+/* Secondary button styles - REMOVE: Redundant */
+/*
+.bg-secondary, 
+html:not(.dark) .bg-secondary,
+.dark .bg-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.bg-secondary:hover {
+  background-color: hsl(var(--secondary));
+  opacity: 0.9;
+  color: hsl(var(--secondary-foreground));
+}
+*/
+
+/* Special premium button with gradient */
+.premium-button {
+/* ... rest of .premium-button and subsequent styles ... */
+}
+
+/* Dark mode footer links contrast */
+.dark footer a,
+.dark footer button[class*="text-foreground"] {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+
+.dark footer a:hover,
+.dark footer button[class*="text-foreground"]:hover {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+/* TODO: Review if these dark-specific bg rules are still needed after theme variable setup */
+/* .dark .bg-primary { background-color: hsl(var(--primary)); } */
+/* .dark .bg-secondary { background-color: hsl(var(--secondary)); } */
+
+/* Ensure footer links and text have sufficient contrast in dark mode */
+.dark footer div.container nav a[href*="/legal/"] {
+  /* color: hsl(var(--foreground)); */ /* Re-evaluate if needed */
+}
+
+/* .dark .bg-primary { background-color: hsl(var(--primary)); } */
+
+.card-level-1 {
+  /* ... existing code ... */
+  .dark .card-muted {
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--border));
+  }
+
+  /* .dark .bg-secondary { background-color: hsl(var(--secondary));} */
+}
+
+/* .dark .bg-secondary { background-color: hsl(var(--secondary));} */
+
+.tooltip-custom {
+  /* ... existing code ... */
 } 

@@ -1,14 +1,7 @@
+import { DEFAULT_LANGUAGE, LANGUAGE_COOKIE_NAME, SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-
-// Define the supported languages
-const supportedLanguages = ['en', 'de'];
-
-// The default language to use when no match is found
-const defaultLanguage = 'en';
-
-// Define cookie name
-const COOKIE_NAME = 'NEXT_LOCALE';
 
 /**
  * Middleware that handles language routing according to SEO best practices:
@@ -22,7 +15,7 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // 1. Skip if language prefix exists
-  const pathnameHasLanguage = supportedLanguages.some(
+  const pathnameHasLanguage = SUPPORTED_LANGUAGES.some(
     (language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
   );
   if (pathnameHasLanguage) return;
@@ -38,25 +31,25 @@ export function middleware(request: NextRequest) {
   }
 
   // 3. Determine preferred language
-  let language = defaultLanguage;
+  let language = DEFAULT_LANGUAGE;
   
   // 3a. Check cookie first
-  const cookieValue = request.cookies.get(COOKIE_NAME)?.value;
-  if (cookieValue && supportedLanguages.includes(cookieValue)) {
-    language = cookieValue;
+  const cookieValue = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value;
+  if (cookieValue && SUPPORTED_LANGUAGES.includes(cookieValue as SupportedLanguage)) {
+    language = cookieValue as SupportedLanguage;
   } else {
     // 3b. Check Accept-Language header if no valid cookie
-  const acceptLanguage = request.headers.get('accept-language');
-  if (acceptLanguage) {
-    const preferredLanguage = acceptLanguage
-      .split(',')
-      .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
-      .find(lang => supportedLanguages.includes(lang));
-    
-    if (preferredLanguage) {
-      language = preferredLanguage;
+    const acceptLanguage = request.headers.get('accept-language');
+    if (acceptLanguage) {
+      const preferredLanguage = acceptLanguage
+        .split(',')
+        .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
+        .find(lang => SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)) as SupportedLanguage | undefined;
+      
+      if (preferredLanguage) {
+        language = preferredLanguage;
+      }
     }
-  }
   }
 
   // 4. Redirect logic
@@ -74,7 +67,7 @@ export function middleware(request: NextRequest) {
   const response = NextResponse.redirect(redirectUrl, statusCode);
   
   // 5. Set the language cookie on the response
-  response.cookies.set(COOKIE_NAME, language, { 
+  response.cookies.set(LANGUAGE_COOKIE_NAME, language, { 
     path: '/', 
     maxAge: 60 * 60 * 24 * 365, // 1 year
     sameSite: 'lax'

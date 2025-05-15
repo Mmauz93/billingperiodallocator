@@ -8,12 +8,9 @@ import { FeedbackButton } from "@/components/feedback-button";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils"; // Ensure cn is imported
+import { getLanguageFromPath } from "@/translations"; // Added import
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
-
-// import { getLanguageFromPath } from "@/translations"; // Removed unused import
-
-
 
 // Improved footer component with cleaner visual hierarchy and fixed positioning
 export function Footer() {
@@ -26,7 +23,10 @@ export function Footer() {
     setMounted(true);
   }, []);
   
-  const effectiveLang = mounted ? (i18nFromHook.language || (pathname?.startsWith('/de') ? 'de' : 'en')) : (pathname?.startsWith('/de') ? 'de' : 'en');
+  // Use getLanguageFromPath for robustness in SSR/initial state
+  // Default to 'en' if path language is not recognized
+  const langFromPathInitial = getLanguageFromPath(pathname) || 'en'; 
+  const effectiveLang = mounted ? (i18nFromHook.language || langFromPathInitial) : langFromPathInitial;
   
   const calculatorLabel = effectiveLang === 'de' ? "Rechner" : "Calculator";
   const privacyLabel = effectiveLang === 'de' ? "Datenschutzerklärung" : "Privacy Policy";

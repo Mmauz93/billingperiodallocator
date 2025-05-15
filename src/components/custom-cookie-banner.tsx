@@ -173,7 +173,7 @@ export function CustomCookieConsentBanner({
                 <div ref={modalRef} role="alertdialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center gap-6">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary cookie-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                         <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
                         <path d="M8.5 8.5v.01" />
                         <path d="M16 15.5v.01" />

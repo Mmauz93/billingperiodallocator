@@ -41,25 +41,17 @@ button[aria-label="Pick a date"]:hover svg {
   color: hsl(var(--primary-foreground));
 }
 
-/* Hover state background */
+/* 
+ * THEME-CONSISTENT HOVER STATES
+ * Ensure same hover behavior in both light and dark modes
+ */
 button[aria-label="Pick a date"]:hover {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
 
-/* 
- * THEME-CONSISTENT HOVER STATES
- * Ensure same hover behavior in both light and dark modes
- */
-html:not(.dark) button[aria-label="Pick a date"]:hover,
-.dark button[aria-label="Pick a date"]:hover {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
 /* Active state is consistent across themes */
-html:not(.dark) button[aria-label="Pick a date"]:active,
-.dark button[aria-label="Pick a date"]:active {
+button[aria-label="Pick a date"]:active {
   transform: scale(0.95);
 }
 
@@ -68,31 +60,21 @@ html:not(.dark) button[aria-label="Pick a date"]:active,
  * These complex selectors target the calendar trigger button when the calendar is open
  * Multiple selectors are used to handle different calendar implementations
  */
-html:not(.dark) .Popover[data-state="open"] button[aria-label="Pick a date"],
-html:not(.dark) [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"],
-html:not(.dark) [role="dialog"] ~ button[aria-label="Pick a date"],
-html:not(.dark) button[aria-label="Pick a date"][data-state="open"],
-html:not(.dark) [open="true"] button[aria-label="Pick a date"],
-.dark .Popover[data-state="open"] button[aria-label="Pick a date"],
-.dark [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"],
-.dark [role="dialog"] ~ button[aria-label="Pick a date"],
-.dark button[aria-label="Pick a date"][data-state="open"],
-.dark [open="true"] button[aria-label="Pick a date"] {
+.Popover[data-state="open"] button[aria-label="Pick a date"],
+[data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"],
+[role="dialog"] ~ button[aria-label="Pick a date"],
+button[aria-label="Pick a date"][data-state="open"],
+[open="true"] button[aria-label="Pick a date"] {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
 
 /* Icon color when calendar is open */
-html:not(.dark) .Popover[data-state="open"] button[aria-label="Pick a date"] svg,
-html:not(.dark) [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"] svg,
-html:not(.dark) [role="dialog"] ~ button[aria-label="Pick a date"] svg,
-html:not(.dark) button[aria-label="Pick a date"][data-state="open"] svg,
-html:not(.dark) [open="true"] button[aria-label="Pick a date"] svg,
-.dark .Popover[data-state="open"] button[aria-label="Pick a date"] svg,
-.dark [data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"] svg,
-.dark [role="dialog"] ~ button[aria-label="Pick a date"] svg,
-.dark button[aria-label="Pick a date"][data-state="open"] svg,
-.dark [open="true"] button[aria-label="Pick a date"] svg {
+.Popover[data-state="open"] button[aria-label="Pick a date"] svg,
+[data-radix-popper-content-wrapper] ~ * button[aria-label="Pick a date"] svg,
+[role="dialog"] ~ button[aria-label="Pick a date"] svg,
+button[aria-label="Pick a date"][data-state="open"] svg,
+[open="true"] button[aria-label="Pick a date"] svg {
   color: hsl(var(--primary-foreground));
 }
 
@@ -121,47 +103,37 @@ html:not(.dark) .rdp-button {
 /*
  * CALENDAR DAY HOVER STATES
  * Styling for hovering over calendar day buttons
- * Complex selectors handle both enabled and disabled states
  */
 .rdp-day:hover:not(.rdp-day_disabled),
 .rdp-button:hover:not(.rdp-day_disabled),
 .rdp-cell button:hover:not([disabled]),
 .rdp-button:not([disabled]).rdp-day_today:hover,
 [role="grid"] button:hover:not([disabled]),
-[role="gridcell"] button:hover:not([disabled]),
-html:not(.dark) .rdp-day:hover:not(.rdp-day_disabled),
-html:not(.dark) .rdp-button:hover:not(.rdp-day_disabled),
-html:not(.dark) [role="grid"] button:hover:not([disabled]),
-html:not(.dark) [role="gridcell"] button:hover:not([disabled]),
-.dark .rdp-day:hover:not(.rdp-day_disabled),
-.dark .rdp-button:hover:not(.rdp-day_disabled),
-.dark [role="grid"] button:hover:not([disabled]),
-.dark [role="gridcell"] button:hover:not([disabled]) {
+[role="gridcell"] button:hover:not([disabled]) {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
 
 /*
- * LIGHT MODE SPECIFIC DAY HOVER
- * Extra specificity for light mode hover states
+ * UNIFIED DAY HOVER (was LIGHT MODE SPECIFIC DAY HOVER)
  * These selectors handle non-selected, non-disabled days
  */
-html:not(.dark) .rdp-day:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
-html:not(.dark) .rdp-button:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
-html:not(.dark) [role="grid"] button:hover:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) [role="gridcell"] button:hover:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) .day:hover:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) .calendar button:hover:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) .rdp-cell:hover button:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) .rdp-table button:hover:not([disabled]):not([aria-selected="true"]),
-html:not(.dark) [data-radix-popper-content-wrapper] [role="grid"] button:hover:not([disabled]):not([aria-label="Previous month"]):not([aria-label="Next month"]):not([aria-selected="true"]) {
+.rdp-day:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
+.rdp-button:hover:not(.rdp-day_disabled):not([aria-selected="true"]),
+[role="grid"] button:hover:not([disabled]):not([aria-selected="true"]),
+[role="gridcell"] button:hover:not([disabled]):not([aria-selected="true"]),
+.day:hover:not([disabled]):not([aria-selected="true"]),
+.calendar button:hover:not([disabled]):not([aria-selected="true"]),
+.rdp-cell:hover button:not([disabled]):not([aria-selected="true"]),
+.rdp-table button:hover:not([disabled]):not([aria-selected="true"]),
+[data-radix-popper-content-wrapper] [role="grid"] button:hover:not([disabled]):not([aria-label="Previous month"]):not([aria-label="Next month"]):not([aria-selected="true"]) {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none;
 }
 
-/* Catch-all selector for any remaining button variants */
-html:not(.dark) button[class*="rdp-button"]:hover:not([disabled]):not([aria-selected="true"]) {
+/* Catch-all selector for any remaining button variants - now generalized */
+button[class*="rdp-button"]:hover:not([disabled]):not([aria-selected="true"]) {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
@@ -193,14 +165,8 @@ html:not(.dark) [role="gridcell"] button[aria-selected="true"],
  * Maintain consistent styling when hovering over the selected date
  */
 .rdp-day_selected:hover,
-html:not(.dark) .rdp-day_selected:hover,
-.dark .rdp-day_selected:hover,
 [role="grid"] button[aria-selected="true"]:hover,
-html:not(.dark) [role="grid"] button[aria-selected="true"]:hover,
-.dark [role="grid"] button[aria-selected="true"]:hover,
-[class*="selected"]:hover,
-html:not(.dark) [class*="selected"]:hover,
-.dark [class*="selected"]:hover {
+[class*="selected"]:hover {
   background-color: hsl(var(--primary)); 
   color: hsl(var(--primary-foreground));
   border: none;
@@ -213,11 +179,7 @@ html:not(.dark) [class*="selected"]:hover,
  * Subtle highlight for the current day when it's not selected
  */
 .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
-html:not(.dark) .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
-.dark .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
-[role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]),
-html:not(.dark) [role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]),
-.dark [role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]) {
+[role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]) {
   background-color: hsla(var(--ring), 0.15);
   font-weight: bold;
 } 

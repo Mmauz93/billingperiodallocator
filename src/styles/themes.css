@@ -61,6 +61,41 @@
   --black: 0 0% 0%;
   --white: 0 0% 100%;
   
+  /* Spacing system - matches Tailwind config */
+  --spacing-0-5: 2px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  
+  /* Border widths */
+  --border-width: 1px;
+  --border-width-thick: 5px;
+  
+  /* Typography - font sizes */
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  
+  /* Typography refinements */
+  --text-decoration-offset: 2px;
+  --text-decoration-thin: 1px;
+  --text-decoration-medium: 1.5px;
+  --text-decoration-thick: 2px;
+  
   /* Z-index scale for consistent layering */
   --z-negative: -1;     /* Below normal flow */
   --z-base: 0;          /* Default stacking context */
@@ -88,6 +123,10 @@
   /* Secondary - Using the logo orange color - darkened for better contrast */
   --secondary: 38 92% 50%;            /* Darkened from 55% to 50% for better contrast (#e69613) */
   --secondary-foreground: 0 0% 100%;  /* White text for contrast on orange */
+
+  /* Success - For validation checks and success indicators */
+  --success: 142 76% 36%;             /* HSL for green-500 (#10b981) */
+  --success-foreground: 0 0% 100%;    /* White text for contrast on success */
 
   /* Warning - For discrepancies or warnings */
   --warning: 33 98% 44%;              /* HSL for amber-600 (#d97706) */
@@ -172,6 +211,10 @@
   /* Dark mode secondary - darker version for better contrast */
   --secondary: 38 92% 55%;            /* HSL for #F5A623 */
   --secondary-foreground: 0 0% 0%;    /* HSL for #000000 */
+  
+  /* Success - For validation checks and success indicators */
+  --success: 142 70% 45%;             /* Brighter green for dark mode - HSL for #22c55e */
+  --success-foreground: 0 0% 0%;      /* Black text for contrast on success */
   
   /* Warning - For discrepancies or warnings - lighter for dark mode */
   --warning: 33 98% 56%;              /* HSL for amber-500 (#f59e0b) */

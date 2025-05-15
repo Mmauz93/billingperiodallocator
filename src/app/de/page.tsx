@@ -1,4 +1,5 @@
 import { FaqItem, FaqSection } from "@/components/faq-section";
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
 
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
@@ -8,7 +9,11 @@ import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  const currentLang = params.lang || 'de';
+  // Validate language parameter
+  const currentLang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'de' as SupportedLanguage;
+    
   const { t } = getServerSideTranslator(currentLang);
   const siteUrl = 'https://billsplitter.siempi.ch';
   const canonicalUrl = `${siteUrl}/${currentLang}/`;
@@ -28,7 +33,12 @@ export async function generateMetadata({ params }: { params: { lang: string } })
 }
 
 export default async function GermanLandingPage({ params }: { params: { lang: string }}) {
-  const { t } = getServerSideTranslator(params.lang || 'de');
+  // Validate language parameter
+  const lang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'de' as SupportedLanguage;
+    
+  const { t } = getServerSideTranslator(lang);
 
   const heroTitle = "Automatisierter Rechnungsabgrenzungsrechner";
   const heroSubtitle = "BillSplitter hilft Ihnen, Rechnungen über Geschäftsjahre hinweg genau und mühelos abzugrenzen. Entwickelt für Finanzfachleute und Unternehmen. Schnell, einfach, präzise.";
@@ -177,7 +187,7 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
                 demoAmount={demoAmount}
                 demoIncludeEndDate={demoIncludeEndDate}
                 demoSplitPeriod={demoSplitPeriod}
-                appPath={`/${params.lang || 'de'}/app`} // Construct app path based on lang
+                appPath={`/${lang}/app`} // Construct app path based on lang
               />
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">

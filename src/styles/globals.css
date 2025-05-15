@@ -11,9 +11,7 @@
 
 /* Utility Classes */
 .form-error-message {
-  color: hsl(var(--destructive));
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  @apply text-destructive text-sm mt-1;
 }
 
-@custom-variant dark (&:is(.dark *)); 
+/* @custom-variant dark (&:is(.dark *)); */ /* REMOVED - Standard Tailwind dark: prefix should be sufficient with darkMode: 'class' */

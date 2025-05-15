@@ -1,3 +1,5 @@
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+
 import { ForceDarkTheme } from '@/components/force-dark-theme';
 import { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown'; // For direct rendering or to pass to a minimal client component
@@ -13,7 +15,11 @@ import remarkGfm from 'remark-gfm';
 // If TermsOfUseClientDE is needed, it would be structured like the refactored EN version.
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  const currentLang = params.lang || 'de';
+  // Validate language parameter
+  const currentLang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'de' as SupportedLanguage;
+    
   const { t } = getServerSideTranslator(currentLang);
   const pageTitle = t("Legal.termsOfUseTitle", "Nutzungsbedingungen");
   const siteUrl = 'https://billsplitter.siempi.ch';
@@ -62,7 +68,11 @@ function StyledMarkdownContent({ content }: { content: string }) {
 }
 
 export default async function TermsOfUsePageDE({ params }: { params: { lang: string }}) {
-  const lang = params.lang || 'de';
+  // Validate language parameter
+  const lang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'de' as SupportedLanguage;
+    
   const { t } = getServerSideTranslator(lang);
   let termsContent = '';
   let lastUpdatedDate = '';

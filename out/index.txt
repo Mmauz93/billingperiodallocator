@@ -1,17 +1,16 @@
 1:"$Sreact.fragment"
-3:I[1333,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-6b85c1b6ebb7c21a.js"],"default"]
+3:I[44521,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-550e39b82df76ade.js","2210","static/chunks/2210-33e0cfb61ca52a8d.js","197","static/chunks/197-9891488260797916.js","3063","static/chunks/3063-bcfccdf94981306c.js","5346","static/chunks/5346-caec6cfec347120e.js","6689","static/chunks/6689-0b556c43a7a8115d.js","7177","static/chunks/app/layout-32709a96146b9bac.js"],"default"]
 4:I[87555,[],""]
-5:I[31295,[],""]
-6:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
-7:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-6b85c1b6ebb7c21a.js"],""]
-8:I[90894,[],"ClientPageRoot"]
-9:I[33792,["8974","static/chunks/app/page-830cdd3ab65498f5.js"],"default"]
-c:I[59665,[],"MetadataBoundary"]
-e:I[59665,[],"OutletBoundary"]
-11:I[74911,[],"AsyncMetadataOutlet"]
-13:I[59665,[],"ViewportBoundary"]
-15:I[26614,[],""]
-:HL["/_next/static/css/6b4f6fdd10bac9bd.css","style"]
+5:I[51901,["8039","static/chunks/app/error-bebae57468d09ca3.js"],"default"]
+6:I[31295,[],""]
+7:I[48782,["6874","static/chunks/6874-550e39b82df76ade.js","4345","static/chunks/app/not-found-6d17e252bd89c41a.js"],"default"]
+8:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-550e39b82df76ade.js","2210","static/chunks/2210-33e0cfb61ca52a8d.js","197","static/chunks/197-9891488260797916.js","3063","static/chunks/3063-bcfccdf94981306c.js","5346","static/chunks/5346-caec6cfec347120e.js","6689","static/chunks/6689-0b556c43a7a8115d.js","7177","static/chunks/app/layout-32709a96146b9bac.js"],""]
+9:I[59665,[],"MetadataBoundary"]
+b:I[59665,[],"OutletBoundary"]
+e:I[74911,[],"AsyncMetadataOutlet"]
+10:I[59665,[],"ViewportBoundary"]
+12:I[26614,[],""]
+:HL["/_next/static/css/1433ad44391fedd3.css","style"]
 2:T65a,
               (function() {
                 // This script ensures the theme is consistent during initial page load
@@ -44,14 +43,12 @@ e:I[59665,[],"OutletBoundary"]
                   }
                 }
               })();
-            0:{"P":null,"b":"FlndOzThnhj_UPbpOqwWz","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/6b4f6fdd10bac9bd.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","link",null,{"rel":"preconnect","href":"https://app.privacybee.io"}],["$","link",null,{"rel":"dns-prefetch","href":"https://app.privacybee.io"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // Add loading class to disable transitions during initial load\n                document.documentElement.classList.add('loading');\n                \n                // Remove loading class once page is fully loaded\n                window.addEventListener('load', function() {\n                  // Small delay to ensure all styles are applied\n                  setTimeout(function() {\n                    document.documentElement.classList.remove('loading');\n                    // Mark theme as initialized to enable transitions\n                    document.documentElement.setAttribute('data-theme-initialized', 'true');\n                  }, 100);\n                });\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L7",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L8",null,{"Component":"$9","searchParams":{},"params":{},"promises":["$@a","$@b"]}],["$","$Lc",null,{"children":"$Ld"}],null,["$","$Le",null,{"children":["$Lf","$L10",["$","$L11",null,{"promise":"$@12"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","cG1fOFiARUhT-kWpHF9Si",{"children":[["$","$L13",null,{"children":"$L14"}],null]}],null]}],false]],"m":"$undefined","G":["$15","$undefined"],"s":false,"S":true}
-16:"$Sreact.suspense"
-17:I[74911,[],"AsyncMetadata"]
-a:{}
-b:{}
-d:["$","$16",null,{"fallback":null,"children":["$","$L17",null,{"promise":"$@18"}]}]
-10:null
-14:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-f:null
-18:{"metadata":[["$","title","0",{"children":"BillSplitter"}],["$","meta","1",{"name":"description","content":"Invoice period allocation calculator for finance professionals"}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","link","3",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}],["$","link","4",{"rel":"icon","href":"/favicon.ico"}]],"error":null,"digest":"$undefined"}
-12:{"metadata":"$18:metadata","error":null,"digest":"$undefined"}
+            0:{"P":null,"b":"-x70pGJAcwhD5Gax_EgrT","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/1433ad44391fedd3.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","link",null,{"rel":"preconnect","href":"https://app.privacybee.io"}],["$","link",null,{"rel":"dns-prefetch","href":"https://app.privacybee.io"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // Add loading class to disable transitions during initial load\n                document.documentElement.classList.add('loading');\n                \n                // Remove loading class once page is fully loaded\n                window.addEventListener('load', function() {\n                  // Small delay to ensure all styles are applied\n                  setTimeout(function() {\n                    document.documentElement.classList.remove('loading');\n                    // Mark theme as initialized to enable transitions\n                    document.documentElement.setAttribute('data-theme-initialized', 'true');\n                  }, 100);\n                });\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$5","errorStyles":[],"errorScripts":[],"template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L7",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L8",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$undefined",["$","$L9",null,{"children":"$La"}],null,["$","$Lb",null,{"children":["$Lc","$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","9GUX3cnm33JmcEoj2yGSD",{"children":[["$","$L10",null,{"children":"$L11"}],null]}],null]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
+13:"$Sreact.suspense"
+14:I[74911,[],"AsyncMetadata"]
+a:["$","$13",null,{"fallback":null,"children":["$","$L14",null,{"promise":"$@15"}]}]
+d:null
+11:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+c:null
+15:{"metadata":[["$","title","0",{"children":"BillSplitter"}],["$","meta","1",{"name":"description","content":"Invoice period allocation calculator for finance professionals"}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","link","3",{"rel":"canonical","href":"https://billsplitter.siempi.ch/en/"}],["$","link","4",{"rel":"alternate","hrefLang":"en","href":"https://billsplitter.siempi.ch/en/"}],["$","link","5",{"rel":"alternate","hrefLang":"de","href":"https://billsplitter.siempi.ch/de/"}],["$","link","6",{"rel":"alternate","hrefLang":"x-default","href":"https://billsplitter.siempi.ch/en/"}],["$","link","7",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"60x60"}],["$","link","8",{"rel":"icon","href":"/favicon.ico"}]],"error":null,"digest":"$undefined"}
+f:{"metadata":"$15:metadata","error":null,"digest":"$undefined"}

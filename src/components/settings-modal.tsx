@@ -4,6 +4,7 @@ import * as z from "zod";
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -197,6 +198,7 @@ export function SettingsModal({
   const dialogTitle = isMounted ? t("SettingsModal.settingsModalTitle") : "Number Formatting Settings";
   const dialogDescription = isMounted ? t("SettingsModal.settingsModalDescription") : "Adjust your preferred number formatting for allocations and reports.";
   const saveLabel = isMounted ? t("SettingsModal.saveButton") : "Save Settings";
+  const cancelLabel = isMounted ? t("SettingsModal.cancelButton", "Cancel") : "Cancel";
 
   return (
     <>
@@ -306,16 +308,38 @@ export function SettingsModal({
                   </FormItem>
                 )}
               />
-              <DialogFooter className="pt-4">
-                <Button
-                  type="submit"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={
-                    !isValid ||
-                    form.formState.isSubmitting ||
-                    Object.keys(form.formState.errors).length > 0
-                  }
-                >
+              <FormField
+                control={form.control}
+                name="locale"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("SettingsModal.localeLabel")}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("SettingsModal.localePlaceholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="en-US">English (United States)</SelectItem>
+                        <SelectItem value="de-DE">Deutsch (Deutschland)</SelectItem>
+                        {/* Add other locales as needed */}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      {t("SettingsModal.localeDescription")}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 sm:gap-0">
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" className="w-full sm:w-auto">
+                    {cancelLabel}
+                  </Button>
+                </DialogClose>
+                <Button type="submit" disabled={!isValid} className="w-full sm:w-auto">
                   {saveLabel}
                 </Button>
               </DialogFooter>

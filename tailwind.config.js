@@ -1,7 +1,7 @@
 import animate from "tailwindcss-animate";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import radixVariants from "./src/design/plugins/radix-variants";
-import themeVars from "./src/design/plugins/theme-vars";
+// import themeVars from "./src/design/plugins/theme-vars"; // REMOVED
 import typography from "@tailwindcss/typography";
 
 /** @type {import('tailwindcss').Config} */
@@ -46,6 +46,10 @@ const tailwindConfig = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -225,7 +229,7 @@ const tailwindConfig = {
   plugins: [
     animate, // Include the animation plugin
     radixVariants, // Custom Radix UI variants plugin
-    themeVars, // Custom Theme Variables plugin
+    // themeVars, // Custom Theme Variables plugin // REMOVED
     typography, // Typography plugin for rich text content
   ],
 };

@@ -1,24 +1,29 @@
 /**
  * Translation system entry point - 100% eval-free
- * This file replaces i18n-client.ts with a simpler implementation
+ * This file exports from language-service.ts and lib/translation.ts for backward compatibility
  */
 
-import { getLanguage } from './lib/translation';
+// Import getCurrentLanguage specifically first
 
+import { getCurrentLanguage } from './lib/language-service';
+
+// Export these from language-service (the new central location)
+export { 
+  SUPPORTED_LANGUAGES,
+  DEFAULT_LANGUAGE as DEFAULT_LANGUAGE,
+  LANGUAGE_STORAGE_KEY,
+  getCurrentLanguage,
+  changeLanguage,
+  getLanguageFromPath
+} from './lib/language-service';
+
+// Export translation functions from translation.ts
 export { 
   t,
   i18n,
-  useTranslation,
-  changeLanguage,
-  getLanguage,
-  getLanguageFromPath
+  useTranslation
 } from './lib/translation';
 
-// Constants exported for backward compatibility with existing code
-export const LANGUAGE_STORAGE_KEY = 'billingperiodallocator-language';
-export const DEFAULT_LANGUAGE = 'en';
-export const SUPPORTED_LANGUAGES = ['en', 'de'];
-
 // For backward compatibility with existing code
-export const getCurrentLanguage = getLanguage; 
+export const getLanguage = getCurrentLanguage; 
  

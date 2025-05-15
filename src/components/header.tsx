@@ -1,6 +1,7 @@
 "use client";
 
-import { getCurrentLanguage, getLanguageFromPath } from "@/translations";
+// import { Languages, Moon, Sun } from "lucide-react"; // REMOVED
+
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,21 @@ import Image from "next/image";
 import LanguageToggle from "@/components/language-toggle";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getLanguageFromPath } from "@/lib/language-service";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/translations";
+
+// import { getCurrentLanguage } from "@/lib/language-service"; // REMOVED
+
+
+
+
+
+
+
+
+
+
 
 // Import components directly instead of using dynamic imports
 
@@ -17,41 +31,17 @@ export function Header() {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [currentLang, setCurrentLang] = useState<string>(() => getCurrentLanguage());
   
-  // Determine language for initial render (hydration) based on pathname
-  let initialLangFromPath = 'en'; // Default language
-  if (pathname) {
-    const pathSegments = pathname.split('/');
-    if (pathSegments.length > 1 && (pathSegments[1] === 'de' || pathSegments[1] === 'en')) {
-      initialLangFromPath = pathSegments[1];
-    }
-  }
-
-  // Mark component as mounted and update language when needed
+  // Mark component as mounted
   useEffect(() => {
-    if (!mounted) {
-      setMounted(true);
-      // On initial mount, ensure our state matches path language
-      if (pathname) {
-        const pathLang = getLanguageFromPath(pathname);
-        if (pathLang && currentLang !== pathLang) {
-          setCurrentLang(pathLang);
-        }
-      }
-    }
-  }, [mounted, pathname, currentLang]);
+    setMounted(true);
+  }, []);
 
-  // Track i18n language changes
-  useEffect(() => {
-    if (mounted && i18n.language && currentLang !== i18n.language) {
-      setCurrentLang(i18n.language);
-    }
-  }, [mounted, i18n.language, currentLang]);
-  
-  // After mount, the language from hooks is the source of truth
-  // For initial render (mounted === false), use initialLangFromPath for consistency
-  const effectiveLang = mounted ? (i18n.language || currentLang) : initialLangFromPath;
+  // For SSR/initial render, get language from path.
+  // For client-side after mount, i18n.language is the source of truth.
+  // getLanguageFromPath should provide a default if the path language is not recognized.
+  const langFromPathInitial = getLanguageFromPath(pathname) || 'en'; // Default for SSR/initial
+  const effectiveLang = mounted ? (i18n.language || langFromPathInitial) : langFromPathInitial;
   
   const rawPathname = pathname || '';
   // Normalize pathname: remove trailing slash if it's not the root itself

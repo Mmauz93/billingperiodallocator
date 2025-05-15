@@ -1,3 +1,5 @@
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+
 import { Metadata } from 'next';
 import React from 'react';
 import { getServerSideTranslator } from '@/lib/translation';
@@ -9,10 +11,26 @@ interface TranslationOptions { // Re-define or import if global
 }
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  const { t } = getServerSideTranslator(params.lang);
-  const pageTitle = t("General.impressum", params.lang === 'de' ? "Impressum" : "Imprint");
+  // Validate language parameter
+  const lang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'en' as SupportedLanguage;
+    
+  const { t } = getServerSideTranslator(lang);
+  const pageTitle = t("General.impressum", lang === 'de' ? "Impressum" : "Imprint");
+  const siteUrl = 'https://billsplitter.siempi.ch';
+  const pagePath = 'legal/impressum/'; // Path specific to this page
+
   return {
     title: pageTitle + ' | BillSplitter',
+    alternates: {
+      canonical: `${siteUrl}/${lang}/${pagePath}`,
+      languages: {
+        'en': `${siteUrl}/en/${pagePath}`,
+        'de': `${siteUrl}/de/${pagePath}`,
+        'x-default': `${siteUrl}/en/${pagePath}`,
+      },
+    },
   };
 }
 
@@ -66,18 +84,22 @@ function ImpressumContent({ lastUpdated, lang, t }: ImpressumContentProps) {
 }
 
 export default async function ImprintPage({ params }: { params: { lang: string }}) {
-  const { lang } = params;
-  const { t } = getServerSideTranslator(lang);
+  // Validate language parameter
+  const paramLang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'en' as SupportedLanguage;
+    
+  const { t } = getServerSideTranslator(paramLang);
   
   const today = new Date();
-  const formattedDate = today.toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const formattedDate = today.toLocaleDateString(paramLang === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const lastUpdatedDisplayString = `${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`;
   
   return (
     <main className="container mx-auto max-w-3xl px-6 py-16">
       <ImpressumContent 
         lastUpdated={lastUpdatedDisplayString}
-        lang={lang}
+        lang={paramLang}
         t={t} // Pass the server-side t function
       />
     </main>

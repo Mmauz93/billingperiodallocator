@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react"; // Keep useEffect for document.title if needed, or remove if handled by metadata
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
 
 import { ForceDarkTheme } from '@/components/force-dark-theme';
 import ReactMarkdown from "react-markdown";
@@ -47,8 +48,13 @@ export default function TermsOfUseClient({ initialContent, initialLang, lastUpda
 
   // Set language context for translations if it mismatches initialLang, primarily for client-side consistency
   useEffect(() => {
-    if (i18n.language !== initialLang) {
-      i18n.changeLanguage(initialLang);
+    // Validate and ensure language is a supported language
+    const validLang = (initialLang && SUPPORTED_LANGUAGES.includes(initialLang as SupportedLanguage)) 
+      ? initialLang as SupportedLanguage 
+      : 'en' as SupportedLanguage;
+      
+    if (i18n.language !== validLang) {
+      i18n.changeLanguage(validLang);
     }
     // document.title is handled by generateMetadata in the server component
   }, [initialLang, i18n]);

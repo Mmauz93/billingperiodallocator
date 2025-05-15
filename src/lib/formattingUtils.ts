@@ -1,4 +1,5 @@
 import { AppSettings } from "@/context/settings-context";
+import { formatDateForDisplay } from "./date-utils";
 
 /**
  * Formats a number according to the application settings using Intl.NumberFormat.
@@ -46,33 +47,8 @@ export function roundValue(value: number, precision: number): number {
  * @returns Formatted date string.
  */
 export function formatDateLocale(dateInput: string | Date | undefined, locale: string): string {
-  if (!dateInput) return 'N/A';
-  
-  try {
-    let date: Date;
-    
-    if (typeof dateInput === 'string') {
-      // If it's already in ISO format with time, use it directly
-      if (dateInput.includes('T')) {
-        date = new Date(dateInput);
-      } else {
-        // Add UTC time for date-only strings
-        date = new Date(dateInput + 'T00:00:00Z');
-      }
-    } else {
-      // It's already a Date
-      date = dateInput;
-    }
-    
-    return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return typeof dateInput === 'string' ? dateInput : dateInput.toISOString().split('T')[0]; // Fallback
-  }
+  // Use the improved date formatting function from date-utils.ts
+  return formatDateForDisplay(dateInput, locale);
 }
 
 /**

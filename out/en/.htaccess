@@ -1,3 +1,8 @@
+# Allow access to this directory
+Options +Indexes
+Allow from all
+Require all granted
+
 # Simple configuration for language directory
 DirectoryIndex index.html
 
@@ -6,7 +11,7 @@ DirectoryIndex index.html
   RewriteEngine On
   RewriteBase /en/
   
-  # Hide .html extension in URLs (301 redirect)
+  # Hide .html extension
   RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
   RewriteRule ^ /%1 [NC,L,R=301]
   
@@ -25,4 +30,4 @@ DirectoryIndex index.html
 # Fallback for servers without mod_rewrite
 <IfModule !mod_rewrite.c>
   ErrorDocument 404 /404.html
-</IfModule>
+</IfModule> 

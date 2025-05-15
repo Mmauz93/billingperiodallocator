@@ -7,8 +7,7 @@
     "dev:turbo": "cross-env NEXT_DISABLE_REACT_DEV_OVERLAY=true NEXT_DISABLE_FAST_REFRESH=true next dev --turbopack",
     "dev:safe": "cross-env NODE_ENV=production next dev",
     "build": "next build",
-    "postbuild": "bash scripts/post-build.sh",
-    "deploy": "next build && bash scripts/post-build.sh",
+    "deploy": "next build",
     "lint": "next lint",
     "test": "jest",
     "prod-test": "next build"

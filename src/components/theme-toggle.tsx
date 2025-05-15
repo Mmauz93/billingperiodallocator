@@ -66,7 +66,7 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-10 flex items-center justify-center focus-visible:ring-0 focus:outline-none border-none transition-colors duration-200 ease"
+          className={`relative size-10 flex items-center justify-center focus-visible:ring-0 focus:outline-none border-none transition-colors duration-200 ease hover:bg-primary hover:text-primary-foreground ${menuOpen ? 'bg-primary text-primary-foreground' : ''}`}
           aria-label={t("ThemeToggle.toggleTheme", { defaultValue: "Toggle theme" })} // Translated label for client
         >
           <div className="h-5 w-5 flex items-center justify-center">

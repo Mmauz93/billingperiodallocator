@@ -1,4 +1,5 @@
 import { FaqItem, FaqSection } from "@/components/faq-section";
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
 
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
@@ -11,7 +12,11 @@ import { getServerSideTranslator } from '@/lib/translation';
 // export type FaqItem = { question: string; answer: string; };
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
-  const currentLang = params.lang || 'en';
+  // Validate language parameter
+  const currentLang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'en' as SupportedLanguage;
+    
   const { t } = getServerSideTranslator(currentLang);
   const siteUrl = 'https://billsplitter.siempi.ch';
   const canonicalUrl = `${siteUrl}/${currentLang}/`;
@@ -31,7 +36,12 @@ export async function generateMetadata({ params }: { params: { lang: string } })
 }
 
 export default async function EnglishLandingPage({ params }: { params: { lang: string }}) {
-  const { t } = getServerSideTranslator(params.lang || 'en'); // Use 'en' or params.lang
+  // Validate language parameter
+  const lang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
+    ? params.lang as SupportedLanguage
+    : 'en' as SupportedLanguage;
+    
+  const { t } = getServerSideTranslator(lang);
 
   // Define default texts for translation keys (these are fallbacks for t())
   const heroTitle = "Automated Invoice Split Calculator";
@@ -183,7 +193,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
                 demoAmount={demoAmount}
                 demoIncludeEndDate={demoIncludeEndDate}
                 demoSplitPeriod={demoSplitPeriod}
-                appPath={`/${params.lang || 'en'}/app`} // Construct app path based on lang
+                appPath={`/${lang}/app`} // Construct app path based on lang
               />
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">

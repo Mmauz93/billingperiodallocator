@@ -102,7 +102,12 @@ const CalculationStepsDisplay = ({
   const currentLocale = i18n.language;
 
   if (steps.error) {
-    return <p className="text-destructive">{steps.error}</p>;
+    // Convert the error to a string representation
+    const errorMessage = typeof steps.error === 'string' 
+      ? steps.error 
+      : (steps.error.message || 'Unknown error');
+      
+    return <p className="text-destructive">{errorMessage}</p>;
   }
 
   const { periodSegments, amountCalculations } = steps;

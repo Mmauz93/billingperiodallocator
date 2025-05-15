@@ -1,8 +1,9 @@
 "use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CalculationInput, CalculationResult } from "@/lib/calculations";
+import { CalculationError, CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
+import { ERROR_CODES, InputValidationError } from "@/lib/errors";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import { CalculationCallbackData } from "@/components/invoice-form";
@@ -18,15 +19,8 @@ import { useTranslation } from '@/translations';
 
 // Import the CalculationCallbackData type from InvoiceForm
 
-
-
-
-
-
-
-
-
-
+// Update the error type definition
+type CalculationErrorType = string | Error | CalculationError | { message?: string; [key: string]: unknown } | null | undefined;
 
 // Define a type for the demo data that matches the one in InvoiceForm
 type DemoDataType = {
@@ -62,9 +56,6 @@ type InputDataForDisplay = Pick<
   CalculationInput,
   "startDate" | "endDate" | "includeEndDate" | "amounts" | "splitPeriod"
 >;
-
-// Define a more specific type for the error parameter
-type CalculationErrorType = string | Error | { message?: string; [key: string]: unknown } | null | undefined;
 
 interface InvoiceCalculatorClientProps {
   pageTitle: string; // Add pageTitle prop
@@ -169,70 +160,109 @@ export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculator
     setInitialDemoData(null);
   }, []);
 
+  // Updated function to handle the new error structure
   const handleCalculation = (
     formData: CalculationCallbackData,
     results: CalculationResult | null,
-    error?: CalculationErrorType // Use the more specific type
-   ) => {
+    error?: CalculationErrorType
+  ) => {
     setCalculationResult(results);
     let displayError: string | null = null;
+    
     if (error) {
-        const baseErrorTitle = t('Errors.calculationErrorTitle');
-        if (typeof error === 'string') {
-            if (error.includes("At least one amount is required")) {
-                displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
-            } else if (error.includes("Start date must be before")) {
-                displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
-            } else {
-                displayError = baseErrorTitle + ": " + error;
-            }
-        } else if (error instanceof Error) {
-            // Handle standard Error objects
+      const baseErrorTitle = t('Errors.calculationErrorTitle');
+      
+      // Handle the new CalculationError types specifically
+      if (error instanceof InputValidationError) {
+        // Map specific error codes to translated messages
+        switch (error.code) {
+          case ERROR_CODES.NO_AMOUNTS:
+            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
+            break;
+          case ERROR_CODES.INVALID_AMOUNT:
+            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountPositive');
+            break;
+          case ERROR_CODES.END_BEFORE_START:
+            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
+            break;
+          case ERROR_CODES.INVALID_DATES:
+            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorInvalidDates', { defaultValue: "Valid start and end dates are required" });
+            break;
+          case ERROR_CODES.ZERO_DURATION:
+            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorZeroDuration', { defaultValue: "The date range must result in a positive duration" });
+            break;
+          default:
             displayError = baseErrorTitle + ": " + error.message;
-            console.error("[InvoiceCalculatorClient] Error object received:", error);
-        } else if (error && typeof error === 'object') {
-            // Improved handling for object errors
-            if ('message' in error && typeof error.message === 'string') {
-                displayError = baseErrorTitle + ": " + error.message;
-            } else {
-                // For objects without a message property, convert to JSON string or use generic message
-                try {
-                    const stringifiedError = JSON.stringify(error);
-                    displayError = baseErrorTitle + ": " + (stringifiedError !== "{}" ? stringifiedError : t('Errors.unexpectedError'));
-                } catch {
-                    // If JSON stringification fails
-                    displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
-                }
-            }
-            console.error("[InvoiceCalculatorClient] Error object received:", error);
-        } else {
-            // For other non-string errors or null/undefined that somehow made it here
-            displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
-            console.error("[InvoiceCalculatorClient] An unexpected or non-standard error was received:", error);
         }
+        
+        // Log with additional details
+        console.warn(`[InvoiceCalculatorClient] Input validation error: ${error.code}`, error.details);
+      } 
+      else if (error instanceof CalculationError) {
+        // Generic handling for other calculation errors
+        displayError = baseErrorTitle + ": " + error.message;
+        
+        // Detailed logging of calculation errors
+        console.error(`[InvoiceCalculatorClient] Calculation error: ${error.code} (${error.category})`, error.details);
+      }
+      else if (typeof error === 'string') {
+        // Backward compatibility for string errors
+        if (error.includes("At least one amount is required")) {
+          displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
+        } else if (error.includes("Start date must be before")) {
+          displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
+        } else {
+          displayError = baseErrorTitle + ": " + error;
+        }
+      } 
+      else if (error instanceof Error) {
+        // Standard Error objects
+        displayError = baseErrorTitle + ": " + error.message;
+        console.error("[InvoiceCalculatorClient] Error object received:", error);
+      } 
+      else if (error && typeof error === 'object') {
+        // Object errors (fallback)
+        if ('message' in error && typeof error.message === 'string') {
+          displayError = baseErrorTitle + ": " + error.message;
+        } else {
+          try {
+            const stringifiedError = JSON.stringify(error);
+            displayError = baseErrorTitle + ": " + (stringifiedError !== "{}" ? stringifiedError : t('Errors.unexpectedError'));
+          } catch {
+            displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
+          }
+        }
+        console.error("[InvoiceCalculatorClient] Error object received:", error);
+      } 
+      else {
+        // Fallback for unknown error types
+        displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
+        console.error("[InvoiceCalculatorClient] An unexpected or non-standard error was received:", error);
+      }
     }
+    
     setCalculationError(displayError);
 
     // If there was any kind of error, we should ensure results are not processed as successful
-    if (formData && results && !displayError) { // Check against displayError now
-        setStoredInputData(formData);
-        // Use requestAnimationFrame + timeout to ensure the layout is stable before scrolling
-        setTimeout(() => {
-          requestAnimationFrame(() => {
-            if (resultsSectionRef.current) {
-              resultsSectionRef.current.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-              });
-            }
-          });
-        }, 200); // Slightly longer delay to ensure layout is fully settled
+    if (formData && results && !displayError) {
+      setStoredInputData(formData);
+      // Use requestAnimationFrame + timeout to ensure the layout is stable before scrolling
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (resultsSectionRef.current) {
+            resultsSectionRef.current.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+          }
+        });
+      }, 200); // Slightly longer delay to ensure layout is fully settled
     } else {
-        setStoredInputData(null);
-        // If there was an error, but results were somehow passed, clear them too
-        if (displayError) {
-            setCalculationResult(null);
-        }
+      setStoredInputData(null);
+      // If there was an error, but results were somehow passed, clear them too
+      if (displayError) {
+        setCalculationResult(null);
+      }
     }
   };
 

@@ -1,8 +1,10 @@
 import { CalculationInput, calculateInvoiceSplit } from "./calculations";
 
+import { createUTCDate } from "./date-utils";
+
 describe("calculateInvoiceSplit", () => {
-  // Helper to create dates easily, specifying UTC to avoid timezone issues
-  const d = (dateStr: string): Date => new Date(dateStr + "T00:00:00Z");
+  // Helper to create dates easily, using our new helper for timezone consistency
+  const d = (dateStr: string): Date => createUTCDate(dateStr);
 
   // Basic Test: Single year, no leap, exclusive end date
   test("should split correctly within a single year (exclusive)", () => {

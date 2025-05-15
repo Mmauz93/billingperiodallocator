@@ -1,14 +1,13 @@
 'use client';
 
 import { Footer } from "@/components/footer";
-import HeadWithHreflang from "@/components/head-with-hreflang";
 import { Header } from "@/components/header";
-import { SUPPORTED_LANGUAGES } from "@/translations";
 import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TranslationProvider from "@/components/translation-provider";
 import dynamic from "next/dynamic";
+import { getLanguageFromPath } from "@/lib/language-service";
 import { usePathname } from "next/navigation";
 
 const DynamicCookieConsentBanner = dynamic(() => 
@@ -23,12 +22,9 @@ export default function ClientLayout({
 }) {
   const path = usePathname() || '';
   
-  // Get language from the URL path segments immediately
-  // More reliable than relying on context that might not be initialized yet
-  const pathSegments = path.split('/');
-  const lang = pathSegments.length > 1 && SUPPORTED_LANGUAGES.includes(pathSegments[1]) 
-    ? pathSegments[1] 
-    : 'en';
+  // Get language from path using our centralized language service
+  const pathLang = getLanguageFromPath(path);
+  const lang = pathLang || 'en';
   
   // Check if we're on a privacy policy page - don't show cookie banner there
   const isPrivacyPolicyPage = path.includes('/legal/privacy-policy');
@@ -44,8 +40,6 @@ export default function ClientLayout({
       >
         <TooltipProvider>
           <TranslationProvider>
-            <HeadWithHreflang currentPath={path} currentLanguage={lang} />
-            
             <div className="flex flex-col min-h-screen w-full overflow-y-auto">
               <Header />
               <main className="flex-grow w-full pt-16 pb-24">{children}</main>
