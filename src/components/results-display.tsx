@@ -189,7 +189,7 @@ const CalculationStepsDisplay = ({
                     {t("ResultsDisplay.discrepancyLabel")}:
                   </span>
                   <span
-                    className={`${Math.abs(amtCalc.discrepancy) > 0.001 ? "text-amber-600 dark:text-amber-500" : "text-muted-foreground/70"}`}
+                    className={`${Math.abs(amtCalc.discrepancy) > 0.001 ? "text-warning dark:text-warning" : "text-muted-foreground/70"}`}
                   >
                     {" "}
                     {fmtNum(amtCalc.discrepancy)}
@@ -432,8 +432,32 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   foot: [[t("ResultsDisplay.totalLabel", { defaultValue: "Total" }), totalDurationDays, utilFormatPercent(1, currentLocale), utilFormatNumber(totalAggregatedAmount, currentLocale, settings)]],
                   startY: yPos, 
                   theme: 'grid', 
-                  headStyles: { fillColor: [46, 90, 140] }, 
-                  footStyles: { fillColor: [240, 240, 240], textColor: 40, fontStyle: 'bold' },
+                  headStyles: { 
+                      // Convert primary color to RGB for PDF
+                      fillColor: getComputedStyle(document.documentElement)
+                          .getPropertyValue('--primary')
+                          .trim()
+                          .split(' ')
+                          .map((v, i) => i === 0 ? parseInt(v) : parseFloat(v) * 2.55)
+                          .filter((_, i) => i < 3) as [number, number, number]
+                  }, 
+                  footStyles: { 
+                      // Convert muted color to RGB for PDF
+                      fillColor: getComputedStyle(document.documentElement)
+                          .getPropertyValue('--muted')
+                          .trim()
+                          .split(' ')
+                          .map((v, i) => i === 0 ? parseInt(v) : parseFloat(v) * 2.55)
+                          .filter((_, i) => i < 3) as [number, number, number], 
+                      textColor: getComputedStyle(document.documentElement)
+                          .getPropertyValue('--foreground')
+                          .trim()
+                          .split(' ')
+                          .map((v, i) => i === 0 ? parseInt(v) : parseFloat(v) * 2.55)
+                          .filter((_, i) => i < 3)
+                          .reduce((sum, c) => sum + c, 0) / 3, 
+                      fontStyle: 'bold' 
+                  },
                   didParseCell: function (data: CellHookData) { 
                       if (data.column.index !== undefined && [1, 2, 3].includes(data.column.index)) {
                           data.cell.styles.halign = 'right';
@@ -540,7 +564,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                 </h3>
                 <button
                   onClick={() => setIsSettingsOpen(true)}
-                  className="p-1.5 rounded-md text-muted-foreground hover:text-white hover:bg-[#0284C7] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer"
                   aria-label={t("ResultsDisplay.settingsLabel")}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

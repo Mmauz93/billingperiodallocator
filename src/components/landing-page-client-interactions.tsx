@@ -48,10 +48,11 @@ export default function LandingPageClientInteractions({
   };
 
   return (
-    <Button 
-      size="lg" 
+    <Button
+      size="lg"
       onClick={handleTestWithDemoData}
-      className="inline-flex items-center gap-1 font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg group !hover:transform !hover:translate-y-[-2px] !hover:scale-[1.015] bg-primary text-white"
+      className="inline-flex items-center gap-1 font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg group !hover:transform !hover:translate-y-[-2px] !hover:scale-[1.015] bg-primary text-primary-foreground"
+      aria-label={buttonText}
     >
       {buttonText}
       <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>

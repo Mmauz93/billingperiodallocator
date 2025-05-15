@@ -29,7 +29,7 @@ function ImpressumContent({ lastUpdated, lang, t }: ImpressumContentProps) {
   return (
     <article className="prose prose-lg dark:prose-invert" aria-label="Legal information">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
           {title}
         </h1>
         <p className="text-sm text-muted-foreground mt-2">{lastUpdated}</p>
@@ -37,7 +37,7 @@ function ImpressumContent({ lastUpdated, lang, t }: ImpressumContentProps) {
       
       <div className="space-y-8">
         <section>
-          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent">
+          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
             {lang === 'de' ? 'Verantwortlich für diese Website' : 'Responsible for this website'}
           </h2>
           <p className="mb-6 text-sm leading-relaxed">
@@ -51,7 +51,7 @@ function ImpressumContent({ lastUpdated, lang, t }: ImpressumContentProps) {
         </section>
         
         <section className="border-t border-muted pt-6">
-          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent">
+          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
             {lang === 'de' ? 'Handelsregister' : 'Commercial Register'}
           </h2>
           <p className="text-sm leading-relaxed">

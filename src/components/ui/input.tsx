@@ -48,13 +48,13 @@ function Input(
         {...props}
       />
       {helperText && (
-        <p className="text-xs text-gray-500 mt-1 mb-3 pl-3">{helperText}</p>
+        <p className="text-xs text-muted-foreground mt-1 mb-3 pl-3">{helperText}</p>
       )}
       {error && (
         <p
           id={errorId}
           role="alert"
-          className="text-sm font-medium text-destructive mt-1"
+          className="form-error-message"
         >
           {error}
         </p>

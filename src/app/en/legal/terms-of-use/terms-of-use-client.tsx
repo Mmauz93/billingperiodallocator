@@ -2,7 +2,9 @@
 
 import React, { useEffect } from "react"; // Keep useEffect for document.title if needed, or remove if handled by metadata
 
+import { ForceDarkTheme } from '@/components/force-dark-theme';
 import ReactMarkdown from "react-markdown";
+import { ThemeProvider } from "next-themes";
 import remarkGfm from "remark-gfm";
 import { useTranslation } from "@/translations";
 
@@ -21,10 +23,10 @@ const TermsOfUseContent = ({ termsContent }: { termsContent: string }) => {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            h1: ({ ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent" {...props} />,
-            h2: ({ ...props }) => <h2 className="text-xl font-semibold mt-6 mb-3 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent" {...props} />,
-            h3: ({ ...props }) => <h3 className="text-lg font-semibold mt-4 mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent" {...props} />,
-            h4: ({ ...props }) => <h4 className="text-base font-semibold mt-3 mb-1 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent" {...props} />,
+            h1: ({ ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" {...props} />,
+            h2: ({ ...props }) => <h2 className="text-xl font-semibold mt-6 mb-3 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" {...props} />,
+            h3: ({ ...props }) => <h3 className="text-lg font-semibold mt-4 mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" {...props} />,
+            h4: ({ ...props }) => <h4 className="text-base font-semibold mt-3 mb-1 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent" {...props} />,
             p: ({ ...props }) => <p className="text-sm leading-relaxed text-muted-foreground mb-4" {...props} />,
             ul: ({ ...props }) => <ul className="text-sm leading-relaxed text-muted-foreground mb-4 pl-5 list-disc" {...props} />,
             ol: ({ ...props }) => <ol className="text-sm leading-relaxed text-muted-foreground mb-4 pl-5 list-decimal" {...props} />,
@@ -52,18 +54,22 @@ export default function TermsOfUseClient({ initialContent, initialLang, lastUpda
   }, [initialLang, i18n]);
 
   return (
-    <main className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent">
-          {t("Legal.termsOfUseTitle", "Terms of Use")}
-        </h1>
-        {lastUpdatedDate && (
-          <p className="text-sm text-muted-foreground mt-2">
-            {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${lastUpdatedDate}`}
-          </p>
-        )}
-      </div>
-      <TermsOfUseContent termsContent={initialContent} />
-    </main>
+    <ForceDarkTheme>
+      <ThemeProvider attribute="class" forcedTheme="dark">
+        <main className="container mx-auto max-w-3xl px-6 py-16 dark bg-background">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              {t("Legal.termsOfUseTitle", "Terms of Use")}
+            </h1>
+            {lastUpdatedDate && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${lastUpdatedDate}`}
+              </p>
+            )}
+          </div>
+          <TermsOfUseContent termsContent={initialContent} />
+        </main>
+      </ThemeProvider>
+    </ForceDarkTheme>
   );
 } 

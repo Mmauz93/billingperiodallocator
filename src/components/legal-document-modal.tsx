@@ -76,7 +76,7 @@ export function LegalDocumentModal({
         <div className="flex justify-end mt-4">
           <Button 
             onClick={() => onOpenChange(false)}
-            className="bg-[#0284C7] hover:bg-[#0284C7]/90 text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {t("SettingsModal.closeButton")}
           </Button>

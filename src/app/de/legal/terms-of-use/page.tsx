@@ -1,5 +1,7 @@
+import { ForceDarkTheme } from '@/components/force-dark-theme';
 import { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown'; // For direct rendering or to pass to a minimal client component
+import { ThemeProvider } from '@/components/theme-provider';
 import fs from 'fs/promises';
 import { getServerSideTranslator } from '@/lib/translation';
 import path from 'path';
@@ -40,15 +42,16 @@ function StyledMarkdownContent({ content }: { content: string }) {
           remarkPlugins={[remarkGfm]}
           components={{
             // Using the styles previously defined in the DE client component
-            h1: ({ /* node, */ ...props }) => <h1 {...props} className="text-2xl font-bold mt-12 mb-4 text-[#0284C7]" />,
-            h2: ({ /* node, */ ...props }) => <h2 {...props} className="text-xl font-semibold mt-12 mb-4 text-[#0284C7]" />,
-            h3: ({ /* node, */ ...props }) => <h3 {...props} className="text-lg font-medium mt-10 mb-3 text-[#0284C7]" />,
+            h1: ({ /* node, */ ...props }) => <h1 {...props} className="text-2xl font-bold mt-12 mb-4 text-primary" />,
+            h2: ({ /* node, */ ...props }) => <h2 {...props} className="text-xl font-semibold mt-12 mb-4 text-primary" />,
+            h3: ({ /* node, */ ...props }) => <h3 {...props} className="text-lg font-medium mt-10 mb-3 text-primary" />,
             p: ({ /* node, */ ...props }) => <p {...props} className="text-sm leading-relaxed text-muted-foreground mb-6" />,
             ul: ({ /* node, */ ...props }) => <ul {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-disc" />,
             ol: ({ /* node, */ ...props }) => <ol {...props} className="text-sm leading-relaxed text-muted-foreground mb-6 pl-6 list-decimal" />,
             li: ({ /* node, */ ...props }) => <li {...props} className="mb-2" />,
-            a: ({ /* node, */ ...props }) => <a {...props} className="text-[#0284C7] hover:underline" />,
+            a: ({ /* node, */ ...props }) => <a {...props} className="text-primary hover:underline" />,
             strong: ({ /* node, */ ...props }) => <strong {...props} className="font-semibold" />,
+            em: ({ /* node, */ ...props }) => <em {...props} className="italic" />,
           }}
         >
           {content}
@@ -84,18 +87,22 @@ export default async function TermsOfUsePageDE({ params }: { params: { lang: str
   }
   
   return (
-    <main className="container mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-[#0284C7]">
-          {t("Legal.termsOfUseTitle", "Nutzungsbedingungen")}
-        </h1>
-        {lastUpdatedDate && (
-          <p className="text-sm text-muted-foreground mt-2">
-            {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${lastUpdatedDate}`}
-          </p>
-        )}
-      </div>
-      <StyledMarkdownContent content={termsContent} />
-    </main>
+    <ForceDarkTheme>
+      <ThemeProvider attribute="class" forcedTheme="dark">
+        <main className="container mx-auto max-w-3xl px-6 py-16 dark bg-background">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-bold text-primary">
+              {t("Legal.termsOfUseTitle", "Nutzungsbedingungen")}
+            </h1>
+            {lastUpdatedDate && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {`${t("Legal.lastUpdatedPrefix", "Zuletzt aktualisiert am")} ${lastUpdatedDate}`}
+              </p>
+            )}
+          </div>
+          <StyledMarkdownContent content={termsContent} />
+        </main>
+      </ThemeProvider>
+    </ForceDarkTheme>
   );
 } 

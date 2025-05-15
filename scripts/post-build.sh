@@ -159,3 +159,4 @@ echo "File permissions set."
 echo "Deployment guide copied to out directory."
 echo ""
 echo "Ready for deployment! Upload the entire 'out' directory to your web server." 
+ 

@@ -195,8 +195,7 @@ export function CustomCookieConsentBanner({
                       <a
                         href="#"
                         onClick={(e) => { e.preventDefault(); onOpenPrivacyAction(); }}
-                        className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 outline-none ring-0 focus:outline-none focus:ring-0 focus:border-0 mb-4 inline-block"
-                        style={{ boxShadow: 'none' }}
+                        className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-0 outline-none ring-0 focus:outline-none focus:ring-0 focus:border-0 mb-4 inline-block shadow-none"
                       >
                         {t('ConsentBanner.learnMoreButton')}
                       </a>
@@ -204,7 +203,9 @@ export function CustomCookieConsentBanner({
                       <div className="flex flex-col space-y-3 w-full mt-2">
                         <Button
                           variant="default"
-                          className="w-full text-base py-6 bg-[#0284C7] hover:bg-[#0284C7]/90 cookie-accept text-lg font-medium"
+                          aria-label={t("CookieConsent.acceptAll", "Accept all")}
+                          id="rcc-confirm-button"
+                          className="w-full text-base py-6 bg-primary hover:bg-primary/90 cookie-accept text-lg font-medium"
                           onClick={handleAccept}
                           autoFocus
                         >
@@ -263,7 +264,7 @@ export function CustomCookieConsentBanner({
                         </Button>
                         <Button
                           variant="default"
-                          className="flex-1 bg-[#0284C7] hover:bg-[#0284C7]/90"
+                          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                           onClick={handleSavePreferences}
                         >
                           Save Preferences

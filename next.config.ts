@@ -27,12 +27,27 @@ const nextConfig: NextConfig = {
   // Don't expose the Next.js version in headers
   poweredByHeader: false,
 
+  // Tell TypeScript to exclude browser-tools-mcp from compilation
+  typescript: {
+    ignoreBuildErrors: false,
+    tsconfigPath: 'tsconfig.json'
+  },
+
   // Fixed webpack configuration to avoid performance warnings
   webpack: (config, { dev }) => {
     // Don't override the devtool in development mode
     if (!dev) {
       config.devtool = 'source-map'; // Only set source maps for production
     }
+    
+    // Simple approach - just override the entire watchOptions object
+    config.watchOptions = {
+      ignored: [
+        '**/node_modules/**',
+        '**/browser-tools-mcp/**'
+      ]
+    };
+    
     return config;
   },
 

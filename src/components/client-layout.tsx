@@ -3,13 +3,13 @@
 import { Footer } from "@/components/footer";
 import HeadWithHreflang from "@/components/head-with-hreflang";
 import { Header } from "@/components/header";
+import { SUPPORTED_LANGUAGES } from "@/translations";
 import { SettingsProvider } from "@/context/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TranslationProvider from "@/components/translation-provider";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { SUPPORTED_LANGUAGES } from "@/translations";
 
 const DynamicCookieConsentBanner = dynamic(() => 
   import("@/components/custom-cookie-banner").then(mod => mod.CustomCookieConsentBanner),
@@ -40,6 +40,7 @@ export default function ClientLayout({
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
+        storageKey="theme" // Explicitly set storage key to match anti-flicker script
       >
         <TooltipProvider>
           <TranslationProvider>

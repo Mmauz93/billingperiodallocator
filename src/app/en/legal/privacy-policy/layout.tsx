@@ -1,6 +1,7 @@
+import { ForceDarkTheme } from '@/components/force-dark-theme';
 import { Metadata } from 'next';
+import { ThemeProvider } from '@/components/theme-provider';
 import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
-import PrivacyPolicyDarkLayoutClient from './PrivacyPolicyDarkLayoutClient';
 
 // Generate alternates for English privacy policy page
 const alternates = generateSubpageHreflangMetadata('en', 'legal/privacy-policy');
@@ -12,5 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyLayoutEN({ children }: { children: React.ReactNode }) {
-  return <PrivacyPolicyDarkLayoutClient>{children}</PrivacyPolicyDarkLayoutClient>;
+  return (
+    <ForceDarkTheme>
+      <ThemeProvider attribute="class" forcedTheme="dark">
+        {children}
+      </ThemeProvider>
+    </ForceDarkTheme>
+  );
 } 

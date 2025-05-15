@@ -1,0 +1,825 @@
+/* Component-specific styling */
+
+/*
+ * HEADER COMPONENT STYLES
+ * These styles ensure consistent appearance and behavior for header navigation elements
+ * Specifically addressing alignment, transitions, and interactive states
+ */
+
+/* Fix header icons alignment */
+header nav .header-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  position: relative;
+}
+
+header nav .header-toggle-button > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: static;
+}
+
+/* Smooth transition for fixed header during scrolling */
+header.fixed {
+  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Header toggle buttons - consistent hover behavior across all toggle types */
+.header-toggle-button {
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.header-toggle-button:hover {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Icon color inheritance for consistent appearance */
+.header-toggle-button:hover svg {
+  color: hsl(var(--primary-foreground));
+}
+
+/* Maintain visual appearance for disabled state */
+.header-toggle-button:disabled {
+  opacity: 1;
+}
+
+/* Dropdown menu item hover styles matching header buttons */
+.header-dropdown-item {
+  cursor: pointer;
+}
+
+.header-dropdown-item:hover {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* 
+ * THEME INITIALIZATION
+ * Prevent transition flicker during initial page load
+ * Only enable transitions after theme is initialized
+ */
+.header-toggle-button {
+  transition: opacity 0.15s ease-in-out;
+}
+
+[data-theme-initialized="true"] .header-toggle-button {
+  opacity: 1;
+}
+
+/*
+ * THEME TOGGLE BUTTON STATES
+ * Ensure theme toggle and language toggle buttons behave consistently
+ * These selectors target buttons containing specific icons from Lucide
+ */
+button:has(svg.Sun, svg.Moon),
+html:not(.dark) button:has(svg.Sun, svg.Moon) {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button:has(svg.Sun, svg.Moon)[data-state="open"],
+html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"],
+button:has(svg.Sun, svg.Moon)[aria-expanded="true"],
+html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
+html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
+button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg,
+html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg {
+  color: hsl(var(--primary-foreground));
+}
+
+/* Fix for Globe icon to ensure consistent appearance */
+.header-toggle-button .lucide-globe,
+button svg.lucide-globe,
+svg.lucide.lucide-globe {
+  color: currentColor;
+  stroke: currentColor;
+  stroke-width: 2px;
+  fill: none;
+  opacity: 1;
+  visibility: visible;
+  display: block;
+}
+
+/* Language toggle button states */
+button:has(svg.Globe),
+html:not(.dark) button:has(svg.Globe) {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button:has(svg.Globe)[data-state="open"],
+html:not(.dark) button:has(svg.Globe)[data-state="open"],
+button:has(svg.Globe)[aria-expanded="true"],
+html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+button:has(svg.Globe)[data-state="open"] svg,
+html:not(.dark) button:has(svg.Globe)[data-state="open"] svg,
+button:has(svg.Globe)[aria-expanded="true"] svg,
+html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] svg {
+  color: hsl(var(--primary-foreground));
+}
+
+/* Header-specific expanded state styles */
+.header-toggle-button[aria-expanded="true"],
+html:not(.dark) .header-toggle-button[aria-expanded="true"],
+button:has(.Globe)[aria-expanded="true"],
+html:not(.dark) button:has(.Globe)[aria-expanded="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.header-toggle-button[aria-expanded="true"] svg,
+html:not(.dark) .header-toggle-button[aria-expanded="true"] svg,
+button:has(.Globe)[aria-expanded="true"] svg,
+html:not(.dark) button:has(.Globe)[aria-expanded="true"] svg {
+  color: hsl(var(--primary-foreground));
+}
+
+/*
+ * DROPDOWN MENU POSITIONING
+ * Set appropriate z-index for Radix UI's dropdown menus
+ * Prevent scrollbar issues during dropdown display
+ */
+[data-radix-popper-content-wrapper] {
+  /* Only set z-index, don't override Radix UI's positioning */
+  z-index: var(--z-popover);
+}
+
+/* Smooth animations for Radix dropdowns */
+[data-radix-menu-content],
+[data-radix-dropdown-menu-content] {
+  animation-duration: 0.15s;
+}
+
+/* Allow body scrolling with dropdown open - removes previous overflow:hidden */
+body:has([data-radix-popper-content-wrapper][data-state="open"]) {
+  overflow: auto;
+}
+
+/*
+ * FOOTER STYLING
+ * Improve consistency and accessibility of footer links and components
+ */
+.siempi-link {
+  color: hsl(var(--foreground)); /* Improved contrast from previous muted-foreground */
+  font-weight: 500; /* Better legibility */
+  @apply no-underline hover:underline transition-colors duration-200;
+}
+
+/* Footer navigation alignment */
+footer div.container nav {
+  display: flex;
+  align-items: center; /* Changed from baseline for better vertical alignment */
+  gap: 16px;
+}
+
+/* Alignment for special footer elements (Calculator and Feedback button) */
+footer div.container nav a[href$="/app/"],
+footer div.container nav a[href*="rechner"],
+footer div.container nav button:has(svg.lucide-message-square) {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  line-height: 24px;
+}
+
+/* Feedback button icon alignment */
+footer div.container nav button:has(svg.lucide-message-square) {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+/*
+ * LIGHT/DARK MODE FOOTER CONTRAST
+ * Ensure all footer links have appropriate contrast in both modes
+ */
+
+/* Light mode contrast improvements for legal links */
+html:not(.dark) footer div.container nav a[href*="/legal/"] {
+  color: hsl(var(--muted-foreground)); /* Darker than original for better contrast */
+  font-weight: 500;
+}
+
+html:not(.dark) footer div.container nav a[href*="/legal/"]:hover {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+}
+
+/* Light mode contrast for Siempi AG link */
+html:not(.dark) footer div.container a[href*="siempi.ch"] {
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+}
+
+html:not(.dark) footer div.container a[href*="siempi.ch"]:hover {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+}
+
+/* Dark mode footer text contrast */
+.dark footer,
+.dark footer span,
+.dark footer div,
+.dark footer p {
+  color: hsl(var(--foreground)); /* Brighter text for better contrast */
+}
+
+/* Dark mode footer links contrast */
+.dark footer a,
+.dark footer button[class*="text-foreground"] {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+
+.dark footer a:hover,
+.dark footer button[class*="text-foreground"]:hover {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+/* Dark mode legal links contrast */
+.dark footer div.container nav a[href*="/legal/"] {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+
+.dark footer div.container nav a[href*="/legal/"]:hover {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+/* Special buttons in dark mode footer - ensure consistent styling */
+.dark footer div.container nav button:has(svg.lucide-message-square),
+.dark footer div.container nav button:has(svg.lucide-message-square) svg {
+  color: hsl(var(--primary));
+  stroke: hsl(var(--primary));
+  fill: none;
+  -webkit-text-fill-color: hsl(var(--primary));
+}
+
+/* Calculator link in dark mode footer */
+.dark footer div.container nav a[href$="/app/"] {
+  color: hsl(var(--primary));
+  -webkit-text-fill-color: hsl(var(--primary));
+}
+
+/*
+ * CARD AND LINK STYLING
+ * Consistent card interaction and link styling
+ */
+
+/* Card cursor style when it's a link */
+.p-6.rounded-lg.group[href] {
+  cursor: pointer;
+}
+
+/* Button hover transitions */
+.button:not(:disabled) {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* No-transform utility to prevent hover transform on specific elements */
+.no-transform {
+  transform: none;
+}
+
+/* Override hover transforms for no-transform elements */
+button.no-transform:hover,
+.button.no-transform:hover,
+[role="button"].no-transform:hover,
+input[type="submit"].no-transform:hover,
+input[type="button"].no-transform:hover {
+  transform: none;
+}
+
+/*
+ * BUTTON STYLING CONSISTENCY
+ * Ensure buttons maintain consistent appearance in all themes
+ */
+
+/* Primary button hover state */
+.bg-primary:hover {
+  background-color: hsl(var(--primary));
+  opacity: 0.9;
+  color: hsl(var(--primary-foreground));
+}
+
+/* Consistent primary button colors in both themes */
+.bg-primary, 
+html:not(.dark) .bg-primary,
+.dark .bg-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Secondary button styles */
+.bg-secondary, 
+html:not(.dark) .bg-secondary,
+.dark .bg-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.bg-secondary:hover {
+  background-color: hsl(var(--secondary));
+  opacity: 0.9;
+  color: hsl(var(--secondary-foreground));
+}
+
+/* Special premium button with gradient */
+.premium-button {
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  color: hsl(var(--primary-foreground));
+  border: none;
+  box-shadow: 0 2px 8px hsla(var(--black), 0.15);
+}
+
+.premium-button:hover {
+  box-shadow: 0 4px 12px hsla(var(--black), 0.2);
+  opacity: 0.95;
+}
+
+.dark .premium-button {
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  white-space: nowrap;
+  box-shadow: 0 4px 12px hsla(var(--black), 0.15);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/*
+ * ACCESSIBILITY IMPROVEMENTS
+ * Enhance contrast for better accessibility
+ */
+
+/* Button text contrast improvements */
+button[class*="text-gray-600"],
+html:not(.dark) button[class*="text-gray-600"],
+a[class*="text-gray-600"],
+html:not(.dark) a[class*="text-gray-600"] {
+  color: hsl(var(--muted-foreground)); /* Darker gray for better contrast */
+}
+
+.dark button[class*="text-gray-600"],
+.dark a[class*="text-gray-600"],
+.dark button[class*="text-gray-400"],
+.dark a[class*="text-gray-400"] {
+  color: hsl(var(--foreground)); /* Brighter text in dark mode */
+}
+
+/* Accept button contrast fix */
+button.inline-flex[class*="bg-primary"],
+html:not(.dark) button.inline-flex[class*="bg-primary"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600; /* Better readability */
+}
+
+.dark button.inline-flex[class*="bg-primary"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+}
+
+/*
+ * CUSTOM TOOLTIP IMPLEMENTATION
+ * CSS-only tooltip using data-tooltip attribute
+ */
+.premium-tooltip {
+  position: relative;
+}
+
+.premium-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  text-align: center;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px hsla(var(--black), 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+  border: 1px solid var(--border);
+}
+
+.premium-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--popover) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+}
+
+.premium-tooltip:hover::before,
+.premium-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 200ms; /* Small delay before showing tooltip */
+  transform: translateX(-50%) translateY(0);
+}
+
+/*
+ * LINK STYLING
+ * Consistent link styling across different contexts
+ */
+
+/* Specialized link styling for accrual accounting links */
+a[href*="accrualaccounting"],
+.accrual-accounting-link {
+  text-decoration: underline;
+  text-decoration-thickness: -1.5px;
+  text-underline-offset: 2px;
+  color: hsl(var(--primary));
+  font-weight: 500;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+a[href*="accrualaccounting"]:hover,
+.accrual-accounting-link:hover {
+  color: hsl(var(--primary));
+  text-decoration-color: hsl(var(--primary));
+  text-decoration-thickness: 2px;
+}
+
+/* Feature card and content links */
+.text-primary.underline,
+span.text-primary.underline,
+a.text-primary,
+span.text-primary,
+p a,
+p span.text-primary,
+a[href],
+[href*="IFRS"],
+[href*="expense"],
+[href*="privacy"],
+[href*="wikipedia"],
+[href*="fedlex"],
+[href*="gesetze"] {
+  cursor: pointer;
+  color: hsl(var(--primary));
+  text-decoration-color: hsla(var(--primary), 0.6);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.text-primary.underline:hover,
+span.text-primary.underline:hover,
+a.text-primary:hover,
+span.text-primary:hover,
+p a:hover,
+p span.text-primary:hover,
+a[href]:hover,
+[href*="IFRS"]:hover,
+[href*="expense"]:hover,
+[href*="privacy"]:hover,
+[href*="wikipedia"]:hover,
+[href*="fedlex"]:hover,
+[href*="gesetze"]:hover {
+  color: hsl(var(--primary));
+  text-decoration-color: hsl(var(--primary));
+  text-decoration-thickness: 2px;
+}
+
+/* Dark mode contrast fix for feature card text */
+.dark .bg-card p span.text-primary,
+.dark [class*="bg-card"] p span.text-primary,
+.dark .bg-card a.text-primary,
+.dark [class*="bg-card"] a.text-primary {
+  color: hsl(var(--muted-foreground));
+  font-weight: 600;
+}
+
+/* Dark mode contrast for feature card paragraphs */
+.dark section a.group p.text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+/*
+ * COOKIE CONSENT STYLING
+ * Custom styles for cookie consent component
+ */
+#rcc-confirm-button {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid hsl(var(--border));
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 13px;
+  margin: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  font-weight: 600;
+}
+
+#rcc-confirm-button:hover {
+  opacity: 0.9;
+}
+
+#rcc-decline-button {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  border: none;
+  padding: 0;
+  margin: 0 0 0 0.5rem;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#rcc-decline-button:hover {
+  text-decoration: underline;
+}
+
+/*
+ * HIGH CONTRAST DARK MODE FIXES
+ * Additional overrides to ensure WCAG contrast compliance
+ */
+
+/* Fix for various text items in dark mode that need higher contrast */
+.dark a.!text-gray-600,
+.dark a.!text-gray-400,
+.dark .text-gray-600,
+.dark .text-gray-400,
+.dark div.container > div.flex > span.text-gray-600 > a.!text-gray-600,
+.dark div.container > nav.flex > div.flex > a.!text-gray-600,
+.dark footer div.container div.flex span.text-gray-600 a,
+.dark footer div.container nav.flex div.flex a {
+  color: hsl(var(--foreground)); /* White text for max contrast */
+  font-weight: 500;
+}
+
+/* Demo data button contrast improvement */
+div.max-w-4xl > div.flex > div.text-left > button.justify-center,
+button.bg-primary[class*="justify-center"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+}
+
+/* Footer links in dark mode */
+.dark footer a,
+.dark footer div.container a,
+.dark footer div.container nav a,
+.dark footer div.container div a {
+  color: hsl(var(--foreground)); /* White text for max contrast */
+  font-weight: 500;
+}
+
+/* Primary buttons text in dark mode */
+.dark .bg-primary {
+  color: hsl(var(--secondary-foreground));
+  font-weight: 600;
+}
+
+/*
+ * ULTRA-SPECIFIC CONTRAST FIXES
+ * These target specific elements that require extra contrast attention
+ * Based on accessibility audit findings
+ */
+
+/* "Siempi AG" link in dark mode */
+.dark div.container > div.flex > span.text-gray-600 > a.\!text-gray-600,
+.dark div.container > div.flex > span.text-gray-600 > a.\!text-gray-400 {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  background-color: hsl(var(--background));
+  text-decoration: underline;
+}
+
+/* Legal links in dark mode */
+.dark div.container > nav.flex > div.flex > a.\!text-gray-600,
+.dark div.container > nav.flex > div.flex > a.\!text-gray-400 {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  background-color: hsl(var(--background));
+  text-decoration: underline;
+}
+
+/* "Test with Demo Data" button */
+div.max-w-4xl > div.flex > div.text-left > button.justify-center {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 700;
+  border: 0.125rem solid hsl(var(--primary-foreground));
+}
+
+/* "Split Invoice" link in dark mode */
+.dark div.container > div.flex > nav.flex > a.justify-center {
+  background-color: var(--card);
+  color: hsl(var(--card-foreground));
+  font-weight: 700;
+  border: 0.125rem solid var(--card);
+}
+
+/* Cookie consent button contrast */
+div.w-full > div.flex-1 > div.flex > button.inline-flex {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 700;
+  border: 0.125rem solid hsl(var(--primary-foreground));
+}
+
+/* Additional footer links fixes in dark mode */
+.dark a[href*="siempi.ch"],
+.dark a[href*="legal"],
+.dark div.container > div.flex > span.text-gray-600 > a,
+.dark div.container > nav.flex > div.flex > a,
+.dark footer a.\!text-gray-600,
+.dark footer a.\!text-gray-400 {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  text-decoration: underline;
+  background-color: hsl(var(--background));
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.125rem;
+}
+
+/* Most specific dark mode footer links target */
+.dark a[href*="siempi.ch"],
+.dark a[href*="legal/privacy-policy"],
+.dark a[href*="legal/terms-of-use"],
+.dark a[href*="legal/impressum"],
+.dark div.container > div.flex > span.text-gray-600 > a,
+.dark div.container > nav.flex > div.flex > a {
+  color: hsl(var(--foreground));
+  font-weight: 900;
+  background-color: hsl(var(--background));
+  text-decoration: underline;
+  text-shadow: 0 0 2px hsl(var(--black));
+  padding: 0.25rem 0.5rem;
+  border: 1px solid hsl(var(--foreground));
+  border-radius: 0.25rem;
+  display: inline-block;
+  margin: 0.125rem;
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/*
+ * CARD SYSTEM
+ * Consistent card styling system with elevation levels
+ */
+
+/* Card level system - from lowest to highest elevation */
+.card-level-1 {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-level-1);
+}
+
+.card-level-2 {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-level-2);
+}
+
+.card-level-3 {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-level-3);
+}
+
+.card-level-4 {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-level-4);
+}
+
+.card-level-5 {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-level-5);
+}
+
+/* Interactive card hover effects */
+.card-interactive {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+}
+
+.card-level-1.card-interactive:hover {
+  box-shadow: var(--shadow-level-2);
+}
+
+.card-level-2.card-interactive:hover {
+  box-shadow: var(--shadow-level-3);
+}
+
+.card-level-3.card-interactive:hover {
+  box-shadow: var(--shadow-level-4);
+}
+
+.card-level-4.card-interactive:hover,
+.card-level-5.card-interactive:hover {
+  box-shadow: var(--shadow-level-5);
+}
+
+/* Card spacing utilities */
+.card-spacing-sm {
+  padding: 0.75rem;
+}
+
+.card-spacing-md {
+  padding: 1rem;
+}
+
+.card-spacing-lg {
+  padding: 1.5rem;
+}
+
+.card-spacing-xl {
+  padding: 2rem;
+}
+
+/* Dark mode card styling */
+.dark .card-level-1,
+.dark .card-level-2,
+.dark .card-level-3,
+.dark .card-level-4,
+.dark .card-level-5 {
+  background-color: var(--card);
+  border-color: var(--border);
+}
+
+/* Muted card variant for layering in dark mode */
+.dark .card-muted {
+  background-color: hsl(var(--card-muted));
+}
+
+/* 
+ * FINAL ULTRA-SPECIFIC CONTRAST FIXES
+ * These target the exact selectors from accessibility audit reports
+ * Using extremely specific selectors to guarantee override
+ */
+html.dark div.container > div.flex > span.text-gray-600 > a.\\!text-gray-600,
+html.dark div.container > nav.flex > div.flex > a.\\!text-gray-600 {
+  background-color: hsl(var(--black));
+  color: hsl(var(--foreground));
+  font-weight: 900;
+  text-decoration: underline;
+  text-shadow: none;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid hsl(var(--foreground));
+  border-radius: 0.25rem;
+  display: inline-block;
+  margin: 0.125rem;
+  position: relative;
+  z-index: var(--z-base);
+  font-size: 1rem;
+} 

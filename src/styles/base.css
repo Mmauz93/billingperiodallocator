@@ -1,0 +1,349 @@
+/* Base styles, resets, typography, html/body rules */
+
+@layer base {
+  * {
+    @apply border-border;
+    max-width: 100%; /* Ensure no element exceeds its container width */
+  }
+
+  /* Enhanced focus indicators for keyboard navigation and accessibility */
+  /* This is the standard focus-visible style used across the app */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  [role="button"]:focus-visible,
+  [role="link"]:focus-visible,
+  [role="tab"]:focus-visible,
+  [role="menuitem"]:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 0.125rem solid hsl(var(--ring));
+    outline-offset: 0.1875rem;
+    box-shadow: 0 0 0 0.1875rem hsla(var(--ring), 0.6);
+    transition: outline-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Custom Radix UI component focus states */
+  [data-radix-menu-item]:focus-visible,
+  [data-radix-dropdown-menu-item]:focus-visible,
+  [data-radix-dialog-content]:focus-visible {
+    outline: 0.125rem solid hsl(var(--ring));
+    outline-offset: 0.125rem;
+    box-shadow: 0 0 0 0.1875rem hsla(var(--ring), 0.6);
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-size: 1rem; /* Explicitly use rem instead of px */
+    line-height: 1.5; /* Improved line-height for better readability (was 1.4) */
+    overflow-x: hidden; /* Prevent horizontal scrolling at body level */
+    width: 100%; /* Ensure body takes exactly viewport width */
+    isolation: isolate; /* Create a new stacking context */
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 1.5rem + 2vw, 2.5rem); /* Fluid typography */
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem; /* Standardize bottom margin for headers */
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 1.25rem + 1.5vw, 2rem); /* Fluid typography */
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 1.25rem; /* Standardize bottom margin for headers */
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 1rem + 0.75vw, 1.5rem); /* Fluid typography */
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 1rem; /* Standardize bottom margin for headers */
+  }
+
+  /* Add h4, h5, h6 for completeness */
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Paragraph spacing */
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Consistent paragraph spacing in containers */
+  p + p {
+    margin-top: 0.75rem;
+  }
+
+  /* Touch target size for interactive elements */
+  button, 
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  .header-toggle-button,
+  .select-item,
+  a[href] {
+    min-height: 2.75rem; /* Converted from 44px to rem (WCAG AA touch target size) */
+    min-width: 2.75rem; /* Converted from 44px to rem (WCAG AA touch target size) */
+  }
+
+  /* Small button exceptions that must remain within line height */
+  button.icon-button-sm {
+    /* Allow smaller touch targets only for very small icons */
+    min-height: 2rem; /* Converted from 32px to rem */
+    min-width: 2rem; /* Converted from 32px to rem */
+  }
+
+  /* Hide arrows from number inputs */
+  /* Chrome, Safari, Edge, Opera */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Make sure header has the highest z-index */
+  header.fixed {
+    z-index: var(--z-sticky); /* Use the sticky z-index for header */
+  }
+  
+  /* Z-index stacking context for forms */
+  form, 
+  .form-control,
+  .form-item, 
+  .form-field,
+  .input-container,
+  .relative,
+  [role="combobox"] {
+    position: relative;
+    z-index: var(--z-base); /* Base z-index for form elements */
+    isolation: isolate;
+  }
+  
+  /* Z-index for form icons and validation markers */
+  .CheckCircle,
+  .AlertCircle,
+  .CalendarIcon,
+  .h-4.w-4,
+  svg.w-4,
+  svg.h-4,
+  button svg,
+  input + div,
+  input ~ div,
+  .absolute.inset-y-0,
+  .absolute.right-2,
+  .absolute.right-10 {
+    z-index: var(--z-base);
+  }
+  
+  /* Radix popovers - z-index managed in components.css, remove position override */
+  [data-radix-popper-content-wrapper] {
+    /* z-index is handled in components.css using the z-index scale */
+    /* Do not set position here; Radix handles it. */
+  }
+}
+
+/* Ensure text elements don't display text editor cursor */
+p, h1, h2, h3, h4, h5, h6, span, div:not([contenteditable="true"]), li, a:not([href]), section, header, footer {
+  cursor: default;
+}
+
+/* Interactive elements should maintain their appropriate cursor */
+a[href], button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer {
+  cursor: pointer;
+}
+
+/* Input elements should show text cursor */
+input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, [contenteditable="true"] {
+  cursor: text;
+}
+
+/* Prevent layout shifts due to scrollbar appearing/disappearing */
+html {
+  scrollbar-gutter: stable;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-anchor: none; /* Prevent scroll jumps during content updates */
+  width: 100%; /* Fix width to prevent layout shifts */
+  font-size: 16px; /* Base font size - important for rem calculations */
+}
+
+/* Accessibility dropdown/popover improvements */
+[role="menu"],
+[role="listbox"] {
+  outline: none; /* Remove default outline */
+}
+
+[role="menu"] [role="menuitem"],
+[role="listbox"] [role="option"] {
+  outline: none; /* Individual items will get focus styles */
+}
+
+/* Improve keyboard navigation for dropdowns */
+[role="menuitem"]:focus,
+[role="option"]:focus {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  outline: none;
+}
+
+/* Style for when the scrollbar needs to be preserved during modals */
+html.prevent-scrollbar-shift {
+  overflow-y: scroll;
+  padding-right: 0; /* Prevent automatic padding */
+  margin-right: calc(var(--scrollbar-width) * -1); /* Negative margin to compensate */
+}
+
+/* For browsers that don't support scrollbar-gutter */
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  /* When modal is open, prevent layout shifts */
+  html.prevent-scrollbar-shift body {
+    position: relative;
+  }
+}
+
+/* Normalize Scrollbar Appearance */
+::-webkit-scrollbar {
+  width: 0.625rem; /* Converted from 10px to rem */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsla(var(--black), 0.2);
+  border-radius: 0.375rem; /* Converted from 6px to rem */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: hsla(var(--white), 0.2);
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Reset overflow on body and html to ensure no double scrollbars */
+body, html {
+  max-width: 100vw;
+}
+
+/* Ensure fixed/absolute positioned elements follow proper stacking */
+.fixed,
+.absolute {
+  z-index: var(--z-fixed); /* Use fixed z-index from scale */
+}
+
+/* Ensure all dropdown menus and popovers have proper z-index */
+/* This rule can be simplified or rely on components.css for Radix elements */
+[data-state="open"].Dialog,
+[data-radix-select-content],
+[data-radix-dropdown-menu-content] {
+  /* z-index for these elements are managed in components.css using the z-index scale */
+}
+
+/* Prevent content flickering during load */
+html.loading * {
+  transition: none;
+}
+
+/* Add transitions for smooth theme switching */
+html {
+  transition: background-color 0.5s, color 0.5s;
+}
+
+body * {
+  transition-property: border-color, color, fill, stroke, opacity, box-shadow, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.15s;
+}
+
+/* Vertical rhythm and spacing */
+section {
+  margin-bottom: 2rem;
+}
+
+main > section {
+  margin-bottom: 3rem;
+}
+
+/* For consistent list styling */
+ul, ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+/* Consistent blockquote styling */
+blockquote {
+  border-left: 0.25rem solid hsl(var(--muted));
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+/* Consistent code block styling */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+pre {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  background-color: hsl(var(--muted));
+  overflow-x: auto;
+}
+
+code {
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  background-color: hsl(var(--muted));
+}
+
+/* Prevent layout shifts during theme changes */
+html.transitioning {
+  overflow-y: scroll; /* Force scrollbar to remain visible */
+}
+
+/* Reduced Motion Helper */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    transition-duration: 1ms;
+    scroll-behavior: auto;
+    transition-delay: 0ms;
+  }
+} 

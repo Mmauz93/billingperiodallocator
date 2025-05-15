@@ -38,72 +38,61 @@ export default function RootLayout({
         <link rel="preconnect" href="https://app.privacybee.io" />
         <link rel="dns-prefetch" href="https://app.privacybee.io" />
 
-        {/* Prevent theme flickering */}
+        {/* Theme initialization script - coordinated with next-themes */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                // On page load or when changing themes, best to add inline in \`head\` to avoid FOUC
-
-                if (localStorage.getItem('theme') === 'dark' ||
-                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                  document.documentElement.style.colorScheme = 'dark';
-                } else {
-                  document.documentElement.classList.remove('dark');
-                  document.documentElement.style.colorScheme = 'light';
+                // This script ensures the theme is consistent during initial page load
+                // It uses the same logic as next-themes to determine the initial theme
+                // This prevents flash of incorrect theme (FOIT)
+                
+                try {
+                  // Check for stored theme preference - using same key as ThemeProvider
+                  let theme = localStorage.getItem('theme');
+                  
+                  // If theme is not explicitly set, check system preference
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  
+                  // Apply the theme immediately to prevent flash
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
+                  }
+                } catch (e) {
+                  // Fail safe: localStorage unavailable, use system preference
+                  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  }
                 }
               })();
             `,
           }}
         />
 
-        {/* Anti-flicker script to prevent content shifts during load */}
+        {/* Minimal anti-flicker script - prevents transition animations during load */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                // Prevent scroll restoration jumping during page load
-                if ('scrollRestoration' in history) {
-                  // Disable automatic scroll restoration
-                  history.scrollRestoration = 'manual';
-                }
-
-                // Store current scroll position on reload only
-                let isReload = false;
-                let scrollPos = { x: 0, y: 0 };
-
-                // Check if this is a reload (not initial page load)
-                try {
-                  if (performance && performance.navigation && performance.navigation.type === 1) {
-                    isReload = true;
-                    scrollPos = { x: window.scrollX, y: window.scrollY };
-                  }
-                } catch (e) {
-                  // Performance API might not be available in all browsers
-                }
-
-                // Add preload class to disable transitions
+                // Add loading class to disable transitions during initial load
                 document.documentElement.classList.add('loading');
-
-                // Remove loading classes after content is ready
+                
+                // Remove loading class once page is fully loaded
                 window.addEventListener('load', function() {
-                  // Small delay to ensure all resources are loaded
+                  // Small delay to ensure all styles are applied
                   setTimeout(function() {
-                    // Restore scroll position if this was a reload
-                    if (isReload) {
-                      window.scrollTo(scrollPos.x, scrollPos.y);
-                    }
-
-                    // Finally re-enable transitions by removing the class
-                    setTimeout(function() {
-                      document.documentElement.classList.remove('loading');
-                      // Re-enable automatic scroll restoration for future navigations
-                      if ('scrollRestoration' in history) {
-                        history.scrollRestoration = 'auto';
-                      }
-                    }, 100); // Keep a small delay for class removal
-                  }, 50); // Keep a small delay before attempting scroll restore & class removal
+                    document.documentElement.classList.remove('loading');
+                    // Mark theme as initialized to enable transitions
+                    document.documentElement.setAttribute('data-theme-initialized', 'true');
+                  }, 100);
                 });
               })();
             `,

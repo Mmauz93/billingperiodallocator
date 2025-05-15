@@ -1,64 +1,51 @@
 1:"$Sreact.fragment"
-3:I[75271,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-35a943d6e2e005e9.js"],"default"]
+3:I[1333,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-6b85c1b6ebb7c21a.js"],"default"]
 4:I[87555,[],""]
 5:I[31295,[],""]
 6:I[48782,["6874","static/chunks/6874-ac10fa00448d5540.js","4345","static/chunks/app/not-found-dd8aed575b5b66ab.js"],"default"]
-7:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-35a943d6e2e005e9.js"],""]
+7:I[69243,["6635","static/chunks/6635-c6ff284a4bc77d89.js","6874","static/chunks/6874-ac10fa00448d5540.js","8655","static/chunks/8655-a6d97a51b982e096.js","6232","static/chunks/6232-7bb87170761a7e13.js","197","static/chunks/197-73ba3c0b37b1923e.js","5346","static/chunks/5346-a18351df590ebaa0.js","6689","static/chunks/6689-27613298898fab72.js","7177","static/chunks/app/layout-6b85c1b6ebb7c21a.js"],""]
 9:I[59665,[],"MetadataBoundary"]
 b:I[59665,[],"OutletBoundary"]
 e:I[74911,[],"AsyncMetadataOutlet"]
 10:I[59665,[],"ViewportBoundary"]
 12:I[26614,[],""]
-:HL["/_next/static/css/32ed88192f5ac156.css","style"]
-2:T825,
+:HL["/_next/static/css/6b4f6fdd10bac9bd.css","style"]
+2:T65a,
               (function() {
-                // Prevent scroll restoration jumping during page load
-                if ('scrollRestoration' in history) {
-                  // Disable automatic scroll restoration
-                  history.scrollRestoration = 'manual';
-                }
-
-                // Store current scroll position on reload only
-                let isReload = false;
-                let scrollPos = { x: 0, y: 0 };
-
-                // Check if this is a reload (not initial page load)
+                // This script ensures the theme is consistent during initial page load
+                // It uses the same logic as next-themes to determine the initial theme
+                // This prevents flash of incorrect theme (FOIT)
+                
                 try {
-                  if (performance && performance.navigation && performance.navigation.type === 1) {
-                    isReload = true;
-                    scrollPos = { x: window.scrollX, y: window.scrollY };
+                  // Check for stored theme preference - using same key as ThemeProvider
+                  let theme = localStorage.getItem('theme');
+                  
+                  // If theme is not explicitly set, check system preference
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  
+                  // Apply the theme immediately to prevent flash
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
                   }
                 } catch (e) {
-                  // Performance API might not be available in all browsers
+                  // Fail safe: localStorage unavailable, use system preference
+                  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  }
                 }
-
-                // Add preload class to disable transitions
-                document.documentElement.classList.add('loading');
-
-                // Remove loading classes after content is ready
-                window.addEventListener('load', function() {
-                  // Small delay to ensure all resources are loaded
-                  setTimeout(function() {
-                    // Restore scroll position if this was a reload
-                    if (isReload) {
-                      window.scrollTo(scrollPos.x, scrollPos.y);
-                    }
-
-                    // Finally re-enable transitions by removing the class
-                    setTimeout(function() {
-                      document.documentElement.classList.remove('loading');
-                      // Re-enable automatic scroll restoration for future navigations
-                      if ('scrollRestoration' in history) {
-                        history.scrollRestoration = 'auto';
-                      }
-                    }, 100); // Keep a small delay for class removal
-                  }, 50); // Keep a small delay before attempting scroll restore & class removal
-                });
               })();
-            0:{"P":null,"b":"x___litH6gtFcpqUtZFnj","p":"","c":["","en","legal","impressum",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["impressum",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/32ed88192f5ac156.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","link",null,{"rel":"preconnect","href":"https://app.privacybee.io"}],["$","link",null,{"rel":"dns-prefetch","href":"https://app.privacybee.io"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // On page load or when changing themes, best to add inline in `head` to avoid FOUC\n\n                if (localStorage.getItem('theme') === 'dark' ||\n                   (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {\n                  document.documentElement.classList.add('dark');\n                  document.documentElement.style.colorScheme = 'dark';\n                } else {\n                  document.documentElement.classList.remove('dark');\n                  document.documentElement.style.colorScheme = 'light';\n                }\n              })();\n            "}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L7",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["impressum",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L8",["$","$L9",null,{"children":"$La"}],null,["$","$Lb",null,{"children":["$Lc","$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","_YTqeaP6v7KjDnlEEd0jF",{"children":[["$","$L10",null,{"children":"$L11"}],null]}],null]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
+            0:{"P":null,"b":"FlndOzThnhj_UPbpOqwWz","p":"","c":["","en","legal","impressum",""],"i":false,"f":[[["",{"children":["en",{"children":["legal",{"children":["impressum",{"children":["__PAGE__",{}]}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/6b4f6fdd10bac9bd.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"className":"scroll-smooth","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","link",null,{"rel":"icon","href":"/favicon.ico"}],["$","link",null,{"rel":"preconnect","href":"https://app.privacybee.io"}],["$","link",null,{"rel":"dns-prefetch","href":"https://app.privacybee.io"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              (function() {\n                // Add loading class to disable transitions during initial load\n                document.documentElement.classList.add('loading');\n                \n                // Remove loading class once page is fully loaded\n                window.addEventListener('load', function() {\n                  // Small delay to ensure all styles are applied\n                  setTimeout(function() {\n                    document.documentElement.classList.remove('loading');\n                    // Mark theme as initialized to enable transitions\n                    document.documentElement.setAttribute('data-theme-initialized', 'true');\n                  }, 100);\n                });\n              })();\n            "}}]]}],["$","body",null,{"className":"min-h-screen bg-background font-sans antialiased","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L6",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L7",null,{"id":"privacybee-widget","src":"https://app.privacybee.io/widget.js","strategy":"afterInteractive"}]]}]]}]]}],{"children":["en",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["legal",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["impressum",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L8",["$","$L9",null,{"children":"$La"}],null,["$","$Lb",null,{"children":["$Lc","$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","blkj-xBqaGe9zE8qMZkqt",{"children":[["$","$L10",null,{"children":"$L11"}],null]}],null]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
 13:"$Sreact.suspense"
 14:I[74911,[],"AsyncMetadata"]
-8:["$","main",null,{"className":"container mx-auto max-w-3xl px-6 py-16","children":["$","article",null,{"className":"prose prose-lg dark:prose-invert","aria-label":"Legal information","children":[["$","div",null,{"className":"text-center mb-10","children":[["$","h1",null,{"className":"text-3xl font-bold bg-gradient-to-r from-[#0284C7] to-[#0284C7]/80 bg-clip-text text-transparent","children":"Imprint"}],["$","p",null,{"className":"text-sm text-muted-foreground mt-2","children":"Last updated on May 14, 2025"}]]}],["$","div",null,{"className":"space-y-8","children":[["$","section",null,{"children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent","children":"Responsible for this website"}],["$","p",null,{"className":"mb-6 text-sm leading-relaxed","children":[["$","strong",null,{"children":"Siempi AG"}],["$","br",null,{}],"Mauro Miotti",["$","br",null,{}],"Birkenstrasse 47",["$","br",null,{}],"CH-6343 Rotkreuz",["$","br",null,{}],"Switzerland",["$","br",null,{}],"Email: ",["$","a",null,{"href":"mailto:info@siempi.ch","className":"text-primary hover:underline","children":"info@siempi.ch"}]]}]]}],["$","section",null,{"className":"border-t border-muted pt-6","children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-[#0284C7]/90 to-[#0284C7]/70 bg-clip-text text-transparent","children":"Commercial Register"}],["$","p",null,{"className":"text-sm leading-relaxed","children":["Registered in the Commercial Register of the Canton of Zug",["$","br",null,{}],"UID: CHE-369.093.556",["$","br",null,{}],"Commercial Register Number",": CH-170.3.042.725-7"]}]]}]]}]]}]}]
+8:["$","main",null,{"className":"container mx-auto max-w-3xl px-6 py-16","children":["$","article",null,{"className":"prose prose-lg dark:prose-invert","aria-label":"Legal information","children":[["$","div",null,{"className":"text-center mb-10","children":[["$","h1",null,{"className":"text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent","children":"Imprint"}],["$","p",null,{"className":"text-sm text-muted-foreground mt-2","children":"Last updated on May 15, 2025"}]]}],["$","div",null,{"className":"space-y-8","children":[["$","section",null,{"children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent","children":"Responsible for this website"}],["$","p",null,{"className":"mb-6 text-sm leading-relaxed","children":[["$","strong",null,{"children":"Siempi AG"}],["$","br",null,{}],"Mauro Miotti",["$","br",null,{}],"Birkenstrasse 47",["$","br",null,{}],"CH-6343 Rotkreuz",["$","br",null,{}],"Switzerland",["$","br",null,{}],"Email: ",["$","a",null,{"href":"mailto:info@siempi.ch","className":"text-primary hover:underline","children":"info@siempi.ch"}]]}]]}],["$","section",null,{"className":"border-t border-muted pt-6","children":[["$","h2",null,{"className":"text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent","children":"Commercial Register"}],["$","p",null,{"className":"text-sm leading-relaxed","children":["Registered in the Commercial Register of the Canton of Zug",["$","br",null,{}],"UID: CHE-369.093.556",["$","br",null,{}],"Commercial Register Number",": CH-170.3.042.725-7"]}]]}]]}]]}]}]
 a:["$","$13",null,{"fallback":null,"children":["$","$L14",null,{"promise":"$@15"}]}]
 d:null
 11:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]

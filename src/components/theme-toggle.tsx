@@ -17,17 +17,10 @@ import { useTranslation } from "@/translations";
 export function ThemeToggle() {
   const { setTheme, theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false); // Control dropdown open state
 
-  // We'll handle translation in a way that avoids hydration mismatches
-  // Instead of using the dynamic translation during server rendering,
-  // we'll use a static default and only apply translation after mount
   const { t } = useTranslation();
   
-  // Save the translated string only after component is mounted
-  const toggleLabel = mounted 
-    ? t("ThemeToggle.toggleTheme", { defaultValue: "Toggle theme" })
-    : "Toggle theme"; // Static fallback for server rendering
-    
   const lightLabel = mounted 
     ? t("ThemeToggle.light", { defaultValue: "Light" })
     : "Light";
@@ -40,44 +33,41 @@ export function ThemeToggle() {
     ? t("ThemeToggle.system", { defaultValue: "System" })
     : "System";
 
-  // Immediately check if we're mounted on the client
+  // Set mounted to true after initial render for client-side only logic
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   // Handle theme changes
   const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
+    setMenuOpen(false); // Close the dropdown menu first
+    setTheme(newTheme); // Then set the theme
   };
 
-  // On server or during hydration, show a simplified button
-  // with a predetermined icon that won't change during hydration
   if (!mounted) {
     return (
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Toggle theme"
-        className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0"
-        style={{ border: 'none' }}
+        className="relative size-10 flex items-center justify-center focus-visible:ring-0 focus:outline-none border-none"
+        aria-label="Toggle theme" // Static label for SSR/initial hydration
       >
-        <div className="h-5 w-5 flex items-center justify-center">
-          <Moon className="h-5 w-5" />
-        </div>
+        {/* Will show both; CSS ensures only one visible based on colorscheme */}
+        <Sun className="h-[1.2rem] w-[1.2rem] dark:hidden" />
+        <Moon className="h-[1.2rem] w-[1.2rem] hidden dark:block" />
+        <span className="sr-only">Toggle theme</span>
       </Button>
     );
   }
 
-  // Only on the client after hydration, render the full component
   return (
-    <DropdownMenu>
+    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          aria-label={toggleLabel}
-          className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0"
-          style={{ border: 'none' }}
+          className="relative size-10 flex items-center justify-center focus-visible:ring-0 focus:outline-none border-none transition-colors duration-200 ease"
+          aria-label={t("ThemeToggle.toggleTheme", { defaultValue: "Toggle theme" })} // Translated label for client
         >
           <div className="h-5 w-5 flex items-center justify-center">
             {resolvedTheme === 'dark' ? (
@@ -88,22 +78,22 @@ export function ThemeToggle() {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" side="top" sideOffset={4} className="bg-popover border border-border">
+      <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="bg-popover border border-border">
         <DropdownMenuItem
           onClick={() => handleThemeChange("light")}
-          className={`header-dropdown-item ${theme === "light" ? "font-medium" : ""}`}
+          className={`flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground ${theme === "light" ? "font-medium" : ""}`}
         >
           {lightLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("dark")}
-          className={`header-dropdown-item ${theme === "dark" ? "font-medium" : ""}`}
+          className={`flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground ${theme === "dark" ? "font-medium" : ""}`}
         >
           {darkLabel}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleThemeChange("system")}
-          className={`header-dropdown-item ${theme === "system" ? "font-medium" : ""}`}
+          className={`flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground ${theme === "system" ? "font-medium" : ""}`}
         >
           {systemLabel}
         </DropdownMenuItem>

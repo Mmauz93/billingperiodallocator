@@ -139,8 +139,7 @@ export default function LanguageToggle() {
         variant="ghost" 
         size="icon" 
         aria-label="Toggle language"
-        className="header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none"
-        style={{ border: 'none' }}
+        className="relative flex items-center justify-center w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none border-none transition-opacity duration-150 ease-in-out header-toggle-button"
       >
         <GlobeIcon />
         <span className="sr-only">Toggle language</span>
@@ -160,8 +159,7 @@ export default function LanguageToggle() {
           size="icon" 
           ref={buttonRef}
           aria-label={toggleLanguageLabel}
-          style={open ? { backgroundColor: '#0284C7', color: 'white' } : {}}
-          className={`header-toggle-button relative w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none`}
+          className={`relative flex items-center justify-center w-10 h-10 text-foreground focus-visible:ring-0 focus:outline-none border-none transition-colors duration-200 header-toggle-button ${open ? 'bg-primary text-primary-foreground' : ''}`}
         >
           <GlobeIcon />
           <span className="sr-only">{toggleLanguageLabel}</span>
@@ -172,7 +170,7 @@ export default function LanguageToggle() {
           {open && (
             <DropdownMenuContent 
               align="end" 
-              side="top" 
+              side="bottom" 
               sideOffset={4} 
               className="z-[1000] bg-popover border border-border shadow-lg rounded-lg"
               asChild
@@ -186,41 +184,27 @@ export default function LanguageToggle() {
               >
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("en")}
-                  className={`header-dropdown-item ${isEnglish ? "font-medium" : ""}`}
-                  style={{ cursor: 'pointer' }}
+                  className={`flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground ${isEnglish ? "font-medium" : ""}`}
                 >
                   <ReactCountryFlag
                     countryCode="GB"
                     svg
-                    style={{
-                      width: "1.2em",
-                      height: "1.2em",
-                      marginRight: "0.5rem",
-                      cursor: "pointer"
-                    }}
+                    className="w-[1.2em] h-[1.2em] mr-2 pointer-events-none"
                     title="English"
-                    className="pointer-events-none"
                   />
-                  <span className={`${isEnglish ? "font-bold" : ""} pointer-events-none`} style={{ cursor: 'pointer' }}>English</span>
+                  <span className={`${isEnglish ? "font-bold" : ""} pointer-events-none`}>English</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => handleLanguageChange("de")}
-                  className={`header-dropdown-item ${isGerman ? "font-medium" : ""}`}
-                  style={{ cursor: 'pointer' }}
+                  className={`flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground ${isGerman ? "font-medium" : ""}`}
                 >
                   <ReactCountryFlag
                     countryCode="DE"
                     svg
-                    style={{
-                      width: "1.2em",
-                      height: "1.2em",
-                      marginRight: "0.5rem",
-                      cursor: "pointer"
-                    }}
+                    className="w-[1.2em] h-[1.2em] mr-2 pointer-events-none"
                     title="Deutsch"
-                    className="pointer-events-none"
                   />
-                  <span className={`${isGerman ? "font-bold" : ""} pointer-events-none`} style={{ cursor: 'pointer' }}>Deutsch</span>
+                  <span className={`${isGerman ? "font-bold" : ""} pointer-events-none`}>Deutsch</span>
                 </DropdownMenuItem>
               </motion.div>
             </DropdownMenuContent>

@@ -1,8 +1,12 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+import animate from "tailwindcss-animate";
+import { fontFamily } from "tailwindcss/defaultTheme";
+import radixVariants from "./src/design/plugins/radix-variants";
+import themeVars from "./src/design/plugins/theme-vars";
+import typography from "@tailwindcss/typography";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: ["class"], // Enable class-based dark mode
+const tailwindConfig = {
+  darkMode: ["class", '[data-theme="dark"]'], // Enable class and data-attribute for dark mode
   content: [
     "./pages/**/*.{ts,tsx}", // Include paths for Tailwind to scan
     "./components/**/*.{ts,tsx}",
@@ -18,25 +22,38 @@ module.exports = {
         "2xl": "1400px", // Max-width for the largest screen
       },
     },
+    // Define consistent screen breakpoints
+    screens: {
+      'xs': '480px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1400px'
+    },
     extend: {
       // Map CSS Variables to Tailwind theme keys
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "var(--background)",
+        background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
+          DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -47,19 +64,19 @@ module.exports = {
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "var(--popover)",
+          DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "var(--card)",
+          DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
         cardMuted: {
-          DEFAULT: "var(--card-muted)",
+          DEFAULT: "hsl(var(--card-muted))",
         },
         disabled: {
-          DEFAULT: "var(--disabled)",
-          foreground: "var(--disabled-foreground)",
+          DEFAULT: "hsl(var(--disabled))",
+          foreground: "hsl(var(--disabled-foreground))",
         },
         // Add the colorblind palette
         colorblind: {
@@ -122,14 +139,13 @@ module.exports = {
       },
       boxShadow: {
         // Define shadow scale based on guidelines
-        sm: "0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03)", // Level 1
-        DEFAULT: "0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03)", // Default shadow (maps to shadow) - Level 1
-        md: "0 2px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.06)", // Level 2
-        lg: "0 4px 8px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.06)", // Level 3
-        xl: "0 8px 16px rgba(0,0,0,0.12), 0 16px 32px rgba(0,0,0,0.10)", // Level 4
-        "2xl":
-          "0 24px 48px rgba(0, 0, 0, 0.12), 0 48px 96px rgba(0, 0, 0, 0.1)", // Optional Level 5 if needed
-        inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+        sm: "var(--shadow-level-1)",
+        DEFAULT: "var(--shadow-level-1)",
+        md: "var(--shadow-level-2)",
+        lg: "var(--shadow-level-3)",
+        xl: "var(--shadow-level-4)",
+        "2xl": "var(--shadow-level-5)",
+        inner: "inset 0 2px 4px 0 hsla(var(--black), 0.05)",
         none: "none",
       },
       keyframes: {
@@ -152,7 +168,66 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         // Add other animations from globals.css if needed
       },
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground'),
+            '--tw-prose-headings': theme('colors.foreground'),
+            '--tw-prose-links': 'hsl(var(--primary))',
+            '--tw-prose-bold': theme('colors.foreground'),
+            color: 'var(--tw-prose-body)',
+            lineHeight: '1.5',
+            a: {
+              color: 'var(--tw-prose-links)',
+              '&:hover': {
+                color: 'hsl(var(--primary-foreground))',
+                textDecoration: 'underline',
+              },
+              textDecoration: 'none',
+            },
+            h1: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '700',
+            },
+            h2: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '600',
+            },
+            h3: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '500',
+            },
+            code: {
+              color: theme('colors.primary.DEFAULT'),
+              fontWeight: '500',
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+            img: {
+              borderRadius: theme('borderRadius.lg'),
+            },
+          },
+        },
+        dark: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground'),
+            '--tw-prose-headings': theme('colors.foreground'),
+            '--tw-prose-links': 'hsl(var(--primary))',
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate")], // Include the animation plugin
+  plugins: [
+    animate, // Include the animation plugin
+    radixVariants, // Custom Radix UI variants plugin
+    themeVars, // Custom Theme Variables plugin
+    typography, // Typography plugin for rich text content
+  ],
 };
+
+export default tailwindConfig;

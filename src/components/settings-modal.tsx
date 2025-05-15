@@ -309,7 +309,7 @@ export function SettingsModal({
               <DialogFooter className="pt-4">
                 <Button
                   type="submit"
-                  className="bg-[#0284C7] hover:bg-[#0284C7]/90 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   disabled={
                     !isValid ||
                     form.formState.isSubmitting ||

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -33,6 +33,8 @@ export function FeedbackButton({
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement>(null); // Ref for the trigger button
 
   // Determine language for initial render based on pathname
   let effectiveLang = 'en'; // Default language
@@ -43,7 +45,7 @@ export function FeedbackButton({
     }
   }
 
-  // Reset state when dialog closes
+  // Reset state when dialog closes and manage focus
   useEffect(() => {
     if (!isOpen) {
       // Delay reset slightly to allow closing animation
@@ -51,6 +53,13 @@ export function FeedbackButton({
         setMessage("");
         setError(null);
       }, 300);
+      // Return focus to the trigger button when the dialog closes
+      triggerButtonRef.current?.focus();
+    } else {
+      // When the dialog opens, focus the textarea
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100); // Small delay to ensure the element is rendered and visible
     }
   }, [isOpen]);
 
@@ -64,6 +73,7 @@ export function FeedbackButton({
     // --- Open Mail Client Instead of API Call ---
     const subject = encodeURIComponent(effectiveLang === 'de' ? "BillSplitter Feedback" : "BillSplitter Feedback");
     const body = encodeURIComponent(message);
+    // Ensure info@siempi.ch is the correct recipient address
     const mailtoLink = `mailto:info@siempi.ch?subject=${subject}&body=${body}`;
 
     try {
@@ -95,7 +105,7 @@ export function FeedbackButton({
   const messageLabel = effectiveLang === 'de' ? "Ihre Nachricht" : "Your Message";
   const messagePlaceholder = effectiveLang === 'de' ? "Schreiben Sie Ihre Nachricht hier..." : "Type your message here...";
   const cancelButtonLabel = effectiveLang === 'de' ? "Abbrechen" : "Cancel";
-  const openEmailButtonLabel = effectiveLang === 'de' ? "E-Mail-Client öffnen" : "Open Email Client";
+  const submitButtonLabel = effectiveLang === 'de' ? "Feedback senden" : "Submit Feedback";
 
   // Default button text if no children provided
   const buttonLabel = children || (effectiveLang === 'de' ? "Feedback teilen" : "Share Your Feedback");
@@ -103,6 +113,7 @@ export function FeedbackButton({
   return (
     <>
       <Button
+        ref={triggerButtonRef} // Assign ref to the trigger button
         variant={variant}
         size={size}
         className={cn(size !== "icon" ? "gap-2" : "", className)} 
@@ -129,28 +140,33 @@ export function FeedbackButton({
                   {messageLabel}
                 </Label>
                 <Textarea
+                  ref={textareaRef}
                   placeholder={messagePlaceholder}
                   id="feedback-message"
                   value={message}
                   onChange={handleMessageChange}
-                  className={error ? "border-destructive focus-visible:ring-destructive" : ""}
+                  className={cn(
+                    "resize-none", // Disable textarea resizing
+                    error ? "border-destructive focus-visible:ring-destructive" : ""
+                  )}
+                  rows={4} // Suggest a default size
                 />
                 {error && <p className="text-sm text-destructive mt-1">{error}</p>}
               </div>
             </div>
-            <DialogFooter className="gap-2">
+            {/* Ensure buttons stack on small screens and have proper alignment/spacing */}
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 sm:gap-0">
               <DialogClose asChild>
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" className="w-full sm:w-auto">
                   {cancelButtonLabel}
                 </Button>
               </DialogClose>
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 onClick={handleSubmitFeedback}
-                disabled={!message.trim()}
-                className="bg-[#0284C7] hover:bg-[#0284C7]/90 text-white"
+                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                {openEmailButtonLabel}
+                {submitButtonLabel}
               </Button>
             </DialogFooter>
           </>

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Import modular CSS files */
+@import "./base.css";
+@import "./themes.css";
+@import "./components.css";
+@import "./forms.css";
+@import "./calendar.css";
+@import "./animations.css";
+
+/* Utility Classes */
+.form-error-message {
+  color: hsl(var(--destructive));
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+@custom-variant dark (&:is(.dark *)); 

@@ -19,6 +19,12 @@
 # production
 /build
 
+# Browser tools MCP - ignore all related directories and files
+/browser-tools-mcp/
+browser-tools-mcp/
+browser-tools-mcp/**/*
+**/browser-tools-mcp/**
+
 # misc
 .DS_Store
 *.pem

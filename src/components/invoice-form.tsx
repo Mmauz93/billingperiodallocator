@@ -306,56 +306,72 @@ export function InvoiceForm({
         }
     }, [form]);
 
-    // Effect for Initial Data Loading - ONE EFFECT TO RULE THEM ALL
+    // Single useEffect for initialization and theme handling
     useEffect(() => {
-        // Set mounted state and button text
         if (!mounted) {
+            console.log("[InvoiceForm] Component mounting");
             setMounted(true);
             setButtonText(t('InvoiceForm.calculateButton', { defaultValue: 'Calculate Split' }));
-            console.log("[InvoiceForm] Component mounted");
+            
+            // Don't try to access localStorage until component is mounted
+            return;
         }
-
-        console.log("[InvoiceForm] Initializing form data...", { initialDemoData });
-        let autoSubmit = false;
-
-        // 1. If initialDemoData is provided, use it with highest priority
-        if (initialDemoData) {
-            console.log("[InvoiceForm] Using demo data from prop:", initialDemoData);
+        
+        // Only run initialization logic once
+        if (initRef.current) {
+            return;
+        }
+        
+        initRef.current = true;
+        console.log("[InvoiceForm] Initializing form data...");
+        
+        try {
+            // Initialization priority:
+            // 1. Demo data from props
+            // 2. Clean URL parameter
+            // 3. Cached data from localStorage
+            // 4. Default values
             
-            const demoFormData = {
-                startDateString: initialDemoData.startDateString || '',
-                endDateString: initialDemoData.endDateString || '',
-                includeEndDate: initialDemoData.includeEndDate === true,
-                splitPeriod: initialDemoData.splitPeriod || 'yearly',
-                amounts: [{ value: initialDemoData.amount ? String(initialDemoData.amount) : '' }]
-            };
+            // Check if demo data is provided
+            if (initialDemoData) {
+                console.log("[InvoiceForm] Using demo data from prop:", initialDemoData);
+                
+                const demoFormData = {
+                    startDateString: initialDemoData.startDateString || '',
+                    endDateString: initialDemoData.endDateString || '',
+                    includeEndDate: initialDemoData.includeEndDate === true,
+                    splitPeriod: initialDemoData.splitPeriod || 'yearly',
+                    amounts: [{ value: initialDemoData.amount ? String(initialDemoData.amount) : '' }]
+                };
 
-            // Apply demo data to form
-            form.reset(demoFormData);
-            
-            // Save demo data to localStorage
-            try {
-                console.log("[InvoiceForm] Saving demo data to localStorage:", demoFormData);
+                // Apply demo data to form
+                form.reset(demoFormData);
+                
+                // Save demo data to localStorage
                 localStorage.setItem(storageKey, JSON.stringify(demoFormData));
-            } catch (error) {
-                console.error("[InvoiceForm] Error saving demo data to localStorage:", error);
+                
+                // Notify parent that demo data was processed
+                if (onDemoDataApplied) {
+                    console.log("[InvoiceForm] Notifying parent that demo data was applied");
+                    onDemoDataApplied();
+                }
+                
+                // Auto-submit the form after a short delay
+                setTimeout(() => {
+                    form.trigger().then(isValid => {
+                        if (isValid) {
+                            console.log("[InvoiceForm] Form is valid, auto-submitting");
+                            form.handleSubmit(onSubmit)();
+                        } else {
+                            console.warn("[InvoiceForm] Auto-submit cancelled - validation failed:", form.formState.errors);
+                        }
+                    });
+                }, 350);
+                
+                return;
             }
             
-            // Notify parent that demo data was processed
-            if (onDemoDataApplied) {
-                console.log("[InvoiceForm] Notifying parent that demo data was applied");
-                onDemoDataApplied();
-            }
-            
-            autoSubmit = true;
-            // Mark as initialized to prevent further loading from cache
-            initRef.current = true;
-        } 
-        // Only try to load from cache if we haven't loaded demo data
-        else if (!initRef.current) {
-            initRef.current = true; // Mark as initialized
-            
-            // 2. Check for clean URL parameter
+            // Check for clean URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             const forceClean = urlParams.get('clean') === 'true';
             
@@ -366,64 +382,57 @@ export function InvoiceForm({
                     startDateString: '',
                     endDateString: '',
                     includeEndDate: true,
-                    splitPeriod: 'yearly' as const,
+                    splitPeriod: 'yearly',
                     amounts: [{ value: '' }]
                 });
-            } 
-            // 3. Otherwise try loading from cache
-            else {
-                const cachedDataString = localStorage.getItem(storageKey);
-                if (cachedDataString) {
-                    console.log("[InvoiceForm] Loading data from localStorage cache:", cachedDataString);
-                    try {
-                        const parsedCache = JSON.parse(cachedDataString) as FormSchemaType;
-                        if (!parsedCache.amounts || parsedCache.amounts.length === 0) {
-                            parsedCache.amounts = [{ value: '' }];
-                        }
-                        form.reset(parsedCache);
-                    } catch (error) {
-                        console.error("[InvoiceForm] Error parsing cached data:", error);
-                        localStorage.removeItem(storageKey);
-                        form.reset({
-                            startDateString: '',
-                            endDateString: '',
-                            includeEndDate: true,
-                            splitPeriod: 'yearly' as const,
-                            amounts: [{ value: '' }]
-                        });
+                return;
+            }
+            
+            // Try loading from cache
+            const cachedDataString = localStorage.getItem(storageKey);
+            if (cachedDataString) {
+                console.log("[InvoiceForm] Loading data from localStorage cache");
+                try {
+                    const parsedCache = JSON.parse(cachedDataString) as FormSchemaType;
+                    if (!parsedCache.amounts || parsedCache.amounts.length === 0) {
+                        parsedCache.amounts = [{ value: '' }];
                     }
-                } else {
-                    console.log("[InvoiceForm] No cached data found, using defaults");
+                    form.reset(parsedCache);
+                } catch (error) {
+                    console.error("[InvoiceForm] Error parsing cached data:", error);
+                    localStorage.removeItem(storageKey);
                     form.reset({
                         startDateString: '',
                         endDateString: '',
                         includeEndDate: true,
-                        splitPeriod: 'yearly' as const,
+                        splitPeriod: 'yearly',
                         amounts: [{ value: '' }]
                     });
                 }
+            } else {
+                console.log("[InvoiceForm] No cached data found, using defaults");
+                // No need to reset - form already has default values
             }
+        } catch (error) {
+            // Fallback if there are any errors accessing localStorage
+            console.error("[InvoiceForm] Error during initialization:", error);
+            form.reset({
+                startDateString: '',
+                endDateString: '',
+                includeEndDate: true,
+                splitPeriod: 'yearly',
+                amounts: [{ value: '' }]
+            });
         }
-        
-        // Auto-submit if using demo data
-        if (autoSubmit) {
-            console.log("[InvoiceForm] Scheduling auto-submit");
-            const timer = setTimeout(() => {
-                form.trigger().then(isValid => {
-                    if (isValid) {
-                        console.log("[InvoiceForm] Form is valid, auto-submitting");
-                        form.handleSubmit(onSubmit)();
-                    } else {
-                        console.warn("[InvoiceForm] Auto-submit cancelled - validation failed:", form.formState.errors);
-                    }
-                });
-            }, 350);
-            
-            return () => clearTimeout(timer);
-        }
-        
-    // Include initialDemoData in dependencies so this effect re-runs when it changes
-    }, [t, onSubmit, initialDemoData, onDemoDataApplied, form, mounted]);
+    }, [
+        mounted, 
+        initialDemoData, 
+        onDemoDataApplied, 
+        t, 
+        form, 
+        storageKey,
+        onSubmit
+    ]);
     
     const getDateHelpText = () => {
         if (i18n.language.startsWith('de')) {
@@ -451,37 +460,71 @@ export function InvoiceForm({
 
     const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        form.setValue("startDateString", value, { shouldValidate: true });
-        form.trigger("startDateString").then(() => {
-            const parsedDate = tryParseDate(value);
-            if (value && !parsedDate) {
-                form.setError("startDateString", {
+        
+        // Clear any previous errors
+        form.clearErrors("startDateString");
+        
+        // Set the new value
+        form.setValue("startDateString", value, { shouldValidate: false });
+        
+        // Validate the date format
+        const parsedDate = tryParseDate(value);
+        if (value && !parsedDate) {
+            form.setError("startDateString", {
+                type: "manual",
+                message: getDateHelpText()
+            });
+        } 
+        // If this is a valid date, check if end date is now invalid in comparison
+        else if (parsedDate) {
+            const endDateValue = form.getValues("endDateString");
+            const endDate = tryParseDate(endDateValue ?? '');
+            
+            // If end date exists and is now before start date, set end date error
+            if (endDate && endDate < parsedDate) {
+                form.setError("endDateString", {
                     type: "manual",
-                    message: getDateHelpText()
+                    message: t('InvoiceForm.errorEndDateBeforeStart')
                 });
             }
-        });
+        }
+        
+        // Always trigger validation to update form state
+        form.trigger("startDateString");
     };
 
     const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        form.setValue("endDateString", value, { shouldValidate: false });
-        const parsedDate = tryParseDate(value);
-        const startDateValue = form.getValues("startDateString") || '';
-        const startDate = tryParseDate(startDateValue);
+        
+        // Clear any previous errors
         form.clearErrors("endDateString");
+        
+        // Set the new value
+        form.setValue("endDateString", value, { shouldValidate: false });
+        
+        // Validate the date format
+        const parsedDate = tryParseDate(value);
         if (value && !parsedDate) {
             form.setError("endDateString", {
                 type: "manual",
                 message: getDateHelpText()
             });
         } 
-        else if (parsedDate && startDate && parsedDate < startDate) {
-            form.setError("endDateString", {
-                type: "manual",
-                message: t('InvoiceForm.errorEndDateBeforeStart')
-            });
+        // If this is a valid date, check if it's before the start date
+        else if (parsedDate) {
+            const startDateValue = form.getValues("startDateString");
+            const startDate = tryParseDate(startDateValue ?? '');
+            
+            // If start date exists and end date is before it, set error
+            if (startDate && parsedDate < startDate) {
+                form.setError("endDateString", {
+                    type: "manual",
+                    message: t('InvoiceForm.errorEndDateBeforeStart')
+                });
+            }
         }
+        
+        // Always trigger validation to update form state
         form.trigger("endDateString");
     };
 
@@ -836,8 +879,10 @@ export function InvoiceForm({
                 </div>
                 <Button 
                     type="submit" 
-                    disabled={form.formState.isSubmitting || isCalculating} 
-                    className={`w-full bg-[#4a90e2] text-white hover:bg-[#4a90e2]/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-[#4a90e2]/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
+                    variant="default"
+                    className={`w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? 'animate-success-glow' : ''}`}
+                    disabled={form.formState.isSubmitting || isCalculating}
+                    aria-live="polite"
                 >
                     {isCalculating ? (
                         <span className="flex items-center justify-center">

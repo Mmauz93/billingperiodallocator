@@ -1,0 +1,203 @@
+/*
+ * ANIMATION KEYFRAMES AND TRANSITIONS
+ * Reusable animation definitions for the application
+ * Carefully coordinated with theme variables
+ */
+
+/* 
+ * FADE ANIMATIONS
+ * Basic transitions for elements appearing/disappearing
+ */
+
+/* Basic fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Staggered fade in for lists */
+@keyframes staggeredFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.staggered-item {
+  animation: staggeredFadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+/*
+ * HIGHLIGHT ANIMATIONS
+ * Visual feedback animations for user interactions
+ */
+
+/* Pulse highlight animation for results section */
+@keyframes pulseHighlight {
+  0% {
+    background-color: transparent;
+  }
+  30% {
+    background-color: var(--pulse-highlight-color);
+  } /* Uses themed --pulse-highlight-color */
+  100% {
+    background-color: transparent;
+  }
+}
+
+.pulse-highlight {
+  animation: pulseHighlight 1.2s ease-out;
+  border-radius: 0.5rem;
+  background-color: transparent; /* Initial state, animation will override */
+}
+
+/* Add proportion highlight styles */
+.proportion-highlight {
+  background-color: hsla(var(--primary), 0.1); /* Primary blue with opacity */
+  color: hsl(var(--primary)); /* Primary color in light mode */
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.dark .proportion-highlight {
+  background-color: hsla(var(--ring), 0.2); /* Lighter primary blue (ring color) with opacity for dark mode */
+  color: hsl(var(--primary-foreground)); /* White text in dark mode */
+}
+
+/*
+ * RESULT ANIMATIONS
+ * Animations for the calculation results display
+ */
+
+/* Result reveal animation */
+@keyframes resultReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success glow animation for the submit button */
+@keyframes successGlow {
+  0% {
+    box-shadow: 0 0 0 hsla(var(--success), 0);
+  } /* Success Green with 0 opacity */
+  50% {
+    box-shadow: 0 0 12px hsla(var(--success), 0.8);
+  } /* Success Green with high opacity */
+  100% {
+    box-shadow: 0 0 0 hsla(var(--success), 0);
+  } /* Success Green with 0 opacity */
+}
+
+/* Success glow animation for the result card */
+@keyframes resultSuccessGlow {
+  0% {
+    box-shadow: 0 0 2px hsla(var(--primary), 0.1);
+  } /* Primary Blue with low opacity */
+  40% {
+    box-shadow: 0 0 15px hsla(var(--primary), 0.3);
+  } /* Primary Blue with medium opacity */
+  100% {
+    box-shadow: 0 0 2px hsla(var(--primary), 0.1);
+  } /* Primary Blue with low opacity */
+}
+
+/* Dark mode variation of result glow */
+@keyframes darkResultSuccessGlow {
+  0% {
+    box-shadow: 0 0 2px hsla(var(--ring), 0.1);
+  } /* Dark mode Ring Blue with low opacity */
+  40% {
+    box-shadow: 0 0 15px hsla(var(--ring), 0.3);
+  } /* Dark mode Ring Blue with medium opacity */
+  100% {
+    box-shadow: 0 0 2px hsla(var(--ring), 0.1);
+  } /* Dark mode Ring Blue with low opacity */
+}
+
+/* Animation utility classes */
+.animate-success-glow {
+  animation: successGlow 1.5s ease-in-out;
+}
+
+.animate-result-reveal {
+  animation: resultReveal 0.4s ease-in-out;
+  animation-fill-mode: backwards;
+  animation-delay: 200ms; /* Small delay before showing results */
+}
+
+.animate-result-glow {
+  animation: resultSuccessGlow 3s ease-out forwards;
+}
+
+/* Apply the dark mode variation in dark theme */
+.dark .animate-result-glow {
+  animation-name: darkResultSuccessGlow;
+}
+
+/*
+ * INTERACTIVE ANIMATIONS
+ * Animations for user interaction feedback
+ */
+
+/* Add scale animation for buttons and inputs */
+@keyframes scaleIn {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+
+/*
+ * BACKGROUND EFFECTS
+ * Subtle background animations for visual interest
+ */
+
+/* Parallax background effect for desktop */
+@media (min-width: 1024px) {
+  .parallax-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      hsla(var(--primary), 0.05),
+      transparent
+    );
+    transform: translateY(0);
+    will-change: transform;
+  }
+
+  .dark .parallax-background {
+    background: linear-gradient(
+      to bottom,
+      hsla(var(--ring), 0.05),
+      transparent
+    );
+  }
+} 

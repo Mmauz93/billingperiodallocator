@@ -7,40 +7,6 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-// Helper function to get scrollbar width
-function getScrollbarWidth() {
-  if (typeof window === 'undefined') return 0;
-  return window.innerWidth - document.documentElement.clientWidth;
-}
-
-// Modified useScrollbarSize hook
-function useScrollbarSize(isOpen: boolean) { 
-  React.useEffect(() => {
-    if (typeof document !== 'undefined') {
-      if (isOpen) {
-        document.documentElement.classList.add('prevent-scrollbar-shift');
-        const scrollbarWidth = getScrollbarWidth();
-        document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-        
-        // Return a cleanup function that will run when isOpen becomes false or component unmounts
-        return () => {
-          document.documentElement.classList.remove('prevent-scrollbar-shift');
-          // Consider if removing the variable is safe or if other components might rely on it.
-          // For now, let's remove it to be clean, assuming one active scroll-sensitive component at a time.
-          document.documentElement.style.removeProperty('--scrollbar-width'); 
-        };
-      } else {
-        // If called with isOpen = false, and the class is present (e.g. from a previous true state that didn't cleanup yet)
-        // ensure it's removed. This handles transitions from true to false gracefully.
-        if (document.documentElement.classList.contains('prevent-scrollbar-shift')) {
-          document.documentElement.classList.remove('prevent-scrollbar-shift');
-          document.documentElement.style.removeProperty('--scrollbar-width');
-        }
-      }
-    }
-  }, [isOpen]); // Re-run when isOpen changes
-}
-
 function DropdownMenu({
   onOpenChange, 
   open: controlledOpen,
@@ -52,9 +18,6 @@ function DropdownMenu({
   
   // Determine the actual open state (controlled or internal)
   const isActuallyOpen = controlledOpen !== undefined ? controlledOpen : isInternalOpen;
-
-  // Call the hook with the actual open state
-  useScrollbarSize(isActuallyOpen);
 
   const handleOpenChange = React.useCallback((openParam: boolean) => {
     if (controlledOpen === undefined) { // Only update internal state if not controlled

@@ -1,0 +1,226 @@
+/* 
+ * FORM ELEMENTS STYLING
+ * Consistent styling for form elements across the application
+ * These styles extend Tailwind's base form styling and apply our theme variables
+ */
+
+/* 
+ * GLOBAL INPUT STYLING
+ * Base styles for all input elements using theme variables
+ */
+input,
+select,
+textarea {
+  @apply w-full rounded-lg border-input py-2 px-3 shadow-sm;
+  background-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+  box-shadow: 0 2px 6px hsla(var(--black), 0.05);
+}
+
+/* 
+ * FOCUS STATES
+ * Custom focus styles that maintain consistent appearance
+ * The border changes color while base.css handles the focus ring/outline
+ */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: hsl(var(--ring));
+  outline: none; /* Remove default outline */
+}
+
+/* Special focus styling for settings inputs */
+.settings-input:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 0.125rem hsla(var(--primary), 0.2);
+}
+
+/* Helper text below inputs */
+.input-helper-text {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+/* 
+ * TOGGLE SWITCH STYLING
+ * Custom styling for toggle switches in both light and dark modes
+ */
+
+/* Light mode unchecked state */
+html:not(.dark) [data-slot="switch"][data-state="unchecked"] {
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+}
+
+/* Light mode toggle thumb */
+html:not(.dark) [data-slot="switch-thumb"] {
+  background-color: hsl(var(--primary-foreground));
+  box-shadow: 0 1px 2px hsla(var(--black), 0.1);
+}
+
+/* Checked state for all toggle switches */
+[data-slot="switch"][data-state="checked"],
+.include-end-date-switch[data-state="checked"] {
+  background-color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsla(var(--primary), 0.1), 0 1px 2px hsla(var(--black), 0.08);
+}
+
+/* Hover state for checked toggle switches */
+[data-slot="switch"][data-state="checked"]:hover,
+.include-end-date-switch[data-state="checked"]:hover {
+  background-color: hsl(var(--primary));
+  opacity: 0.9;
+}
+
+/* 
+ * ERROR HANDLING STYLES
+ * Consistent error styling across all form components
+ */
+
+/* Common error message class - defined in globals.css */
+.form-error-message {
+  /* Styles defined in globals.css */
+}
+
+/* Invalid input highlighting */
+[aria-invalid="true"],
+[data-invalid="true"] {
+  border-color: hsl(var(--destructive));
+}
+
+/* 
+ * ERROR ICON STYLING
+ * These selectors target error icons that appear next to invalid inputs
+ * Uses multiple selector patterns to catch different component structures
+ */
+[aria-invalid="true"] ~ svg,
+[aria-invalid="true"] + svg,
+[data-invalid="true"] ~ svg,
+[data-error="true"] svg,
+svg.text-destructive {
+  color: hsl(var(--destructive));
+}
+
+/*
+ * DROPDOWN AND SELECT STYLING
+ * Consistent appearance for Radix UI dropdown menus and select components
+ */
+
+/* 
+ * Fixed positioning ensures dropdowns don't get cut off by parent containers
+ * Uses z-index scale from themes.css
+ */
+[data-radix-select-content],
+[data-radix-popper-content-wrapper] {
+  position: fixed;
+  z-index: var(--z-dropdown);
+  overflow: visible;
+}
+
+/* Scrollable viewport for dropdown contents */
+[data-radix-select-viewport] {
+  max-height: 240px;
+  overflow-y: auto;
+  scrollbar-gutter: stable; /* Prevents layout shift when scrollbar appears */
+}
+
+/* 
+ * DROPDOWN ITEM HOVER STATES
+ * These selectors target Radix UI dropdown items to ensure they have
+ * consistent cursor and hover effects
+ */
+[data-radix-select-item],
+[role="option"],
+[id^="select-item-"] {
+  cursor: pointer;
+}
+
+[data-radix-select-item]:hover,
+[role="option"]:hover,
+[id^="select-item-"]:hover {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  --tw-bg-opacity: 1;
+}
+
+/* 
+ * RADIX UI PORTAL POSITIONING
+ * Ensures dropdown portals appear above other elements
+ */
+[data-radix-select-portal] {
+  isolation: isolate;
+  z-index: var(--z-popover);
+  position: fixed;
+}
+
+/* Scrollable viewport sizing */
+[data-radix-select-viewport] {
+  max-height: var(--radix-select-content-available-height, 200px);
+  overflow-y: auto;
+  padding: 5px;
+}
+
+/*
+ * THEME-SPECIFIC DROPDOWN HOVER STATES
+ * Ensure consistent hover effects in both light and dark modes
+ */
+
+/* Light mode dropdown hover */
+html:not(.dark) [id^="select-item-"]:hover,
+html:not(.dark) [data-radix-select-item]:hover,
+html:not(.dark) [data-radix-select-item][data-highlighted="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+}
+
+/* Dark mode dropdown hover */
+.dark [id^="select-item-"]:hover,
+.dark [data-radix-select-item]:hover,
+.dark [data-radix-select-item][data-highlighted="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+}
+
+/*
+ * CUSTOM SELECT COMPONENT STYLING
+ * Additional styles for our custom select implementation
+ */
+.select-dropdown-item {
+  cursor: pointer;
+}
+
+/* Light mode custom select hover */
+html:not(.dark) .select-dropdown-item:hover,
+html:not(.dark) .select-dropdown-item[data-highlighted="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Dark mode custom select hover */
+.dark .select-dropdown-item:hover,
+.dark .select-dropdown-item[data-highlighted="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/*
+ * SELECTED ITEM STYLING
+ * Remove background color from selected items while preserving the check icon
+ * This prevents the item from having both "selected" and "hover" styling simultaneously
+ */
+[data-radix-select-item][data-state="checked"],
+[data-slot="select-item"][data-state="checked"],
+.select-dropdown-item[data-state="checked"] {
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Check icon styling for selected items */
+[data-radix-select-item][data-state="checked"] svg,
+[data-slot="select-item"][data-state="checked"] svg,
+.select-dropdown-item[data-state="checked"] svg {
+  color: hsl(var(--primary));
+  opacity: 1;
+} 
