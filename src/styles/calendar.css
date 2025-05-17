@@ -1,7 +1,17 @@
 /*
- * CALENDAR AND DATE PICKER STYLING
- * Comprehensive styling for calendar components used in date pickers
- * Custom styling to ensure consistent appearance in both light and dark modes
+ * CALENDAR AND DATE PICKER STYLING - REFACTORED
+ *
+ * All custom CSS rules previously in this file have been removed.
+ * The application uses the shadcn/ui Calendar component (src/components/ui/calendar.tsx),
+ * which is built with react-day-picker and styled extensively using Tailwind CSS utility classes.
+ *
+ * Customizations to the calendar's appearance should be made by:
+ * 1. Modifying the Tailwind classes directly within src/components/ui/calendar.tsx for base style changes.
+ * 2. Passing custom Tailwind classes via the `classNames` prop to the <Calendar /> component where it is used,
+ *    to target specific parts of react-day-picker for instance-specific styling.
+ *
+ * This approach ensures that calendar styling is encapsulated, leverages the existing design system (Tailwind, CSS variables),
+ * and avoids conflicts from global CSS overrides.
  */
 
 /*

@@ -1,11 +1,13 @@
 import { FaqItem, FaqSection } from "@/components/faq-section";
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+import { TypographyH1, TypographyH2, TypographyLarge, TypographyLead } from "@/components/ui/typography";
 
 import { FeatureCard } from "@/components/feature-card";
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
 import Link from "next/link";
 import { Metadata } from 'next';
+import { PageSection } from "@/components/page-section";
 import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
 
@@ -102,27 +104,39 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
   return (
     <>
       {/* Hero Section */}
-      <header className="py-20 text-center px-6 bg-background mb-16 cursor-default">
-        <div className="max-w-3xl mx-auto cursor-default">
-          <Image 
-            src="/images/icon.svg"
-            alt={t('Landing.logoAlt', { defaultValue: 'BillSplitter Logo' })} 
-            width={64}
-            height={64}
-            className="mx-auto mb-6 w-16 h-16" 
-            priority // Keep priority for LCP elements
-          />
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground cursor-default">
-            {t('Landing.heroTitle', { defaultValue: heroTitle })}
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground cursor-default">
-            {t('Landing.heroSubtitle', { defaultValue: heroSubtitle })}
-          </p>
-        </div>
-      </header>
+      <PageSection 
+        as="header" 
+        py="20" 
+        bg="bg-background" 
+        mb="16" 
+        textAlignment="text-center" 
+        maxWidth="3xl"
+      >
+        <Image 
+          src="/images/icon.svg"
+          alt={t('Landing.logoAlt', { defaultValue: 'BillSplitter Logo' })} 
+          width={64}
+          height={64}
+          className="mx-auto mb-6 w-16 h-16" 
+          priority // Keep priority for LCP elements
+        />
+        <TypographyH1 className="mb-6 cursor-default">
+          {t('Landing.heroTitle', { defaultValue: heroTitle })}
+        </TypographyH1>
+        <TypographyLead className="cursor-default">
+          {t('Landing.heroSubtitle', { defaultValue: heroSubtitle })}
+        </TypographyLead>
+      </PageSection>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16 cursor-default">
+      <PageSection 
+        maxWidth="6xl" 
+        bg="bg-background" 
+        className="grid gap-10 md:grid-cols-3" 
+        px="6" // Explicitly pass px if PageSection default is different or to be sure
+        py="16"
+        mb="16"
+      >
         <FeatureCard
           iconSrc="/feature-icon-1.svg"
           iconAlt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })}
@@ -153,19 +167,23 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             </>
           }
         />
-      </section>
+      </PageSection>
 
       {/* Call to Action */}
-      <section className="py-20 px-6 mb-16 cursor-default">
+      <PageSection 
+        py="20" 
+        mb="16" 
+        maxWidth="full" // Section itself is full-width with padding
+      >
         <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden cursor-default">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8 cursor-default">
             <div className="text-left flex-1 cursor-default">
-              <h2 className="text-3xl font-bold mb-4 text-primary cursor-default">
+              <TypographyH2 className="mb-4 text-primary cursor-default">
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
-              </h2>
-              <p className="text-lg mb-6 text-muted-foreground cursor-default">
+              </TypographyH2>
+              <TypographyLarge className="mb-6 text-muted-foreground cursor-default">
                 {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Learn how <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline cursor-pointer select-none">accrual accounting</a> can improve your financial reporting.
-              </p>
+              </TypographyLarge>
               <LandingPageClientInteractions 
                 buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}
                 demoStartDate={demoStartDate}
@@ -188,7 +206,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             </div>
           </div>
         </div>
-      </section>
+      </PageSection>
       
       {/* FAQ/Q&A Section for SEO - FaqSection is now a client component */}
       <FaqSection 

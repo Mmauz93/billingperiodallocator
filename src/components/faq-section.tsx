@@ -2,6 +2,7 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
+import { PageSection } from "@/components/page-section";
 import { useState } from "react";
 
 // FAQ data type
@@ -48,7 +49,14 @@ export function FaqSection({
   };
 
   return (
-    <section className="py-16 px-6 max-w-3xl mx-auto bg-background mb-10 cursor-default">
+    <PageSection 
+      maxWidth="3xl" 
+      bg="bg-background" 
+      mb="10" 
+      px="6"
+      py="16"
+      className=""
+    >
       <h2 className="text-3xl font-bold mb-10 text-center text-foreground cursor-default">
         {title}
       </h2>
@@ -124,7 +132,7 @@ export function FaqSection({
           opacity: 0.8;
         }
       `}</style>
-    </section>
+    </PageSection>
   );
 } 
 

@@ -8,34 +8,25 @@
  * GLOBAL INPUT STYLING
  * Base styles for all input elements using theme variables
  */
-input,
-select,
-textarea {
-  @apply w-full rounded-lg border-input py-2 px-3 shadow-sm;
-  background-color: hsl(var(--input));
-  color: hsl(var(--foreground));
-  box-shadow: 0 2px 6px hsla(var(--black), 0.05);
-}
+/* REMOVED: GLOBAL INPUT STYLING (input, select, textarea base styles)
+   Shadcn/ui components (Input, Select, Textarea) define their own comprehensive styling
+   using Tailwind utilities and CSS variables. Global overrides here conflict or are redundant.
+   Specific needs like `bg-input` or custom shadows should be addressed in those components'
+   base definitions if a global change is desired, or applied as variants. */
 
 /* 
  * FOCUS STATES
  * Custom focus styles that maintain consistent appearance
  * The border changes color while base.css handles the focus ring/outline
  */
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: hsl(var(--ring));
-  outline: none; /* Remove default outline */
-}
+/* REMOVED: FOCUS STATES (input:focus, select:focus, textarea:focus)
+   Shadcn/ui components provide accessible and themed focus styling (e.g., focus-visible:ring-ring).
+   These global overrides are simpler and can conflict with the richer Shadcn focus visuals. */
 
-/* Special focus styling for settings inputs */
-.settings-input:focus {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 0.125rem hsla(var(--primary), 0.2);
-}
+/* REMOVED: Special focus styling for .settings-input as the class was not found to be in use. */
 
 /* Helper text below inputs */
+/* KEPT (for now): Utility class for helper text. Consider replacing with direct Tailwind utilities if usage is sparse. */
 .input-helper-text {
   @apply text-xs text-muted-foreground mt-1;
 }
@@ -44,6 +35,7 @@ textarea:focus {
  * TOGGLE SWITCH STYLING
  * Custom styling for toggle switches in both light and dark modes
  */
+/* TODO: Analyze if these are still needed given Switch.tsx refactor. Assumed removed for now if covered by Switch component. */
 
 /* 
  * ERROR HANDLING STYLES
@@ -51,11 +43,12 @@ textarea:focus {
  */
 
 /* Common error message class - defined in globals.css */
-.form-error-message {
+/* .form-error-message { */ /* Assuming this is styled in globals.css as commented */
   /* Styles defined in globals.css */
-}
+/* } */
 
 /* Invalid input highlighting */
+/* KEPT: Good global rule for accessibility and UX. Complements Shadcn components. */
 [aria-invalid="true"],
 [data-invalid="true"] {
   border-color: hsl(var(--destructive));
@@ -66,6 +59,7 @@ textarea:focus {
  * These selectors target error icons that appear next to invalid inputs
  * Uses multiple selector patterns to catch different component structures
  */
+/* KEPT: Good global rules for error icon consistency. */
 [aria-invalid="true"] ~ svg,
 [aria-invalid="true"] + svg,
 [data-invalid="true"] ~ svg,
@@ -76,101 +70,23 @@ svg.text-destructive {
 
 /*
  * DROPDOWN AND SELECT STYLING
- * Consistent appearance for Radix UI dropdown menus and select components
  */
+/* REMOVED: Rules for [data-radix-select-content], [data-radix-popper-content-wrapper] (position:fixed, z-index, opacity).
+   Shadcn Select/Dropdown components manage their own positioning (typically via Popper) and z-index (e.g., z-50).
+   Forcing position:fixed and !important opacity globally is problematic. */
 
-/* 
- * Fixed positioning ensures dropdowns don't get cut off by parent containers
- * Uses z-index scale from themes.css
- */
-[data-radix-select-content],
-[data-radix-popper-content-wrapper] {
-  position: fixed;
-  z-index: var(--z-dropdown);
-  overflow: visible;
-  background-color: inherit; /* Ensure backgrounds aren't made transparent */
-  opacity: 1 !important; /* Force opacity to be 1 */
-}
+/* REMOVED: Rules for [data-radix-select-viewport] (max-height, overflow, padding).
+   Shadcn Select component's Viewport has its own Tailwind styling. Specific needs should be in select.tsx. */
 
-/* Scrollable viewport for dropdown contents */
-[data-radix-select-viewport] {
-  max-height: var(--radix-select-content-available-height, 200px);
-  overflow-y: auto;
-  scrollbar-gutter: stable; /* Prevents layout shift when scrollbar appears */
-  @apply p-[5px];
-}
+/* REMOVED: Rules for [data-radix-select-item], [role="option"] hover states (bg-primary).
+   Shadcn SelectItem defines its own hover/focus states (typically bg-accent). This CSS conflicts. */
 
-/* 
- * DROPDOWN ITEM HOVER STATES
- * These selectors target Radix UI dropdown items to ensure they have
- * consistent cursor and hover effects
- */
-[data-radix-select-item],
-[role="option"],
-[id^="select-item-"] {
-  cursor: pointer;
-}
+/* REMOVED: Rules for [data-radix-select-portal] (position:fixed, z-index).
+   Radix handles portal mechanics. Overriding portal styles globally is risky. */
 
-[data-radix-select-item]:hover,
-[role="option"]:hover,
-[id^="select-item-"]:hover {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  --tw-bg-opacity: 1;
-}
+/* REMOVED: Rules for THEME-SPECIFIC DROPDOWN HOVER STATES and CUSTOM SELECT COMPONENT STYLING (.select-dropdown-item).
+   These are redundant with previous removals or target unused custom classes. SelectItem styling is in select.tsx. */
 
-/* 
- * RADIX UI PORTAL POSITIONING
- * Ensures dropdown portals appear above other elements
- */
-[data-radix-select-portal] {
-  isolation: isolate;
-  z-index: var(--z-popover);
-  position: fixed;
-}
-
-/*
- * THEME-SPECIFIC DROPDOWN HOVER STATES
- * Ensure consistent hover effects in both light and dark modes
- */
-[id^="select-item-"]:hover,
-[data-radix-select-item]:hover,
-[data-radix-select-item][data-highlighted="true"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  cursor: pointer;
-}
-
-/*
- * CUSTOM SELECT COMPONENT STYLING
- * Additional styles for our custom select implementation
- */
-.select-dropdown-item {
-  cursor: pointer;
-}
-
-.select-dropdown-item:hover,
-.select-dropdown-item[data-highlighted="true"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-/*
- * SELECTED ITEM STYLING
- * Remove background color from selected items while preserving the check icon
- * This prevents the item from having both "selected" and "hover" styling simultaneously
- */
-[data-radix-select-item][data-state="checked"],
-[data-slot="select-item"][data-state="checked"],
-.select-dropdown-item[data-state="checked"] {
-  background-color: transparent;
-  color: inherit;
-}
-
-/* Check icon styling for selected items */
-[data-radix-select-item][data-state="checked"] svg,
-[data-slot="select-item"][data-state="checked"] svg,
-.select-dropdown-item[data-state="checked"] svg {
-  color: hsl(var(--primary));
-  opacity: 1;
-} 
+/* REMOVED: SELECTED ITEM STYLING ([data-radix-select-item][data-state="checked"]).
+   Styling for selected items (background, text color, check icon color) should be encapsulated
+   within the shadcn SelectItem component in select.tsx. Global overrides here are not ideal. */ 

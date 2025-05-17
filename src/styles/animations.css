@@ -1,8 +1,66 @@
 /*
- * ANIMATION KEYFRAMES AND TRANSITIONS
- * Reusable animation definitions for the application
- * Carefully coordinated with theme variables
+ * ANIMATION KEYFRAMES AND TRANSITIONS - REFACTORED
+ *
+ * Custom CSS animations and keyframes previously in this file have been migrated
+ * to the project's tailwind.config.js (or .ts) file under `theme.extend.keyframes`
+ * and `theme.extend.animation`.
+ *
+ * Corresponding elements in .tsx files should be updated to use the Tailwind utility classes
+ * generated from these definitions (e.g., replace `.animate-fadeIn` with `animate-fadeIn`).
+ *
+ * Non-animation style rules previously in this file (e.g., .proportion-highlight, .parallax-background)
+ * should be implemented using Tailwind CSS utility classes directly on the elements where they are needed.
+ *
+ * This approach centralizes animation definitions within the Tailwind theme, promoting consistency
+ * and leveraging the design system.
  */
+
+/*
+  Ensure the following keyframes and animations are added to your tailwind.config.js:
+
+  keyframes: {
+    fadeIn: {
+      '0%': { opacity: '0', transform: 'translateY(10px)' },
+      '100%': { opacity: '1', transform: 'translateY(0)' },
+    },
+    staggeredFadeIn: { // Or reuse 'fadeIn' keyframes
+      '0%': { opacity: '0', transform: 'translateY(10px)' },
+      '100%': { opacity: '1', transform: 'translateY(0)' },
+    },
+    pulseHighlight: {
+      '0%, 100%': { backgroundColor: 'transparent' },
+      // Ensure --pulse-highlight-color is defined in your global CSS (e.g., themes.css)
+      '30%': { backgroundColor: 'var(--pulse-highlight-color)' },
+    },
+    resultReveal: { // Can also reuse 'fadeIn' keyframes
+      '0%': { opacity: '0', transform: 'translateY(10px)' },
+      '100%': { opacity: '1', transform: 'translateY(0)' },
+    },
+    successGlow: {
+      '0%, 100%': { boxShadow: '0 0 0 hsla(var(--success), 0)' },
+      '50%': { boxShadow: '0 0 12px hsla(var(--success), 0.8)' },
+    },
+    resultSuccessGlow: {
+      '0%, 100%': { boxShadow: '0 0 2px hsla(var(--primary), 0.1)' },
+      '40%': { boxShadow: '0 0 15px hsla(var(--primary), 0.3)' },
+    },
+    darkResultSuccessGlow: {
+      '0%, 100%': { boxShadow: '0 0 2px hsla(var(--ring), 0.1)' },
+      '40%': { boxShadow: '0 0 15px hsla(var(--ring), 0.3)' },
+    },
+  },
+  animation: {
+    fadeIn: 'fadeIn 0.5s ease-out forwards',
+    staggeredFadeIn: 'staggeredFadeIn 0.4s ease-out forwards',
+    pulseHighlight: 'pulseHighlight 1.2s ease-out',
+    // For resultReveal, apply Tailwind 'delay-200' class. Initial opacity-0 handles fill-mode effectively.
+    resultReveal: 'resultReveal 0.4s ease-in-out forwards',
+    successGlow: 'successGlow 1.5s ease-in-out',
+    // For resultGlow, apply one and use dark:animate-resultGlowDark in component
+    resultGlow: 'resultSuccessGlow 3s ease-out forwards',
+    resultGlowDark: 'darkResultSuccessGlow 3s ease-out forwards',
+  },
+*/
 
 /* 
  * FADE ANIMATIONS
