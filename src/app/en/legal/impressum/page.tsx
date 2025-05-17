@@ -45,34 +45,34 @@ function ImpressumContent({ lastUpdated, lang, t }: ImpressumContentProps) {
   const title = t("General.impressum", lang === 'de' ? "Impressum" : "Imprint");
     
   return (
-    <article className="prose prose-lg dark:prose-invert" aria-label="Legal information">
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+    <article className="prose prose-lg dark:prose-invert cursor-default" aria-label="Legal information">
+      <div className="text-center mb-10 cursor-default">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent cursor-default">
           {title}
         </h1>
-        <p className="text-sm text-muted-foreground mt-2">{lastUpdated}</p>
+        <p className="text-sm text-muted-foreground mt-2 cursor-default">{lastUpdated}</p>
       </div>
       
-      <div className="space-y-8">
-        <section>
-          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
+      <div className="space-y-8 cursor-default">
+        <section className="cursor-default">
+          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent cursor-default">
             {lang === 'de' ? 'Verantwortlich für diese Website' : 'Responsible for this website'}
           </h2>
-          <p className="mb-6 text-sm leading-relaxed">
+          <p className="mb-6 text-sm leading-relaxed cursor-default">
             <strong>Siempi AG</strong><br />
             Mauro Miotti<br />
             Birkenstrasse 47<br />
             CH-6343 Rotkreuz<br />
             Switzerland<br />
-            Email: <a href="mailto:info@siempi.ch" className="text-primary hover:underline">info@siempi.ch</a>
+            Email: <a href="mailto:info@siempi.ch" className="text-primary hover:underline cursor-pointer select-none">info@siempi.ch</a>
           </p>
         </section>
         
-        <section className="border-t border-muted pt-6">
-          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
+        <section className="border-t border-muted pt-6 cursor-default">
+          <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent cursor-default">
             {lang === 'de' ? 'Handelsregister' : 'Commercial Register'}
           </h2>
-          <p className="text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed cursor-default">
             {lang === 'de' ? 'Eingetragen im Handelsregister des Kantons Zug' : 'Registered in the Commercial Register of the Canton of Zug'}<br />
             UID: CHE-369.093.556<br />
             {lang === 'de' ? 'Handelsregisternummer' : 'Commercial Register Number'}: CH-170.3.042.725-7
@@ -96,7 +96,7 @@ export default async function ImprintPage({ params }: { params: { lang: string }
   const lastUpdatedDisplayString = `${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`;
   
   return (
-    <main className="container mx-auto max-w-3xl px-6 py-16">
+    <main className="container mx-auto max-w-3xl px-6 py-16 cursor-default">
       <ImpressumContent 
         lastUpdated={lastUpdatedDisplayString}
         lang={paramLang}

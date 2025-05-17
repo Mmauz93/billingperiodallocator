@@ -169,8 +169,12 @@ export function CustomCookieConsentBanner({
               aria-live="polite"
               role="region"
             >
-              <div className="pointer-events-auto bg-card text-card-foreground shadow-xl border border-border/40 rounded-lg p-8 flex flex-col items-center w-full max-w-md mx-auto">
-                <div ref={modalRef} role="alertdialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center gap-6">
+              <div className="pointer-events-auto bg-card text-card-foreground shadow-xl border border-border/40 rounded-lg p-8 flex flex-col items-center w-full max-w-md mx-auto" 
+                style={{ backgroundColor: 'hsl(var(--card))', opacity: 1 }}
+              >
+                <div ref={modalRef} role="alertdialog" aria-modal="true" aria-labelledby="cookie-dialog-title" tabIndex={-1} className="w-full flex flex-col items-center gap-6"
+                  style={{ backgroundColor: 'transparent' }}
+                >
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
@@ -204,7 +208,6 @@ export function CustomCookieConsentBanner({
                         <Button
                           variant="default"
                           aria-label={t("CookieConsent.acceptAll", "Accept all")}
-                          id="rcc-confirm-button"
                           className="w-full text-base py-6 bg-primary hover:bg-primary/90 cookie-accept text-lg font-medium"
                           onClick={handleAccept}
                           autoFocus
@@ -236,7 +239,9 @@ export function CustomCookieConsentBanner({
                             <h3 className="font-medium">Essential Cookies</h3>
                             <p className="text-xs text-muted-foreground">Required for the website to function properly</p>
                           </div>
-                          <Switch checked={true} disabled={true} />
+                          <div className="flex items-center border-none outline-none">
+                            <Switch checked={true} disabled id="essential-cookies" />
+                          </div>
                         </div>
                       </div>
                       
@@ -246,11 +251,13 @@ export function CustomCookieConsentBanner({
                             <h3 className="font-medium">Analytics Cookies</h3>
                             <p className="text-xs text-muted-foreground">Help us improve the website by collecting anonymous usage data</p>
                           </div>
-                          <Switch 
-                            checked={analyticsEnabled} 
-                            onCheckedChange={setAnalyticsEnabled}
-                            id="analytics-toggle"
-                          />
+                          <div className="flex items-center border-none outline-none">
+                            <Switch 
+                              checked={analyticsEnabled} 
+                              onCheckedChange={setAnalyticsEnabled}
+                              id="analytics-toggle"
+                            />
+                          </div>
                         </div>
                       </div>
                       

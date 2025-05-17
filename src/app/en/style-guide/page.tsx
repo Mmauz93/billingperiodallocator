@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ColorSwatchProps {
   name: string;
@@ -79,30 +80,54 @@ export default function StyleGuidePage() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-4">Cards</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="card-level-1 p-6 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Card Level 1</h3>
-            <p>Default card with level 1 shadow.</p>
-          </div>
-          <div className="card-level-2 p-6 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Card Level 2</h3>
-            <p>Card with level 2 shadow.</p>
-          </div>
-          <div className="card-level-3 p-6 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Card Level 3</h3>
-            <p>Card with level 3 shadow.</p>
-          </div>
-          <div className="card-level-4 p-6 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Card Level 4</h3>
-            <p>Card with level 4 shadow.</p>
-          </div>
-          <div className="card-level-5 p-6 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Card Level 5</h3>
-            <p>Card with level 5 shadow.</p>
-          </div>
-          <div className="dark card-muted p-6 rounded-lg text-foreground">
-            <h3 className="text-lg font-medium mb-2">Dark Muted Card</h3>
-            <p>Card with muted background in dark mode.</p>
-          </div>
+          <Card className="shadow">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Card Level 1</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Default card with level 1 shadow.</p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Card Level 2</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Card with level 2 shadow.</p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Card Level 3</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Card with level 3 shadow.</p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Card Level 4</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Card with level 4 shadow.</p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-2xl">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Card Level 5</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Card with level 5 shadow.</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-background dark:bg-muted text-foreground">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium mb-2">Dark Muted Card</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Card with muted background in dark mode.</p>
+            </CardContent>
+          </Card>
         </div>
       </section>
       

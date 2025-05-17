@@ -774,13 +774,14 @@ export function InvoiceForm({
                                 <FormDescription>{t('InvoiceForm.includeEndDateDescription')}</FormDescription>
                             </div>
                             <FormControl>
-                                <Switch 
-                                    checked={field.value} 
-                                    onCheckedChange={field.onChange}
-                                    id="includeEndDate"
-                                    name="includeEndDate"
-                                    className="include-end-date-switch"
-                                />
+                                <div className="flex items-center border-none outline-none">
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        id="includeEndDate"
+                                        name="includeEndDate"
+                                    />
+                                </div>
                             </FormControl>
                         </FormItem>
                     )} 

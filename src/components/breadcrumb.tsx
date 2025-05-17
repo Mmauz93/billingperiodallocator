@@ -7,34 +7,39 @@ interface BreadcrumbProps {
 
 /**
  * Simple breadcrumb component with hardcoded translations for stability.
- * No client-side effects or hooks to cause hydration issues.
+ * Using explicit line heights and vertical alignment to force consistent rendering.
  */
 export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
-  // Static translations to avoid hydration mismatches
   const homeLabel = lang === 'de' ? 'Startseite' : 'Home';
   
   return (
-    <nav className="flex mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
-      <ol className="inline-flex items-center">
-        <li className="inline-flex items-center">
-          <Link 
-            href={`/${lang}/`}
-            className="hover:text-primary transition-colors"
+    <div className="mb-6 whitespace-nowrap">
+      <span className="text-sm">
+        <Link href={`/${lang}/`} className="text-muted-foreground hover:text-primary">
+          {homeLabel}
+        </Link>
+        <span className="inline-block mx-2" aria-hidden="true">
+          <svg 
+            width="12" 
+            height="12" 
+            viewBox="0 0 6 10" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            className="inline-block align-baseline"
           >
-            {homeLabel}
-          </Link>
-        </li>
-        <li>
-          <div className="flex items-center mx-2">
-            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
-            </svg>
-          </div>
-        </li>
-        <li aria-current="page">
-          <span className="text-foreground">{currentPage}</span>
-        </li>
-      </ol>
+            <path 
+              d="M1 9L5 5L1 1" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+            />
+          </svg>
+        </span>
+        <span className="text-foreground" aria-current="page">
+          {currentPage}
+        </span>
+      </span>
       
       {/* Schema.org structured data for breadcrumbs */}
       <script 
@@ -59,6 +64,6 @@ export function Breadcrumb({ currentPage, lang }: BreadcrumbProps) {
           })
         }}
       />
-    </nav>
+    </div>
   );
 } 

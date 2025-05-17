@@ -96,8 +96,8 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
   return (
     <>
       {/* Hero Section */}
-      <header className="py-20 text-center px-6 bg-background mb-16">
-        <div className="max-w-3xl mx-auto">
+      <header className="py-20 text-center px-6 bg-background mb-16 cursor-default">
+        <div className="max-w-3xl mx-auto cursor-default">
           <Image 
             src="/images/icon.svg"
             alt={t('Landing.logoAlt', { defaultValue: 'BillSplitter Logo' })} 
@@ -106,59 +106,59 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
             className="mx-auto mb-6 w-16 h-16" 
             priority
           />
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground cursor-default">
             {t('Landing.heroTitle', { defaultValue: heroTitle })}
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground">
+          <p className="text-lg md:text-xl text-muted-foreground cursor-default">
             {t('Landing.heroSubtitle', { defaultValue: heroSubtitle })}
           </p>
         </div>
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16">
+      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16 cursor-default">
         <FeatureCard
           iconSrc="/feature-icon-1.svg"
-          iconAlt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })}
+          iconAlt={t('Landing.feature1Alt', { defaultValue: 'Genaue Zuordnungs-Ikone' })}
           title={t('Landing.feature1Title', { defaultValue: feature1Title })}
           description={
             <>
-              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Mehr über <Link href="https://de.wikipedia.org/wiki/Rechnungsabgrenzung" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">Aufwandsabgrenzung</Link>.
+              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Erfahren Sie mehr über die <Link href="https://de.wikipedia.org/wiki/Periodenabgrenzung" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">Periodenabgrenzung</Link>.
             </>
           }
         />
         <FeatureCard
           iconSrc="/feature-icon-2.svg"
-          iconAlt={t('Landing.feature2Alt', { defaultValue: 'Deferred Revenue Icon' })}
+          iconAlt={t('Landing.feature2Alt', { defaultValue: 'Abgegrenzte Einnahmen Ikone' })}
           title={t('Landing.feature2Title', { defaultValue: feature2Title })}
           description={
             <>
-              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In Übereinstimmung mit <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">IFRS 15</Link> Standards.
+              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} Im Einklang mit <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">IFRS 15</Link> Standards.
             </>
           }
         />
         <FeatureCard
           iconSrc="/feature-icon-3.svg"
-          iconAlt={t('Landing.feature3Alt', { defaultValue: 'No Login Needed Icon' })}
+          iconAlt={t('Landing.feature3Alt', { defaultValue: 'Kein Login Notwendig Ikone' })}
           title={t('Landing.feature3Title', { defaultValue: feature3Title })}
           description={
             <>
-              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">Datenschutzerklärung</Link>.
+              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">Datenschutzrichtlinie</Link>.
             </>
           }
         />
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 px-6 mb-16">
-        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden">
-          <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
-            <div className="text-left flex-1">
-              <h2 className="text-3xl font-bold mb-4 text-primary">
+      <section className="py-20 px-6 mb-16 cursor-default">
+        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden cursor-default">
+          <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8 cursor-default">
+            <div className="text-left flex-1 cursor-default">
+              <h2 className="text-3xl font-bold mb-4 text-primary cursor-default">
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
               </h2>
-              <p className="text-lg mb-6 text-muted-foreground">
-                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Erfahren Sie, wie <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">zeitliche Abgrenzung</a> Ihre Finanzberichterstattung verbessern kann.
+              <p className="text-lg mb-6 text-muted-foreground cursor-default">
+                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Erfahren Sie, wie <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline cursor-pointer select-none">Periodenabgrenzung</a> Ihre Finanzberichterstattung verbessern kann.
               </p>
               <LandingPageClientInteractions 
                 buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}

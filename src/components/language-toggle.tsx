@@ -54,7 +54,9 @@ export default function LanguageToggle() {
         size="icon" 
         aria-label="Toggle language"
         className={cn(
-          "header-toggle-button focus-visible:ring-0 focus:outline-none border-none"
+          "header-toggle-button focus-visible:ring-0 focus:outline-none border-none rounded-sm",
+          "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
+          "opacity-0 transition-opacity duration-150 ease-in-out"
         )}
       >
         <Globe className="h-5 w-5" />
@@ -75,9 +77,11 @@ export default function LanguageToggle() {
           ref={buttonRef}
           aria-label={toggleLanguageLabel}
           className={cn(
-            "header-toggle-button focus-visible:ring-0 focus:outline-none border-none",
+            "header-toggle-button focus-visible:ring-0 focus:outline-none border-none rounded-sm",
             "hover:bg-primary hover:text-primary-foreground",
-            open && "bg-primary text-primary-foreground"
+            open && "bg-primary text-primary-foreground",
+            "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
+            "opacity-0 transition-opacity duration-150 ease-in-out"
           )}
         >
           <Globe className="h-5 w-5" />

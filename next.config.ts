@@ -44,7 +44,8 @@ const nextConfig: NextConfig = {
     config.watchOptions = {
       ignored: [
         '**/node_modules/**',
-        '**/browser-tools-mcp/**'
+        '**/browser-tools-mcp/**',
+        '**/browser-tools-mcp-main/**'
       ]
     };
     

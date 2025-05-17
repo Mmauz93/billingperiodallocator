@@ -201,7 +201,7 @@
   button div:has(> svg),
   a > div > span > svg,
   button > div > span > svg {
-    cursor: pointer !important;
+    cursor: pointer;
   }
   
   /* Handle the specific case of the → arrow icon in different contexts */
@@ -214,7 +214,7 @@
   a .group:hover svg,
   .group:hover > div > svg,
   .group:hover > span > svg {
-    cursor: pointer !important;
+    cursor: pointer;
   }
 }
 

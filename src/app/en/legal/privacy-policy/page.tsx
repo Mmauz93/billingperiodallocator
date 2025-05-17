@@ -56,12 +56,12 @@ export default async function PrivacyPolicyPageEN(/* { params }: { params: { lan
     <ForceDarkTheme>
       <ThemeProvider attribute="class" forcedTheme="dark"> {/* Applies dark theme to this page context */}
         {/* <BodyDarkModeSetter /> */}{/* Uncomment if explicit body/html styling is needed beyond ThemeProvider */}
-        <main className="container mx-auto max-w-3xl px-6 py-16 dark bg-background">
-          <div className="mb-6 text-center">
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+        <main className="container mx-auto max-w-3xl px-6 py-16 dark bg-background cursor-default">
+          <div className="mb-6 text-center cursor-default">
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent cursor-default">
               {t("Legal.privacyPolicyTitle", "Privacy Policy")}
             </h1>
-            <p className="text-sm text-foreground opacity-70 mt-2">
+            <p className="text-sm text-foreground opacity-70 mt-2 cursor-default">
               {`${t("Legal.lastUpdatedPrefix", "Last updated on")} ${formattedDate}`}
             </p>
           </div>

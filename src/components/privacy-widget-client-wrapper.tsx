@@ -12,7 +12,7 @@ const PrivacyWidget = dynamic<PrivacyWidgetProps>(
   () => Promise.resolve(({ lang }: PrivacyWidgetProps) => {
     const widgetHtml = `<privacybee-widget website-id="cmama28x0005vjo8hyyznlmon" type="dsgvo" lang="${lang}" data-theme="dark"></privacybee-widget>`;
     // The script for privacybee is loaded in the root layout (layout.tsx)
-    return <div dangerouslySetInnerHTML={{ __html: widgetHtml }} />;
+    return <div dangerouslySetInnerHTML={{ __html: widgetHtml }} className="cursor-default" />;
   }),
   {
     ssr: false,

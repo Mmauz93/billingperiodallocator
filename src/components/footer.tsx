@@ -42,10 +42,10 @@ export function Footer() {
   const isOnCalculatorPage = pathname?.includes('/app');
 
   return (
-    <footer className="w-full border-t border-border bg-card text-sm text-muted-foreground py-6 px-4 transition-colors duration-300">
-      <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3">
-          <Link href={`/${effectiveLang}`} className="flex items-center gap-2 cursor-pointer">
+    <footer className="w-full border-t border-border bg-card text-sm text-muted-foreground py-6 px-4 transition-colors duration-300 cursor-default">
+      <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between cursor-default">
+        <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3 cursor-default">
+          <Link href={`/${effectiveLang}`} className="flex items-center gap-2 cursor-pointer select-none">
             <Image
               src="/images/icon.svg"
               alt="BillSplitter Logo Icon"
@@ -53,7 +53,7 @@ export function Footer() {
               height={24}
               className="w-6 h-6"
             />
-            <span className="relative block h-7 w-[130px] cursor-pointer">
+            <span className="relative block h-7 w-[130px] cursor-pointer select-none">
               <Image
                 src="/images/logo.svg"
                 alt="BillSplitter Logo"
@@ -62,15 +62,16 @@ export function Footer() {
               />
             </span>
           </Link>
-          <span className="text-muted-foreground text-xs">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground no-underline hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">{companyLabel}</a></span>
+          <span className="text-muted-foreground text-xs cursor-default">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground no-underline hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card cursor-pointer select-none">{companyLabel}</a></span>
         </div>
 
-        <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3">
-          <div className="flex flex-wrap justify-center gap-4 min-h-12 items-baseline">
+        <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3 cursor-default">
+          <div className="flex flex-wrap justify-center gap-4 min-h-12 items-baseline cursor-default">
             <Link
               href={`/${effectiveLang}/app`}
               className={cn(
-                "text-foreground hover:underline transition-colors duration-200",
+                "text-sky-600 no-underline hover:text-sky-600 hover:opacity-90",
+                "transition-colors duration-200 font-medium decoration-muted-foreground cursor-pointer select-none",
                 isOnCalculatorPage && "hidden",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               )}
@@ -80,17 +81,18 @@ export function Footer() {
             <FeedbackButton
               variant="link"
               size="sm"
-              className="p-0 h-auto font-normal text-sm text-foreground hover:underline transition-colors duration-200 focus-visible:ring-offset-card"
+              className="p-0 h-auto font-normal text-sm text-foreground hover:underline transition-colors duration-200 focus-visible:ring-offset-card cursor-pointer select-none"
             >
               {feedbackLabel}
             </FeedbackButton>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center">
+          <div className="flex flex-wrap justify-center gap-4 min-h-12 items-center cursor-default">
             <Link
               href={`/${effectiveLang}/legal/privacy-policy`}
               className={cn(
-                "text-muted-foreground hover:underline transition-colors duration-200",
+                "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
+                "font-medium decoration-muted-foreground",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               )}
             >
@@ -99,7 +101,8 @@ export function Footer() {
             <Link
               href={`/${effectiveLang}/legal/terms-of-use`}
               className={cn(
-                "text-muted-foreground hover:underline transition-colors duration-200",
+                "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
+                "font-medium decoration-muted-foreground",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               )}
             >
@@ -108,7 +111,8 @@ export function Footer() {
             <Link
               href={`/${effectiveLang}/legal/impressum`}
               className={cn(
-                "text-muted-foreground hover:underline transition-colors duration-200",
+                "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
+                "font-medium decoration-muted-foreground",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               )}
             >
@@ -117,7 +121,7 @@ export function Footer() {
           </div>
         </nav>
 
-        <div className="text-xs text-muted-foreground mt-4 md:mt-0 md:w-1/3 md:text-right transition-colors duration-200">
+        <div className="text-xs text-muted-foreground mt-4 md:mt-0 md:w-1/3 md:text-right transition-colors duration-200 cursor-default">
           {defaultCopyright}
         </div>
       </div>

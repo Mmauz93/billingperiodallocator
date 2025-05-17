@@ -102,8 +102,8 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
   return (
     <>
       {/* Hero Section */}
-      <header className="py-20 text-center px-6 bg-background mb-16">
-        <div className="max-w-3xl mx-auto">
+      <header className="py-20 text-center px-6 bg-background mb-16 cursor-default">
+        <div className="max-w-3xl mx-auto cursor-default">
           <Image 
             src="/images/icon.svg"
             alt={t('Landing.logoAlt', { defaultValue: 'BillSplitter Logo' })} 
@@ -112,24 +112,24 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
             className="mx-auto mb-6 w-16 h-16" 
             priority // Keep priority for LCP elements
           />
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground cursor-default">
             {t('Landing.heroTitle', { defaultValue: heroTitle })}
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground">
+          <p className="text-lg md:text-xl text-muted-foreground cursor-default">
             {t('Landing.heroSubtitle', { defaultValue: heroSubtitle })}
           </p>
         </div>
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16">
+      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16 cursor-default">
         <FeatureCard
           iconSrc="/feature-icon-1.svg"
           iconAlt={t('Landing.feature1Alt', { defaultValue: 'Accurate Allocation Icon' })}
           title={t('Landing.feature1Title', { defaultValue: feature1Title })}
           description={
             <>
-              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Learn more about <Link href="https://en.wikipedia.org/wiki/Matching_principle" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">expense recognition</Link>.
+              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Learn more about <Link href="https://en.wikipedia.org/wiki/Matching_principle" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">expense recognition</Link>.
             </>
           }
         />
@@ -139,7 +139,7 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
           title={t('Landing.feature2Title', { defaultValue: feature2Title })}
           description={
             <>
-              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In line with <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">IFRS 15</Link> standards.
+              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} In line with <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">IFRS 15</Link> standards.
             </>
           }
         />
@@ -149,22 +149,22 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
           title={t('Landing.feature3Title', { defaultValue: feature3Title })}
           description={
             <>
-              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Read more about our <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer">privacy policy</Link>.
+              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Read more about our <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">privacy policy</Link>.
             </>
           }
         />
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 px-6 mb-16">
-        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden">
-          <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8">
-            <div className="text-left flex-1">
-              <h2 className="text-3xl font-bold mb-4 text-primary">
+      <section className="py-20 px-6 mb-16 cursor-default">
+        <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden cursor-default">
+          <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8 cursor-default">
+            <div className="text-left flex-1 cursor-default">
+              <h2 className="text-3xl font-bold mb-4 text-primary cursor-default">
                 {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
               </h2>
-              <p className="text-lg mb-6 text-muted-foreground">
-                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Learn how <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">accrual accounting</a> can improve your financial reporting.
+              <p className="text-lg mb-6 text-muted-foreground cursor-default">
+                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Learn how <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline cursor-pointer select-none">accrual accounting</a> can improve your financial reporting.
               </p>
               <LandingPageClientInteractions 
                 buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}

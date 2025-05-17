@@ -24,6 +24,10 @@
 browser-tools-mcp/
 browser-tools-mcp/**/*
 **/browser-tools-mcp/**
+/browser-tools-mcp-main/
+browser-tools-mcp-main/
+browser-tools-mcp-main/**/*
+**/browser-tools-mcp-main/**
 
 # misc
 .DS_Store

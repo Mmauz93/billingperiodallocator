@@ -1,12 +1,10 @@
 "use client";
 
 import * as React from "react";
-
-import { Moon, Sun } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { Sun, Moon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
@@ -16,52 +14,47 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    if (resolvedTheme === 'dark') {
-      setTheme('light');
-    } else {
-      setTheme('dark');
-    }
-  };
-
   if (!mounted) {
     return (
       <Button
         variant="ghost"
         size="icon"
-        className={cn(
-          "header-toggle-button focus-visible:ring-0 focus:outline-none border-none"
-        )}
         aria-label="Toggle theme"
+        disabled
+        className={cn(
+          "header-toggle-button focus-visible:ring-0 focus:outline-none border-none rounded-sm",
+          "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
+          "opacity-0 transition-opacity duration-150 ease-in-out"
+        )}
       >
-        <Sun className="h-5 w-5 dark:hidden" />
-        <Moon className="h-5 w-5 hidden dark:block" />
+        <Sun className="h-5 w-5" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     );
   }
 
-  const ariaLabel = resolvedTheme === 'dark' 
-    ? "Switch to light theme" 
-    : "Switch to dark theme";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={toggleTheme}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "header-toggle-button focus-visible:ring-0 focus:outline-none border-none",
-        "hover:bg-primary hover:text-primary-foreground"
+        "header-toggle-button focus-visible:ring-0 focus:outline-none border-none relative rounded-sm",
+        "hover:bg-primary hover:text-primary-foreground",
+        "bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
+        "opacity-0 transition-opacity duration-150 ease-in-out"
       )}
-      aria-label={ariaLabel}
     >
-      {resolvedTheme === 'dark' ? (
-        <Sun className="h-5 w-5" />
-      ) : (
+      {isDark ? (
         <Moon className="h-5 w-5" />
+      ) : (
+        <Sun className="h-5 w-5" />
       )}
-      <span className="sr-only">{ariaLabel}</span>
+      <span className="sr-only">
+        {isDark ? "Switch to light theme" : "Switch to dark theme"}
+      </span>
     </Button>
   );
 }

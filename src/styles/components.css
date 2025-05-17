@@ -6,796 +6,86 @@
  * Specifically addressing alignment, transitions, and interactive states
  */
 
-/* Fix header icons alignment */
-header nav .header-toggle-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  @apply h-10 w-10; /* Replaced height and width with Tailwind classes */
-  position: relative;
-}
+/* REMOVED: All specific header button and dropdown item styling.
+   This is now handled by Tailwind CSS classes directly within the
+   language-toggle.tsx, theme-toggle.tsx, and other relevant header components.
+   This includes base styles, hover states, icon alignment, and transitions. */
 
-header nav .header-toggle-button > div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: static;
-}
+/* REMOVED: header.fixed { transition: ... }
+   This transition was moved directly to the <header> element in Header.tsx using Tailwind classes. */
 
-/* Smooth transition for fixed header during scrolling */
-header.fixed {
-  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-}
-
-/* Header toggle buttons - consistent hover behavior across all toggle types */
-.header-toggle-button {
-  background-color: transparent;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.header-toggle-button:hover {
-  background-color: #0284C7;
-  color: hsl(var(--background));
-}
-
-/* Icon color inheritance for consistent appearance */
-.header-toggle-button:hover svg {
-  color: hsl(var(--background));
-}
-
-/* Maintain visual appearance for disabled state */
-.header-toggle-button:disabled {
-  opacity: 1;
-}
-
-/* Dropdown menu item hover styles matching header buttons */
-.header-dropdown-item {
-  cursor: pointer;
-}
-
-.header-dropdown-item:hover {
-  background-color: #0284C7;
-  color: hsl(var(--background));
-}
-
-/* 
+/*
  * THEME INITIALIZATION
  * Prevent transition flicker during initial page load
  * Only enable transitions after theme is initialized
  */
-.header-toggle-button {
-  transition: opacity 0.15s ease-in-out;
-}
+/* REMOVED: .header-toggle-button { transition: opacity ... }
+   Opacity transitions for header toggle buttons are now applied via Tailwind classes
+   directly on the button elements in their respective components.
+   The buttons also start with opacity-0 via Tailwind. */
 
+/* KEPT: This rule is part of the theme initialization anti-flicker mechanism.
+   It makes header toggle buttons visible once the theme is confirmed loaded (data-theme-initialized="true" on html tag).
+   Buttons start with opacity-0 and have transition-opacity via Tailwind classes applied in their components. */
 [data-theme-initialized="true"] .header-toggle-button {
   opacity: 1;
 }
 
 /*
- * THEME TOGGLE BUTTON STATES
- * Ensure theme toggle and language toggle buttons behave consistently
- * These selectors target buttons containing specific icons from Lucide
+ * THEME TOGGLE BUTTON STATES & SPECIFIC ICON STYLING
  */
-button:has(svg.Sun, svg.Moon),
-html:not(.dark) button:has(svg.Sun, svg.Moon) {
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-button:has(svg.Sun, svg.Moon)[data-state="open"],
-html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"],
-button:has(svg.Sun, svg.Moon)[aria-expanded="true"],
-html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] {
-  background-color: #0284C7;
-  color: hsl(var(--background));
-}
-
-button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
-html:not(.dark) button:has(svg.Sun, svg.Moon)[data-state="open"] svg,
-button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg,
-html:not(.dark) button:has(svg.Sun, svg.Moon)[aria-expanded="true"] svg {
-  color: hsl(var(--background));
-}
-
-/* Fix for Globe icon to ensure consistent appearance */
-.header-toggle-button .lucide-globe,
-button svg.lucide-globe,
-svg.lucide.lucide-globe {
-  color: currentColor;
-  stroke: currentColor;
-  @apply stroke-2;
-  fill: none;
-  opacity: 1;
-  visibility: visible;
-  display: block;
-}
-
-/* Language toggle button states */
-button:has(svg.Globe),
-html:not(.dark) button:has(svg.Globe) {
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-button:has(svg.Globe)[data-state="open"],
-html:not(.dark) button:has(svg.Globe)[data-state="open"],
-button:has(svg.Globe)[aria-expanded="true"],
-html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] {
-  background-color: #0284C7;
-  color: hsl(var(--background));
-}
-
-button:has(svg.Globe)[data-state="open"] svg,
-html:not(.dark) button:has(svg.Globe)[data-state="open"] svg,
-button:has(svg.Globe)[aria-expanded="true"] svg,
-html:not(.dark) button:has(svg.Globe)[aria-expanded="true"] svg {
-  color: hsl(var(--background));
-}
-
-/* Header-specific expanded state styles */
-.header-toggle-button[aria-expanded="true"],
-html:not(.dark) .header-toggle-button[aria-expanded="true"],
-button:has(.Globe)[aria-expanded="true"],
-html:not(.dark) button:has(.Globe)[aria-expanded="true"] {
-  background-color: #0284C7;
-  color: hsl(var(--background));
-}
-
-.header-toggle-button[aria-expanded="true"] svg,
-html:not(.dark) .header-toggle-button[aria-expanded="true"] svg,
-button:has(.Globe)[aria-expanded="true"] svg,
-html:not(.dark) button:has(.Globe)[aria-expanded="true"] svg {
-  color: hsl(var(--background));
-}
+/* REMOVED: All rules related to button:has(svg.Sun, svg.Moon), button:has(svg.Globe),
+   .header-toggle-button .lucide-globe, and .header-toggle-button[aria-expanded="true"].
+   Styling for theme and language toggle buttons, including their open/expanded states and icon appearances,
+   is handled by Tailwind CSS classes directly within theme-toggle.tsx and language-toggle.tsx.
+   Component-level styles take precedence and were often conflicting with these global rules. */
 
 /*
  * DROPDOWN MENU POSITIONING
  * Set appropriate z-index for Radix UI's dropdown menus
  * Prevent scrollbar issues during dropdown display
  */
+/* KEPT (for now): This rule is a global override for Radix popper content wrappers.
+   It ensures a specific z-index and aims to prevent transparency issues.
+   The !important on opacity is a concern and may need review if conflicts arise
+   or if more specific Radix component styling makes it redundant in the future.
+   Consider if this can be replaced by ensuring PopperContent components always have appropriate bg/opacity. */
 [data-radix-popper-content-wrapper] {
   /* Only set z-index, don't override Radix UI's positioning */
   z-index: var(--z-popover);
+  background-color: inherit; /* Ensure backgrounds aren't made transparent */
+  opacity: 1 !important; /* Force opacity to be 1 */
 }
 
-/* Smooth animations for Radix dropdowns */
-[data-radix-menu-content],
-[data-radix-dropdown-menu-content] {
-  animation-duration: 0.15s;
-}
-
-/* Allow body scrolling with dropdown open - removes previous overflow:hidden */
-body:has([data-radix-popper-content-wrapper][data-state="open"]) {
-  overflow: auto;
-}
+/* REMOVED: Rules for [data-radix-menu-content] animation duration and body:has([data-radix-popper-content-wrapper]) overflow.
+   Shadcn/ui components manage their own animations. Global body overflow overrides are too broad and can break modal behavior. */
 
 /*
- * FOOTER STYLING
- * Improve consistency and accessibility of footer links and components
- * CRITICAL: All dimensional properties must be theme-agnostic
+ * COMPONENT STYLING CONSOLIDATION NOTICE
+ *
+ * All subsequent CSS rules previously in this file have been removed as part of a major refactoring effort.
+ * The goals of this refactoring were to:
+ *   1. Establish Tailwind CSS utility classes as the primary Single Source of Truth (SSOT) for styling.
+ *   2. Co-locate styles with their respective components (.tsx files).
+ *   3. Reduce CSS specificity conflicts, reliance on !important, and global overrides.
+ *   4. Improve maintainability and predictability of the application's styling.
+ *
+ * Removed sections included (but were not limited to):
+ *   - FOOTER STYLING (structural and color-specific)
+ *   - CARD AND LINK STYLING (general link overrides, custom tooltips)
+ *   - COOKIE CONSENT STYLING (IDs #rcc-confirm-button, #rcc-decline-button)
+ *   - HIGH CONTRAST DARK MODE FIXES (patches for dark mode)
+ *   - CARD SYSTEM (custom .card-level-X, .card-interactive, etc.)
+ *   - Header "Split Invoice" button overrides
+ *   - Direct Calculator link overrides
+ *   - FIX FOR TRANSPARENT DIALOGS AND DROPDOWNS (problematic !important usage)
+ *   - DARK MODE IMPROVEMENTS FOR FORM CONTROLS (!important usage)
+ *   - Switch component overrides (border-radius with !important)
+ *   - Duplicate/late-file Header toggle button border-radius styles
+ *
+ * Styling for these elements and features should now be found within their respective
+ * .tsx components using Tailwind CSS utility classes, or managed through the application's
+ * theme configuration (src/styles/themes.css and tailwind.config.js).
+ * If specific issues arise that these removed rules were addressing, they should be
+ * re-evaluated and solved using Tailwind-idiomatic approaches at the component or theme level.
  */
-
-/* Footer navigation alignment - THEME AGNOSTIC */
-footer div.container nav {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-}
-
-/* Alignment for special footer elements - THEME AGNOSTIC */
-footer div.container nav a[href$="/app/"],
-footer div.container nav a[href*="rechner"],
-footer div.container nav button:has(svg.lucide-message-square) {
-  display: inline-flex;
-  align-items: center;
-  height: var(--spacing-6);
-  line-height: var(--spacing-6);
-}
-
-/* Footer link transitions - THEME AGNOSTIC */
-footer a, 
-footer button[class*="text-foreground"] {
-  @apply transition-colors duration-200;
-  font-weight: 500; /* CONSISTENT weight across themes */
-  text-decoration-color: hsl(var(--muted-foreground));
-}
-
-/* Cursor behavior - THEME AGNOSTIC */
-footer a *, 
-footer button[class*="text-foreground"] * {
-  cursor: pointer;
-}
-
-/* Feedback button alignment - THEME AGNOSTIC */
-footer div.container nav button:has(svg.lucide-message-square) {
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  text-decoration: none;
-}
-
-/* Feedback button hover - no underline */
-footer div.container nav button:has(svg.lucide-message-square):hover {
-  text-decoration: none;
-}
-
-/*
- * FOOTER LINK COLORS - ONLY COLORS DIFFER BETWEEN THEMES, NOT DIMENSIONS
- */
-
-/* Calculator link - blue in both themes - NO UNDERLINES */
-a[href*="calculator"],
-a[href*="Calculator"],
-a:link:has(span:contains("Calculator")),
-footer a:contains("Calculator"),
-nav a:contains("Calculator"),
-a.calculator-link,
-a[href$="/calculator/"],
-a[href$="/calculator"],
-footer div.container nav a[href*="calculator"],
-footer div.container nav a[href*="Calculator"],
-footer div.container nav a:contains("Calculator"),
-footer div.container nav a[href*="rechner"] {
-  color: #0284C7 !important;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-a[href*="calculator"]:hover,
-a[href*="Calculator"]:hover,
-a:link:has(span:contains("Calculator")):hover,
-footer a:contains("Calculator"):hover,
-nav a:contains("Calculator"):hover,
-a.calculator-link:hover,
-a[href$="/calculator/"]:hover,
-a[href$="/calculator"]:hover,
-footer div.container nav a[href*="calculator"]:hover,
-footer div.container nav a[href*="Calculator"]:hover,
-footer div.container nav a:contains("Calculator"):hover,
-footer div.container nav a[href*="rechner"]:hover {
-  color: #0284C7 !important;
-  opacity: 0.9;
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-/* Light mode legal links color - simplified */
-html:not(.dark) footer div.container nav a[href*="/legal/"],
-html:not(.dark) footer div.container nav a[href*="privacy-policy"],
-html:not(.dark) footer div.container nav a[href*="terms-of-use"],
-html:not(.dark) footer div.container nav a[href*="impressum"],
-html:not(.dark) footer div.container nav a[href*="imprint"] {
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-}
-
-html:not(.dark) footer div.container nav a[href*="/legal/"]:hover,
-html:not(.dark) footer div.container nav a[href*="privacy-policy"]:hover,
-html:not(.dark) footer div.container nav a[href*="terms-of-use"]:hover,
-html:not(.dark) footer div.container nav a[href*="impressum"]:hover,
-html:not(.dark) footer div.container nav a[href*="imprint"]:hover {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.8;
-  text-decoration: none;
-}
-
-/* Light mode Siempi AG link color */
-html:not(.dark) footer div.container a[href*="siempi.ch"] {
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-}
-
-html:not(.dark) footer div.container a[href*="siempi.ch"]:hover {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.8;
-  text-decoration: none;
-}
-
-/* Dark mode footer text color */
-.dark footer,
-.dark footer span,
-.dark footer div,
-.dark footer p {
-  color: hsl(var(--foreground));
-}
-
-/* Dark mode footer link colors */
-.dark footer a,
-.dark footer button[class*="text-foreground"] {
-  color: hsl(var(--foreground));
-}
-
-.dark footer a:hover,
-.dark footer button[class*="text-foreground"]:hover {
-  color: hsl(var(--foreground));
-  opacity: 0.8;
-}
-
-/* Dark mode footer legal links colors */
-.dark footer div.container nav a[href*="/legal/"],
-.dark footer div.container nav a[href*="privacy-policy"],
-.dark footer div.container nav a[href*="terms-of-use"],
-.dark footer div.container nav a[href*="impressum"],
-.dark footer div.container nav a[href*="imprint"] {
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-}
-
-.dark footer div.container nav a[href*="/legal/"]:hover,
-.dark footer div.container nav a[href*="privacy-policy"]:hover,
-.dark footer div.container nav a[href*="terms-of-use"]:hover,
-.dark footer div.container nav a[href*="impressum"]:hover,
-.dark footer div.container nav a[href*="imprint"]:hover {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.8;
-  text-decoration: none;
-}
-
-/* Dark mode footer button & icon colors */
-.dark footer div.container nav button:has(svg.lucide-message-square),
-.dark footer div.container nav button:has(svg.lucide-message-square) svg {
-  color: hsl(var(--foreground));
-  stroke: currentColor;
-  fill: none;
-  text-decoration: none;
-}
-
-.dark footer div.container nav button:has(svg.lucide-message-square):hover {
-  text-decoration: none;
-  opacity: 0.8;
-}
-
-/* Dark mode calculator link colors */
-.dark footer div.container nav a[href*="calculator"],
-.dark footer div.container nav a[href*="Calculator"],
-.dark footer div.container nav a:contains("Calculator"),
-.dark footer div.container nav a[href*="rechner"] {
-  color: #0284C7;
-  text-decoration: none;
-}
-
-.dark footer div.container nav a[href*="calculator"]:hover,
-.dark footer div.container nav a[href*="Calculator"]:hover,
-.dark footer div.container nav a:contains("Calculator"):hover,
-.dark footer div.container nav a[href*="rechner"]:hover {
-  color: #0284C7;
-  opacity: 0.9;
-  text-decoration: none;
-}
-
-/*
- * CARD AND LINK STYLING
- * Consistent card interaction and link styling
- */
-
-/* Card cursor style when it's a link */
-.p-6.rounded-lg.group[href] {
-  cursor: pointer;
-}
-
-/* Button hover transitions */
-.button:not(:disabled) {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease,
-    opacity 0.2s ease;
-}
-
-/* No-transform utility to prevent hover transform on specific elements */
-.no-transform {
-  transform: none;
-}
-
-/* Override hover transforms for no-transform elements */
-button.no-transform:hover,
-.button.no-transform:hover,
-[role="button"].no-transform:hover,
-input[type="submit"].no-transform:hover,
-input[type="button"].no-transform:hover {
-  transform: none;
-}
-
-/*
- * CUSTOM TOOLTIP IMPLEMENTATION
- * CSS-only tooltip using data-tooltip attribute
- */
-.premium-tooltip {
-  position: relative;
-}
-
-.premium-tooltip::before {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: calc(var(--spacing-1) + 2px) var(--spacing-3); /* Using var instead of hardcoded 6px 12px */
-  border-radius: var(--radius-md); /* Using radius var instead of hardcoded 6px */
-  background-color: var(--popover);
-  color: var(--popover-foreground);
-  text-align: center;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  box-shadow: 0 var(--spacing-1) var(--spacing-3) hsla(var(--black), 0.15);
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.2s,
-    visibility 0.2s;
-  z-index: var(--z-tooltip);
-  pointer-events: none;
-  border: var(--border-width, 1px) solid var(--border);
-}
-
-.premium-tooltip::after {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: var(--border-width-thick, 5px);
-  border-style: solid;
-  border-color: var(--popover) transparent transparent transparent;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.3s ease,
-    visibility 0s linear 0.3s;
-  z-index: var(--z-tooltip);
-  pointer-events: none;
-}
-
-.premium-tooltip:hover::before,
-.premium-tooltip:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transition-delay: 200ms; /* Small delay before showing tooltip */
-  transform: translateX(-50%) translateY(0);
-}
-
-/*
- * LINK STYLING
- * Consistent link styling across different contexts
- * Only the underline becomes orange on hover
- */
-
-/* Specialized link styling for accrual accounting links */
-a[href*="accrualaccounting"],
-.accrual-accounting-link {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-decoration-color: hsl(var(--muted-foreground));
-  text-underline-offset: var(--text-decoration-offset);
-  color: hsl(var(--foreground));
-  font-weight: 400;
-  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
-}
-
-a[href*="accrualaccounting"]:hover,
-.accrual-accounting-link:hover {
-  color: hsl(var(--foreground));
-  text-decoration-color: #0284C7;
-  text-decoration-thickness: 2px;
-}
-
-/* Feature card and content links */
-.text-primary.underline,
-span.text-primary.underline,
-a.text-primary,
-span.text-primary,
-p a,
-p span.text-primary,
-a[href],
-[href*="IFRS"],
-[href*="expense"],
-[href*="privacy"],
-[href*="terms"],
-[href*="imprint"],
-[href*="compliance"],
-[href*="invoice"] {
-  text-decoration-thickness: 1px;
-  text-decoration-color: hsl(var(--muted-foreground));
-  text-underline-offset: var(--text-decoration-offset);
-  transition: color 0.2s ease, text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
-  color: hsl(var(--foreground));
-}
-
-.text-primary.underline:hover,
-span.text-primary.underline:hover,
-a.text-primary:hover,
-span.text-primary:hover,
-p a:hover,
-p span.text-primary:hover,
-a[href]:hover,
-[href*="IFRS"]:hover,
-[href*="expense"]:hover,
-[href*="privacy"]:hover,
-[href*="terms"]:hover,
-[href*="imprint"]:hover,
-[href*="compliance"]:hover,
-[href*="invoice"]:hover {
-  color: hsl(var(--foreground));
-  text-decoration-color: #0284C7;
-  text-decoration-thickness: 2px;
-}
-
-/* Dark mode contrast fix for feature card text - COLOR ONLY */
-.dark .bg-card p span.text-primary,
-.dark [class*="bg-card"] p span.text-primary,
-.dark .bg-card a.text-primary,
-.dark [class*="bg-card"] a.text-primary {
-  color: hsl(var(--foreground));
-}
-
-/* Dark mode contrast for feature card paragraphs - COLOR ONLY */
-.dark section a.group p.text-muted-foreground {
-  color: hsl(var(--muted-foreground));
-}
-
-/*
- * COOKIE CONSENT STYLING
- * Custom styles for cookie consent component
- */
-#rcc-confirm-button {
-  border: var(--border-width) solid hsl(var(--border));
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  font-weight: 600;
-  font-size: var(--font-size-sm, 0.875rem); /* Using var instead of hardcoded 13px */
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-#rcc-confirm-button:hover {
-  opacity: 0.9;
-}
-
-#rcc-decline-button {
-  border: var(--border-width) solid hsl(var(--border));
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
-  font-weight: 600;
-  font-size: var(--font-size-sm, 0.875rem); /* Using var instead of hardcoded 13px */
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-#rcc-decline-button:hover {
-  text-decoration: underline;
-  text-decoration-color: #0284C7;
-}
-
-/*
- * HIGH CONTRAST DARK MODE FIXES
- * Additional overrides to ensure WCAG contrast compliance
- * ONLY COLORS are changed, not dimensions
- */
-
-/* Fix for various text items in dark mode that need higher contrast - COLOR ONLY */
-.dark a.!text-gray-600,
-.dark a.!text-gray-400,
-.dark .text-gray-600,
-.dark .text-gray-400,
-.dark div.container > div.flex > span.text-gray-600 > a.!text-gray-600,
-.dark div.container > nav.flex > div.flex > a.!text-gray-600,
-.dark footer div.container div.flex span.text-gray-600 a,
-.dark footer div.container nav.flex div.flex a {
-  color: hsl(var(--foreground)); /* White text for max contrast */
-}
-
-/* Demo data button contrast improvement - COLOR ONLY */
-div.max-w-4xl > div.flex > div.text-left > button.justify-center,
-button.bg-primary[class*="justify-center"] {
-  background-color: #0284C7;
-  color: white;
-  border: none;
-  font-weight: 600;
-}
-
-/* Primary buttons text in dark mode - COLOR ONLY */
-.dark .bg-primary {
-  color: hsl(var(--secondary-foreground));
-}
-
-/* "Test with Demo Data" button - COLOR ONLY except font-weight */
-div.max-w-4xl > div.flex > div.text-left > button.justify-center {
-  background-color: #0284C7;
-  color: white;
-  border: none;
-  font-weight: 600;
-}
-
-/* "Split Invoice" link in dark mode - COLOR ONLY */
-.dark div.container > div.flex > nav.flex > a.justify-center {
-  background-color: var(--card);
-  color: hsl(var(--card-foreground));
-  border: 0.125rem solid var(--card);
-}
-
-/* Cookie consent button contrast - COLOR ONLY */
-div.w-full > div.flex-1 > div.flex > button.inline-flex {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  border: 0.125rem solid hsl(var(--secondary-foreground));
-}
-
-/*
- * CARD SYSTEM
- * Consistent card styling system with elevation levels
- */
-
-/* Card level system - from lowest to highest elevation */
-.card-level-1 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-level-1);
-}
-
-.card-level-2 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-level-2);
-}
-
-.card-level-3 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-level-3);
-}
-
-.card-level-4 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-level-4);
-}
-
-.card-level-5 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-level-5);
-}
-
-/* Interactive card hover effects */
-.card-interactive {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card-interactive:hover {
-  transform: translateY(calc(-1 * var(--spacing-0-5, 2px)));
-}
-
-.card-level-1.card-interactive:hover {
-  box-shadow: var(--shadow-level-2);
-}
-
-.card-level-2.card-interactive:hover {
-  box-shadow: var(--shadow-level-3);
-}
-
-.card-level-3.card-interactive:hover {
-  box-shadow: var(--shadow-level-4);
-}
-
-.card-level-4.card-interactive:hover,
-.card-level-5.card-interactive:hover {
-  box-shadow: var(--shadow-level-5);
-}
-
-/* Card spacing utilities */
-.card-spacing-sm {
-  padding: 0.75rem;
-}
-
-.card-spacing-md {
-  padding: 1rem;
-}
-
-.card-spacing-lg {
-  padding: 1.5rem;
-}
-
-.card-spacing-xl {
-  padding: 2rem;
-}
-
-/* Dark mode card styling - ONLY COLORS */
-.dark .card-level-1,
-.dark .card-level-2,
-.dark .card-level-3,
-.dark .card-level-4,
-.dark .card-level-5 {
-  background-color: var(--card);
-  @apply border border-[var(--border)];
-}
-
-/* Muted card variant for layering in dark mode - ONLY COLORS */
-.dark .card-muted {
-  background-color: hsl(var(--muted));
-  border-color: hsl(var(--border));
-}
-
-.tooltip-custom {
-  /* ... existing tooltip code ... */
-}
-
-/* Header "Split Invoice" button styling */
-header nav a[href$="/app"],
-header button:has(a[href$="/app"]),
-.text-primary.border-primary.hover\:bg-primary\/10 {
-  background-color: #0284C7;
-  color: white;
-  border: none;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-header nav a[href$="/app"]:hover,
-header button:has(a[href$="/app"]):hover,
-.text-primary.border-primary.hover\:bg-primary\/10:hover {
-  background-color: #0284C7;
-  opacity: 0.9;
-  color: white;
-  border: none;
-  text-decoration: none;
-}
-
-/* Update header button specifics in header.tsx component styling */
-nav .flex.items-center.gap-1.text-primary.border-primary.hover\:bg-primary\/10,
-button.flex.items-center.gap-1.text-primary.border-primary {
-  background-color: #0284C7 !important;
-  color: white !important;
-  border: none !important;
-}
-
-nav .flex.items-center.gap-1.text-primary.border-primary.hover\:bg-primary\/10:hover,
-button.flex.items-center.gap-1.text-primary.border-primary:hover {
-  opacity: 0.9;
-}
-
-/* Dark mode Siempi AG link color */
-.dark footer div.container a[href*="siempi.ch"],
-.dark footer div.container a[href*="Siempi"] {
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-}
-
-.dark footer div.container a[href*="siempi.ch"]:hover,
-.dark footer div.container a[href*="Siempi"]:hover {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.8;
-  text-decoration: none;
-}
-
-/* DIRECT CALCULATOR LINK OVERRIDE - SINGLE SOURCE OF TRUTH */
-a.text-foreground.hover\:underline[href="/en/app/"],
-a[href="/en/app/"] {
-  color: #0284C7 !important;
-  text-decoration: none !important;
-}
-
-a.text-foreground.hover\:underline[href="/en/app/"]:hover,
-a[href="/en/app/"]:hover {
-  color: #0284C7 !important;
-  text-decoration: none !important;
-  opacity: 0.9;
-}
-
-/* Backup for any language variation */
-a.text-foreground.hover\:underline[href$="/app/"],
-a[href$="/app/"] {
-  color: #0284C7 !important;
-  text-decoration: none !important;
-}
-
-a.text-foreground.hover\:underline[href$="/app/"]:hover,
-a[href$="/app/"]:hover {
-  color: #0284C7 !important;
-  text-decoration: none !important;
-  opacity: 0.9;
-} 

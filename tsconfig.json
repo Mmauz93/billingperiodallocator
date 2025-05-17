@@ -23,5 +23,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", "browser-tools-mcp", "browser-tools-mcp/**/*"]
+  "exclude": ["node_modules", ".next", "browser-tools-mcp", "browser-tools-mcp/**/*", "browser-tools-mcp-main", "browser-tools-mcp-main/**/*"]
 }
