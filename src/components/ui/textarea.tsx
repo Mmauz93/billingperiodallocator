@@ -12,13 +12,10 @@ function Textarea(
   ref: React.Ref<HTMLTextAreaElement>,
 ) {
   const errorId = error ? `${id}-error` : undefined;
-  
-  // Handle double click to select all text
+
   const handleDoubleClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
-    // Call the target's select method to select all text
     e.currentTarget.select();
-    
-    // Also call any provided onDoubleClick handler (to maintain existing behavior)
+
     if (onDoubleClick) {
       onDoubleClick(e);
     }

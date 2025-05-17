@@ -1,7 +1,12 @@
-import { DEFAULT_LANGUAGE, LANGUAGE_COOKIE_NAME, SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+import {
+  DEFAULT_LANGUAGE,
+  LANGUAGE_COOKIE_NAME,
+  SUPPORTED_LANGUAGES,
+  SupportedLanguage,
+} from "@/lib/language-service";
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 /**
  * Middleware that handles language routing according to SEO best practices:
@@ -16,36 +21,42 @@ export function middleware(request: NextRequest) {
 
   // 1. Skip if language prefix exists
   const pathnameHasLanguage = SUPPORTED_LANGUAGES.some(
-    (language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
+    (language) =>
+      pathname.startsWith(`/${language}/`) || pathname === `/${language}`,
   );
   if (pathnameHasLanguage) return;
 
   // 2. Skip if static file, API route, etc.
   if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/images') ||
-    pathname.includes('.') 
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/images") ||
+    pathname.includes(".")
   ) {
     return;
   }
 
   // 3. Determine preferred language
   let language = DEFAULT_LANGUAGE;
-  
+
   // 3a. Check cookie first
   const cookieValue = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value;
-  if (cookieValue && SUPPORTED_LANGUAGES.includes(cookieValue as SupportedLanguage)) {
+  if (
+    cookieValue &&
+    SUPPORTED_LANGUAGES.includes(cookieValue as SupportedLanguage)
+  ) {
     language = cookieValue as SupportedLanguage;
   } else {
     // 3b. Check Accept-Language header if no valid cookie
-    const acceptLanguage = request.headers.get('accept-language');
+    const acceptLanguage = request.headers.get("accept-language");
     if (acceptLanguage) {
       const preferredLanguage = acceptLanguage
-        .split(',')
-        .map(lang => lang.split(';')[0].trim().substring(0, 2).toLowerCase())
-        .find(lang => SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)) as SupportedLanguage | undefined;
-      
+        .split(",")
+        .map((lang) => lang.split(";")[0].trim().substring(0, 2).toLowerCase())
+        .find((lang) =>
+          SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage),
+        ) as SupportedLanguage | undefined;
+
       if (preferredLanguage) {
         language = preferredLanguage;
       }
@@ -56,7 +67,7 @@ export function middleware(request: NextRequest) {
   let redirectUrl: URL;
   let statusCode: 301 | 302;
 
-  if (pathname === '/') {
+  if (pathname === "/") {
     redirectUrl = new URL(`/${language}/`, request.url);
     statusCode = 301; // Permanent for root
   } else {
@@ -65,12 +76,12 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.redirect(redirectUrl, statusCode);
-  
+
   // 5. Set the language cookie on the response
-  response.cookies.set(LANGUAGE_COOKIE_NAME, language, { 
-    path: '/', 
+  response.cookies.set(LANGUAGE_COOKIE_NAME, language, {
+    path: "/",
     maxAge: 60 * 60 * 24 * 365, // 1 year
-    sameSite: 'lax'
+    sameSite: "lax",
   });
 
   return response;
@@ -78,8 +89,5 @@ export function middleware(request: NextRequest) {
 
 // Configure middleware to run only on specific paths
 export const config = {
-  matcher: [
-    '/((?!_next|images|api|.*\\.).*)',
-    '/'
-  ],
-}; 
+  matcher: ["/((?!_next|images|api|.*\\.).*)", "/"],
+};

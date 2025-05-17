@@ -133,7 +133,10 @@
 }
 
 .dark .proportion-highlight {
-  background-color: hsla(var(--ring), 0.2); /* Lighter primary blue (ring color) with opacity for dark mode */
+  background-color: hsla(
+    var(--ring),
+    0.2
+  ); /* Lighter primary blue (ring color) with opacity for dark mode */
   color: hsl(var(--primary-foreground)); /* White text in dark mode */
 }
 
@@ -258,4 +261,4 @@
       transparent
     );
   }
-} 
+}

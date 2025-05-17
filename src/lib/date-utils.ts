@@ -18,7 +18,7 @@ import { format, isValid, parse } from "date-fns";
 /**
  * Creates a Date object that's timezone-agnostic by setting time to midnight UTC.
  * This ensures consistent behavior regardless of user's timezone.
- * 
+ *
  * @param dateStr - A date string in the format YYYY-MM-DD
  * @returns A Date object set to midnight UTC
  */
@@ -30,14 +30,17 @@ export function createUTCDate(dateStr: string): Date {
 /**
  * Parse a date from various formats with timezone consistency.
  * The returned date will be normalized to midnight UTC time.
- * 
+ *
  * @param dateStr - A date string in various supported formats
  * @param formats - An array of formats to try (date-fns format patterns)
  * @returns A Date object or null if parsing fails
  */
-export function parseDate(dateStr: string, formats: string[] = ["yyyy-MM-dd", "dd.MM.yyyy"]): Date | null {
+export function parseDate(
+  dateStr: string,
+  formats: string[] = ["yyyy-MM-dd", "dd.MM.yyyy"],
+): Date | null {
   if (!dateStr) return null;
-  
+
   // Try direct ISO parsing first
   if (dateStr.includes("T")) {
     const date = new Date(dateStr);
@@ -46,7 +49,7 @@ export function parseDate(dateStr: string, formats: string[] = ["yyyy-MM-dd", "d
       return createUTCDate(format(date, "yyyy-MM-dd"));
     }
   }
-  
+
   // Try each format
   for (const formatPattern of formats) {
     try {
@@ -59,39 +62,45 @@ export function parseDate(dateStr: string, formats: string[] = ["yyyy-MM-dd", "d
       // Continue to next format
     }
   }
-  
+
   return null;
 }
 
 /**
  * Format a date for display, taking into account the locale
- * 
+ *
  * @param date - A Date object or ISO date string
  * @param locale - The locale to use for formatting (e.g., 'en', 'de')
  * @returns A formatted date string
  */
-export function formatDateForDisplay(date: Date | string | undefined, locale: string): string {
+export function formatDateForDisplay(
+  date: Date | string | undefined,
+  locale: string,
+): string {
   if (!date) return "N/A";
-  
+
   try {
-    const dateObj = typeof date === "string" ? 
-      (date.includes("T") ? new Date(date) : createUTCDate(date)) : 
-      date;
-    
+    const dateObj =
+      typeof date === "string"
+        ? date.includes("T")
+          ? new Date(date)
+          : createUTCDate(date)
+        : date;
+
     // Format in UTC to display the date as it is, ignoring local timezone conversion for date parts
     return new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     }).format(dateObj);
   } catch (error) {
     console.error("Error formatting date:", error);
     // Fallback should also ideally respect UTC if possible
     if (typeof date === "string") {
-        // Attempt to return YYYY-MM-DD if it's a simple date string, otherwise indicate error
-        return date.match(/^\d{4}-\d{2}-\d{2}$/) ? date : "Invalid Date String";
+      // Attempt to return YYYY-MM-DD if it's a simple date string, otherwise indicate error
+      return date.match(/^\d{4}-\d{2}-\d{2}$/) ? date : "Invalid Date String";
     }
     return date.toISOString().split("T")[0]; // This gives YYYY-MM-DD from UTC date
   }
-} 
+}

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function GlobalError({
   error,
@@ -13,17 +13,21 @@ export default function GlobalError({
     console.error(error);
   }, [error]);
 
-  let lang = 'en';
-  if (typeof window !== 'undefined') {
-    if (window.location.pathname.startsWith('/de')) {
-      lang = 'de';
+  let lang = "en";
+  if (typeof window !== "undefined") {
+    if (window.location.pathname.startsWith("/de")) {
+      lang = "de";
     }
   }
 
-  const title = lang === 'de' ? 'Ein Fehler ist aufgetreten' : 'An Error Occurred';
-  const message = lang === 'de' ? 'Entschuldigung, etwas ist schiefgegangen. Bitte versuchen Sie es später erneut.' : 'Sorry, something went wrong. Please try again later.';
-  const tryAgain = lang === 'de' ? 'Erneut versuchen' : 'Try Again';
-  const goHome = lang === 'de' ? 'Zur Startseite' : 'Go to Homepage';
+  const title =
+    lang === "de" ? "Ein Fehler ist aufgetreten" : "An Error Occurred";
+  const message =
+    lang === "de"
+      ? "Entschuldigung, etwas ist schiefgegangen. Bitte versuchen Sie es später erneut."
+      : "Sorry, something went wrong. Please try again later.";
+  const tryAgain = lang === "de" ? "Erneut versuchen" : "Try Again";
+  const goHome = lang === "de" ? "Zur Startseite" : "Go to Homepage";
 
   return (
     <html lang={lang}>
@@ -41,7 +45,7 @@ export default function GlobalError({
               {tryAgain}
             </button>
             <a
-              href={lang === 'de' ? '/de/' : '/en/'}
+              href={lang === "de" ? "/de/" : "/en/"}
               className="px-6 py-3 rounded-md border border-border hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               {goHome}
@@ -56,4 +60,4 @@ export default function GlobalError({
       </body>
     </html>
   );
-} 
+}

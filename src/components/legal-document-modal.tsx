@@ -77,9 +77,7 @@ export function LegalDocumentModal({
         </div>
         <DialogFooter className="mt-auto pt-4">
           <DialogClose asChild>
-            <Button variant="outline">
-              {t("SettingsModal.closeButton")}
-            </Button>
+            <Button variant="outline">{t("SettingsModal.closeButton")}</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

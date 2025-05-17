@@ -10,17 +10,22 @@ interface InputProps extends React.ComponentProps<"input"> {
 }
 
 function Input(
-  { className, type, helperText, error, id, onDoubleClick, ...props }: InputProps,
+  {
+    className,
+    type,
+    helperText,
+    error,
+    id,
+    onDoubleClick,
+    ...props
+  }: InputProps,
   ref: React.Ref<HTMLInputElement>,
 ) {
   const errorId = error ? `${id}-error` : undefined;
-  
-  // Handle double click to select all text
+
   const handleDoubleClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    // Call the target's select method to select all text
     e.currentTarget.select();
-    
-    // Also call any provided onDoubleClick handler (to maintain existing behavior)
+
     if (onDoubleClick) {
       onDoubleClick(e);
     }
@@ -48,14 +53,12 @@ function Input(
         {...props}
       />
       {helperText && (
-        <p className="text-xs text-muted-foreground mt-1 mb-3 pl-3">{helperText}</p>
+        <p className="text-xs text-muted-foreground mt-1 mb-3 pl-3">
+          {helperText}
+        </p>
       )}
       {error && (
-        <p
-          id={errorId}
-          role="alert"
-          className="form-error-message"
-        >
+        <p id={errorId} role="alert" className="form-error-message">
           {error}
         </p>
       )}

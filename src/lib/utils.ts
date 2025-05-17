@@ -11,20 +11,20 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function safeText(value: unknown): string {
   if (value === null || value === undefined) {
-    return '';
+    return "";
   }
-  
-  if (typeof value === 'string') {
+
+  if (typeof value === "string") {
     return value;
   }
-  
-  if (typeof value === 'object') {
+
+  if (typeof value === "object") {
     try {
       return JSON.stringify(value);
     } catch {
-      return '[Object]';
+      return "[Object]";
     }
   }
-  
+
   return String(value);
 }

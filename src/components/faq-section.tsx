@@ -1,6 +1,11 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 import { PageSection } from "@/components/page-section";
 import { useState } from "react";
@@ -27,10 +32,10 @@ interface FaqSectionProps {
   ldJsonMainEntity: LdJsonFaqItem[]; // Pre-translated for ld+json
 }
 
-export function FaqSection({ 
-  faqData, 
-  title, 
-  ldJsonMainEntity
+export function FaqSection({
+  faqData,
+  title,
+  ldJsonMainEntity,
 }: FaqSectionProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [openItemValue, setOpenItemValue] = useState<string | null>(null); // Tracks the value of the open item
@@ -49,10 +54,10 @@ export function FaqSection({
   };
 
   return (
-    <PageSection 
-      maxWidth="3xl" 
-      bg="bg-background" 
-      mb="10" 
+    <PageSection
+      maxWidth="3xl"
+      bg="bg-background"
+      mb="10"
       px="6"
       py="16"
       className=""
@@ -60,9 +65,9 @@ export function FaqSection({
       <h2 className="text-3xl font-bold mb-10 text-center text-foreground cursor-default">
         {title}
       </h2>
-      <Accordion 
-        type="single" 
-        collapsible 
+      <Accordion
+        type="single"
+        collapsible
         className="space-y-4"
         value={openItemValue || undefined} // Controlled component
         onValueChange={handleValueChange} // Update open item state
@@ -72,33 +77,35 @@ export function FaqSection({
           const isOpen = openItemValue === itemValue;
 
           return (
-            <div 
+            <div
               key={index}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
               className="relative" // No cursor style here, let children define
             >
-              <AccordionItem 
+              <AccordionItem
                 value={itemValue} // Necessary for Accordion to identify the item
                 className="bg-card dark:bg-card rounded-xl px-6 py-2 border border-border/60 shadow-sm transition-all duration-200 cursor-pointer"
                 style={{
-                  borderColor: isOpen ? 'hsl(var(--primary) / 0.5)' : '', // Color on open
-                  boxShadow: isOpen ? '0 8px 16px rgba(0, 0, 0, 0.1)' : (hoveredIndex === index ? '0 4px 12px rgba(0,0,0,0.08)' : ''), // Different shadow for open vs hover
-                  transform: hoveredIndex === index ? 'translateY(-1px)' : '' // Movement on hover
+                  borderColor: isOpen ? "hsl(var(--primary) / 0.5)" : "", // Color on open
+                  boxShadow: isOpen
+                    ? "0 8px 16px rgba(0, 0, 0, 0.1)"
+                    : hoveredIndex === index
+                      ? "0 4px 12px rgba(0,0,0,0.08)"
+                      : "", // Different shadow for open vs hover
+                  transform: hoveredIndex === index ? "translateY(-1px)" : "", // Movement on hover
                 }}
               >
-                <AccordionTrigger 
+                <AccordionTrigger
                   className="text-xl font-semibold text-foreground hover:no-underline cursor-pointer select-none transition-colors"
                   style={{
-                    color: isOpen ? '#0284C7' : '' // Title color on open
+                    color: isOpen ? "#0284C7" : "", // Title color on open
                   }}
                 >
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent 
-                  className="text-muted-foreground pt-2"
-                >
-                  <div 
+                <AccordionContent className="text-muted-foreground pt-2">
+                  <div
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                     className="faq-content" // Default cursor for answer text, links will have their own
                   />
@@ -108,19 +115,19 @@ export function FaqSection({
           );
         })}
       </Accordion>
-      
+
       {/* Structured data for SEO */}
-      <script 
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": ldJsonMainEntity
-          })
+            mainEntity: ldJsonMainEntity,
+          }),
         }}
       />
-      
+
       <style jsx global>{`
         .faq-content a {
           text-decoration: underline;
@@ -134,5 +141,4 @@ export function FaqSection({
       `}</style>
     </PageSection>
   );
-} 
-
+}

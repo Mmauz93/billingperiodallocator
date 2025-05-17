@@ -24,7 +24,7 @@ export function ThemeToggle() {
         className={cn(
           "header-toggle-button focus-visible:ring-0 focus:outline-none border-none rounded-sm",
           "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
-          "opacity-0 transition-opacity duration-150 ease-in-out"
+          "opacity-0 transition-opacity duration-150 ease-in-out",
         )}
       >
         <Sun className="h-5 w-5" />
@@ -44,14 +44,10 @@ export function ThemeToggle() {
         "header-toggle-button focus-visible:ring-0 focus:outline-none border-none relative rounded-sm",
         "hover:bg-primary hover:text-primary-foreground",
         "bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
-        "opacity-0 transition-opacity duration-150 ease-in-out"
+        "opacity-0 transition-opacity duration-150 ease-in-out",
       )}
     >
-      {isDark ? (
-        <Moon className="h-5 w-5" />
-      ) : (
-        <Sun className="h-5 w-5" />
-      )}
+      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
       <span className="sr-only">
         {isDark ? "Switch to light theme" : "Switch to dark theme"}
       </span>

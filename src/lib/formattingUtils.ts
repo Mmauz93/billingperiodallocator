@@ -46,7 +46,10 @@ export function roundValue(value: number, precision: number): number {
  * @param locale Locale string (e.g., 'en', 'de').
  * @returns Formatted date string.
  */
-export function formatDateLocale(dateInput: string | Date | undefined, locale: string): string {
+export function formatDateLocale(
+  dateInput: string | Date | undefined,
+  locale: string,
+): string {
   // Use the improved date formatting function from date-utils.ts
   return formatDateForDisplay(dateInput, locale);
 }

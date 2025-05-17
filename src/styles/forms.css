@@ -43,7 +43,7 @@
 
 /* Common error message class - defined in globals.css */
 /* .form-error-message { */ /* Assuming this is styled in globals.css as commented */
-  /* Styles defined in globals.css */
+/* Styles defined in globals.css */
 /* } */
 
 /* Invalid input highlighting */
@@ -86,4 +86,4 @@ svg.text-destructive {
 
 /* REMOVED: SELECTED ITEM STYLING ([data-radix-select-item][data-state="checked"]).
    Styling for selected items (background, text color, check icon color) should be encapsulated
-   within the shadcn SelectItem component in select.tsx. Global overrides here are not ideal. */ 
+   within the shadcn SelectItem component in select.tsx. Global overrides here are not ideal. */

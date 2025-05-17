@@ -3,7 +3,7 @@
  */
 
 // Extend calculation types to support both string and Date types for proper TypeScript typing
-declare module '@/lib/calculations' {
+declare module "@/lib/calculations" {
   interface CalculationStepDetails {
     totalDuration: {
       days: number;
@@ -15,4 +15,15 @@ declare module '@/lib/calculations' {
 }
 
 // Export your own project-specific types here
-export {}; 
+export {};
+
+// Type for the translation function used throughout the application
+export type TranslationFn = (
+  key: string,
+  options?: {
+    defaultValue?: string;
+    values?: Record<string, string | number>;
+  } | string
+) => string;
+
+// Add any other shared types below

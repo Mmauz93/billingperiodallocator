@@ -1,13 +1,14 @@
-import { Metadata } from 'next';
-import { generateSubpageHreflangMetadata } from '@/lib/seo-utils';
+import { Metadata } from "next";
+import { generateSubpageHreflangMetadata } from "@/lib/seo-utils";
 
 // Generate alternates for German terms of use page
-const alternates = generateSubpageHreflangMetadata('de', 'legal/terms-of-use');
+const alternates = generateSubpageHreflangMetadata("de", "legal/terms-of-use");
 
 export const metadata: Metadata = {
-  title: 'Nutzungsbedingungen | BillSplitter',
-  description: 'Allgemeine Geschäftsbedingungen für die Nutzung des BillSplitter-Dienstes. Bitte lesen Sie diese Bedingungen sorgfältig durch, bevor Sie unsere Plattform nutzen.',
-  alternates
+  title: "Nutzungsbedingungen | BillSplitter",
+  description:
+    "Allgemeine Geschäftsbedingungen für die Nutzung des BillSplitter-Dienstes. Bitte lesen Sie diese Bedingungen sorgfältig durch, bevor Sie unsere Plattform nutzen.",
+  alternates,
 };
 
 export default function TermsOfUseLayoutDE({
@@ -16,4 +17,4 @@ export default function TermsOfUseLayoutDE({
   children: React.ReactNode;
 }) {
   return <>{children}</>;
-} 
+}

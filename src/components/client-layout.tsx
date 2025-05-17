@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -10,9 +10,12 @@ import dynamic from "next/dynamic";
 import { getLanguageFromPath } from "@/lib/language-service";
 import { usePathname } from "next/navigation";
 
-const DynamicCookieConsentBanner = dynamic(() => 
-  import("@/components/custom-cookie-banner").then(mod => mod.CustomCookieConsentBanner),
-  { ssr: false }
+const DynamicCookieConsentBanner = dynamic(
+  () =>
+    import("@/components/custom-cookie-banner").then(
+      (mod) => mod.CustomCookieConsentBanner,
+    ),
+  { ssr: false },
 );
 
 export default function ClientLayout({
@@ -20,15 +23,13 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const path = usePathname() || '';
-  
-  // Get language from path using our centralized language service
+  const path = usePathname() || "";
+
   const pathLang = getLanguageFromPath(path);
-  const lang = pathLang || 'en';
-  
-  // Check if we're on a privacy policy page - don't show cookie banner there
-  const isPrivacyPolicyPage = path.includes('/legal/privacy-policy');
-  
+  const lang = pathLang || "en";
+
+  const isPrivacyPolicyPage = path.includes("/legal/privacy-policy");
+
   return (
     <SettingsProvider>
       <ThemeProvider
@@ -36,7 +37,7 @@ export default function ClientLayout({
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
-        storageKey="theme" // Explicitly set storage key to match anti-flicker script
+        storageKey="theme"
       >
         <TooltipProvider>
           <TranslationProvider>
@@ -45,8 +46,7 @@ export default function ClientLayout({
               <main className="flex-grow w-full pt-16 pb-24">{children}</main>
               <Footer />
             </div>
-            
-            {/* Only show cookie banner if not on privacy policy page */}
+
             {!isPrivacyPolicyPage && (
               <DynamicCookieConsentBanner
                 onAcceptAction={() => {
@@ -67,4 +67,4 @@ export default function ClientLayout({
       </ThemeProvider>
     </SettingsProvider>
   );
-} 
+}

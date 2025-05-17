@@ -18,34 +18,43 @@ export function Footer() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   // Use getLanguageFromPath for robustness in SSR/initial state
   // Default to 'en' if path language is not recognized
-  const langFromPathInitial = getLanguageFromPath(pathname) || 'en'; 
-  const effectiveLang = mounted ? (i18nFromHook.language || langFromPathInitial) : langFromPathInitial;
-  
-  const calculatorLabel = effectiveLang === 'de' ? "Rechner" : "Calculator";
-  const privacyLabel = effectiveLang === 'de' ? "Datenschutzerklärung" : "Privacy Policy";
-  const termsLabel = effectiveLang === 'de' ? "Nutzungsbedingungen" : "Terms of Use";
-  const impressumLabel = effectiveLang === 'de' ? "Impressum" : "Imprint";
-  const feedbackLabel = effectiveLang === 'de' ? "Feedback teilen" : "Share Your Feedback";
+  const langFromPathInitial = getLanguageFromPath(pathname) || "en";
+  const effectiveLang = mounted
+    ? i18nFromHook.language || langFromPathInitial
+    : langFromPathInitial;
+
+  const calculatorLabel = effectiveLang === "de" ? "Rechner" : "Calculator";
+  const privacyLabel =
+    effectiveLang === "de" ? "Datenschutzerklärung" : "Privacy Policy";
+  const termsLabel =
+    effectiveLang === "de" ? "Nutzungsbedingungen" : "Terms of Use";
+  const impressumLabel = effectiveLang === "de" ? "Impressum" : "Imprint";
+  const feedbackLabel =
+    effectiveLang === "de" ? "Feedback teilen" : "Share Your Feedback";
   const companyLabel = "Siempi AG";
-  
-  const defaultCopyright = effectiveLang === 'de' 
-    ? `© ${currentYear} Siempi AG — Alle Rechte vorbehalten.`
-    : `© ${currentYear} Siempi AG — All rights reserved.`;
-  
-  const isOnCalculatorPage = pathname?.includes('/app');
+
+  const defaultCopyright =
+    effectiveLang === "de"
+      ? `© ${currentYear} Siempi AG — Alle Rechte vorbehalten.`
+      : `© ${currentYear} Siempi AG — All rights reserved.`;
+
+  const isOnCalculatorPage = pathname?.includes("/app");
 
   return (
     <footer className="w-full border-t border-border bg-card text-sm text-muted-foreground py-6 px-4 transition-colors duration-300 cursor-default">
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between cursor-default">
         <div className="flex items-center gap-2 mb-4 md:mb-0 md:w-1/3 cursor-default">
-          <Link href={`/${effectiveLang}`} className="flex items-center gap-2 cursor-pointer select-none">
+          <Link
+            href={`/${effectiveLang}`}
+            className="flex items-center gap-2 cursor-pointer select-none"
+          >
             <Image
               src="/images/icon.svg"
               alt="BillSplitter Logo Icon"
@@ -62,7 +71,17 @@ export function Footer() {
               />
             </span>
           </Link>
-          <span className="text-muted-foreground text-xs cursor-default">by <a href="https://siempi.ch/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground no-underline hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card cursor-pointer select-none">{companyLabel}</a></span>
+          <span className="text-muted-foreground text-xs cursor-default">
+            by{" "}
+            <a
+              href="https://siempi.ch/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground no-underline hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card cursor-pointer select-none"
+            >
+              {companyLabel}
+            </a>
+          </span>
         </div>
 
         <nav className="flex flex-col items-center gap-2 text-sm md:w-1/3 cursor-default">
@@ -73,7 +92,7 @@ export function Footer() {
                 "text-sky-600 no-underline hover:text-sky-600 hover:opacity-90",
                 "transition-colors duration-200 font-medium decoration-muted-foreground cursor-pointer select-none",
                 isOnCalculatorPage && "hidden",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
               )}
             >
               {calculatorLabel}
@@ -93,7 +112,7 @@ export function Footer() {
               className={cn(
                 "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
                 "font-medium decoration-muted-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
               )}
             >
               {privacyLabel}
@@ -103,7 +122,7 @@ export function Footer() {
               className={cn(
                 "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
                 "font-medium decoration-muted-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
               )}
             >
               {termsLabel}
@@ -113,7 +132,7 @@ export function Footer() {
               className={cn(
                 "text-muted-foreground hover:underline transition-colors duration-200 cursor-pointer select-none",
                 "font-medium decoration-muted-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
               )}
             >
               {impressumLabel}
@@ -127,4 +146,4 @@ export function Footer() {
       </div>
     </footer>
   );
-} 
+}

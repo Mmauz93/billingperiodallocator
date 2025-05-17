@@ -1,7 +1,7 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
 
 // Configure for static export
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 
 /**
  * Robots.txt configuration following best practices for multilingual SEO:
@@ -13,16 +13,16 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',                  // Allow crawling of all public content
+        userAgent: "*",
+        allow: "/", // Allow crawling of all public content
         disallow: [
-          '/api/',                   // Prevent crawling of API routes
-          '/_next/',                 // Prevent crawling of Next.js internals
-          '/static/',                // Prevent crawling of static assets directory
+          "/api/", // Prevent crawling of API routes
+          "/_next/", // Prevent crawling of Next.js internals
+          "/static/", // Prevent crawling of static assets directory
         ],
       },
     ],
-    sitemap: 'https://billsplitter.siempi.ch/sitemap.xml',
-    host: 'https://billsplitter.siempi.ch',
+    sitemap: "https://billsplitter.siempi.ch/sitemap.xml",
+    host: "https://billsplitter.siempi.ch",
   };
-} 
+}

@@ -15,7 +15,7 @@ import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { SupportedLanguage } from "@/lib/language-service";
 import { cn } from "@/lib/utils";
-import { useTranslation } from '@/translations';
+import { useTranslation } from "@/translations";
 
 export default function LanguageToggle() {
   const { i18n, t } = useTranslation();
@@ -23,7 +23,7 @@ export default function LanguageToggle() {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const toggleLanguageLabel = mounted 
+  const toggleLanguageLabel = mounted
     ? t("LanguageToggle.toggleLanguage", { defaultValue: "Toggle language" })
     : "Toggle language";
 
@@ -32,31 +32,23 @@ export default function LanguageToggle() {
   }, []);
 
   const handleLanguageChange = (lang: SupportedLanguage) => {
-    if (i18n.language === lang) {
-      setOpen(false);
-      if (buttonRef.current) {
-        buttonRef.current.blur();
-      }
-      return;
+    if (i18n.language !== lang) {
+      i18n.changeLanguage(lang);
     }
-    
-    i18n.changeLanguage(lang);
     setOpen(false);
-    if (buttonRef.current) {
-      buttonRef.current.blur();
-    }
+    buttonRef.current?.blur();
   };
 
   if (!mounted) {
     return (
-      <Button 
-        variant="ghost" 
-        size="icon" 
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="Toggle language"
         className={cn(
           "header-toggle-button focus-visible:ring-0 focus:outline-none border-none rounded-sm",
           "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
-          "opacity-0 transition-opacity duration-150 ease-in-out"
+          "opacity-0 transition-opacity duration-150 ease-in-out",
         )}
       >
         <Globe className="h-5 w-5" />
@@ -71,9 +63,9 @@ export default function LanguageToggle() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           ref={buttonRef}
           aria-label={toggleLanguageLabel}
           className={cn(
@@ -81,7 +73,7 @@ export default function LanguageToggle() {
             "hover:bg-primary hover:text-primary-foreground",
             open && "bg-primary text-primary-foreground",
             "relative bg-transparent transition-colors duration-200 ease-in-out disabled:opacity-100",
-            "opacity-0 transition-opacity duration-150 ease-in-out"
+            "opacity-0 transition-opacity duration-150 ease-in-out",
           )}
         >
           <Globe className="h-5 w-5" />
@@ -89,17 +81,17 @@ export default function LanguageToggle() {
         </Button>
       </DropdownMenuTrigger>
       {open && (
-        <DropdownMenuContent 
-          align="end" 
-          side="bottom" 
-          sideOffset={4} 
+        <DropdownMenuContent
+          align="end"
+          side="bottom"
+          sideOffset={4}
           className="z-[var(--z-popover)]"
         >
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => handleLanguageChange("en")}
             className={cn(
               "flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
-              isEnglish && "font-medium"
+              isEnglish && "font-medium",
             )}
           >
             <ReactCountryFlag
@@ -108,13 +100,17 @@ export default function LanguageToggle() {
               className="w-[1.2em] h-[1.2em] mr-2 pointer-events-none"
               title="English"
             />
-            <span className={cn(isEnglish && "font-bold", "pointer-events-none")}>English</span>
+            <span
+              className={cn(isEnglish && "font-bold", "pointer-events-none")}
+            >
+              English
+            </span>
           </DropdownMenuItem>
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => handleLanguageChange("de")}
             className={cn(
               "flex items-center cursor-pointer transition-colors duration-200 hover:bg-primary hover:text-primary-foreground",
-              isGerman && "font-medium"
+              isGerman && "font-medium",
             )}
           >
             <ReactCountryFlag
@@ -123,7 +119,11 @@ export default function LanguageToggle() {
               className="w-[1.2em] h-[1.2em] mr-2 pointer-events-none"
               title="Deutsch"
             />
-            <span className={cn(isGerman && "font-bold", "pointer-events-none")}>Deutsch</span>
+            <span
+              className={cn(isGerman && "font-bold", "pointer-events-none")}
+            >
+              Deutsch
+            </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       )}

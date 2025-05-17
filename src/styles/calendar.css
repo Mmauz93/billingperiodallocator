@@ -27,10 +27,12 @@
 .rdp td button,
 [role="grid"] button,
 [role="gridcell"] button,
-[data-radix-popper-content-wrapper] [role="grid"] button:not([aria-selected="true"]):not(:hover),
+[data-radix-popper-content-wrapper]
+  [role="grid"]
+  button:not([aria-selected="true"]):not(:hover),
 button.day,
 .calendar button {
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 /*
@@ -38,7 +40,10 @@ button.day,
  * Styles for the calendar icon button that opens the date picker
  */
 button[aria-label="Pick a date"] {
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
 }
 
 /* Active state micro-interaction */
@@ -107,7 +112,9 @@ html:not(.dark) .rdp-button {
   width: 100%;
   height: 100%;
   border-radius: 0.5rem;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 
 /*
@@ -136,7 +143,11 @@ html:not(.dark) .rdp-button {
 .calendar button:hover:not([disabled]):not([aria-selected="true"]),
 .rdp-cell:hover button:not([disabled]):not([aria-selected="true"]),
 .rdp-table button:hover:not([disabled]):not([aria-selected="true"]),
-[data-radix-popper-content-wrapper] [role="grid"] button:hover:not([disabled]):not([aria-label="Previous month"]):not([aria-label="Next month"]):not([aria-selected="true"]) {
+[data-radix-popper-content-wrapper]
+  [role="grid"]
+  button:hover:not([disabled]):not([aria-label="Previous month"]):not(
+    [aria-label="Next month"]
+  ):not([aria-selected="true"]) {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none;
@@ -177,7 +188,7 @@ html:not(.dark) [role="gridcell"] button[aria-selected="true"],
 .rdp-day_selected:hover,
 [role="grid"] button[aria-selected="true"]:hover,
 [class*="selected"]:hover {
-  background-color: hsl(var(--primary)); 
+  background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none;
   box-shadow: none;
@@ -189,7 +200,8 @@ html:not(.dark) [role="gridcell"] button[aria-selected="true"],
  * Subtle highlight for the current day when it's not selected
  */
 .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_disabled),
-[role="grid"] button[aria-current="date"]:not([aria-selected="true"]):not([disabled]) {
+[role="grid"]
+  button[aria-current="date"]:not([aria-selected="true"]):not([disabled]) {
   background-color: hsla(var(--ring), 0.15);
   font-weight: bold;
-} 
+}

@@ -1,82 +1,93 @@
-import { FaqItem, FaqSection } from "@/components/faq-section";
-import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/language-service';
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/lib/language-service";
+import {
+  TypographyH1,
+  TypographyH2,
+  TypographyLarge,
+  TypographyLead,
+} from "@/components/ui/typography";
+import {
+  ctaSubtitle,
+  ctaTitle,
+  demoAmount,
+  demoEndDate,
+  demoIncludeEndDate,
+  demoSplitPeriod,
+  demoStartDate,
+  faqData,
+  feature1Desc,
+  feature1Title,
+  feature2Desc,
+  feature2Title,
+  feature3Desc,
+  feature3Title,
+  heroSubtitle,
+  heroTitle,
+} from "./landing-page-data";
 
+import { FaqSection } from "@/components/faq-section";
 import { FeatureCard } from "@/components/feature-card";
 import Image from "next/image";
 import LandingPageClientInteractions from "@/components/landing-page-client-interactions";
 import Link from "next/link";
-import { Metadata } from 'next';
+import { Metadata } from "next";
+import { PageSection } from "@/components/page-section";
 import React from "react";
-import { getServerSideTranslator } from '@/lib/translation';
+import { getServerSideTranslator } from "@/lib/translation";
 
-export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { lang: string };
+}): Promise<Metadata> {
   // Validate language parameter
-  const currentLang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
-    ? params.lang as SupportedLanguage
-    : 'de' as SupportedLanguage;
-    
+  const currentLang =
+    params.lang &&
+    SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage)
+      ? (params.lang as SupportedLanguage)
+      : ("de" as SupportedLanguage);
+
   const { t } = getServerSideTranslator(currentLang);
-  const siteUrl = 'https://billsplitter.siempi.ch';
+  const siteUrl = "https://billsplitter.siempi.ch";
   const canonicalUrl = `${siteUrl}/${currentLang}/`;
 
   return {
-    title: t('LandingPage.title', 'BillSplitter – Rechnungen auf Geschäftsperioden aufteilen'),
-    description: t('LandingPage.metaDescription', 'Rechnungen einfach auf Geschäftsperioden aufteilen. Zahlungen monatlich, vierteljährlich, jährlich splitten – gemäß IFRS 15, HGB, OR.'),
+    title: t(
+      "LandingPage.title",
+      "BillSplitter – Rechnungen auf Geschäftsperioden aufteilen",
+    ),
+    description: t(
+      "LandingPage.metaDescription",
+      "Rechnungen einfach auf Geschäftsperioden aufteilen. Zahlungen monatlich, vierteljährlich, jährlich splitten – gemäß IFRS 15, HGB, OR.",
+    ),
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'en': `${siteUrl}/en/`,
-        'de': `${siteUrl}/de/`,
-        'x-default': `${siteUrl}/en/`, // Default to English version
+        en: `${siteUrl}/en/`,
+        de: `${siteUrl}/de/`,
+        "x-default": `${siteUrl}/en/`, // Default to English version
       },
     },
   };
 }
 
-export default async function GermanLandingPage({ params }: { params: { lang: string }}) {
+export default async function GermanLandingPage({
+  params,
+}: {
+  params: { lang: string };
+}) {
   // Validate language parameter
-  const lang = (params.lang && SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage))
-    ? params.lang as SupportedLanguage
-    : 'de' as SupportedLanguage;
-    
+  const lang =
+    params.lang &&
+    SUPPORTED_LANGUAGES.includes(params.lang as SupportedLanguage)
+      ? (params.lang as SupportedLanguage)
+      : ("de" as SupportedLanguage);
+
   const { t } = getServerSideTranslator(lang);
 
-  const heroTitle = "Automatisierter Rechnungsabgrenzungsrechner";
-  const heroSubtitle = "BillSplitter hilft Ihnen, Rechnungen über Geschäftsjahre hinweg genau und mühelos abzugrenzen. Entwickelt für Finanzfachleute und Unternehmen. Schnell, einfach, präzise.";
-  const feature1Title = "Genaue Periodenabgrenzung";
-  const feature1Desc = "Berechnen Sie automatisch, wie viel einer Rechnung zu jedem Geschäftsjahr gehört – keine manuellen Fehler mehr.";
-  const feature2Title = "Vorauszahlungen & Rechnungsabgrenzung"; // Updated to match image
-  const feature2Desc = "Unterstützt die Abgrenzung nach IFRS 15, HGB und OR Standards für eine saubere, konforme Buchhaltung.";
-  const feature3Title = "Keine Anmeldung. Keine Datenspeicherung.";
-  const feature3Desc = "Nutzen Sie BillSplitter sofort, ohne ein Konto zu erstellen. Ihre Daten bleiben sicher und privat.";
-  const ctaTitle = "Rechnungen jetzt abgrenzen";
-  const ctaSubtitle = "Starten Sie den Rechner und automatisieren Sie Ihre Ertrags- und Aufwandsabgrenzungen in Sekunden.";
-  
-  const faqData: FaqItem[] = [
-    {
-      question: "Wie berechnet BillSplitter die Rechnungsabgrenzungen?",
-      answer: "BillSplitter berechnet anteilige Abgrenzungen basierend auf der genauen Anzahl der Tage in jeder Finanzperiode. Der Gesamtbetrag der Rechnung wird durch die Anzahl der Tage im Leistungszeitraum geteilt und dann mit den Tagen in jedem Geschäftsjahr oder jeder Periode multipliziert."
-    },
-    {
-      question: "Muss ich ein Konto erstellen, um BillSplitter zu nutzen?",
-      answer: "Nein, BillSplitter ist vollständig kontofrei. Sie können es sofort nutzen, ohne sich anzumelden, ein Passwort zu erstellen oder persönliche Informationen anzugeben. Ihre Daten werden lokal verarbeitet und niemals auf unseren Servern gespeichert."
-    },
-    {
-      question: "Ist BillSplitter konform mit Rechnungslegungsstandards?",
-      answer: "Ja, BillSplitter folgt den Grundsätzen der periodengerechten Rechnungslegung gemäss <a href='https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>IFRS 15</a>, <a href='https://www.gesetze-im-internet.de/hgb/' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>HGB</a>, und <a href='https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de' target='_blank' rel='noopener noreferrer' class='text-primary hover:underline whitespace-nowrap'>OR</a> Standards, und eignet sich somit für die korrekte Erfassung von passiven und aktiven Rechnungsabgrenzungsposten in der Finanzbuchhaltung."
-    },
-    {
-      question: "Kann ich Rechnungen nach monatlichen, vierteljährlichen oder jährlichen Perioden aufteilen?",
-      answer: "Ja, BillSplitter unterstützt mehrere Aufteilungsoptionen. Sie können Rechnungen über jährliche, vierteljährliche oder monatliche Perioden abgrenzen, je nach Ihren Buchhaltungs- und Berichtsanforderungen."
-    },
-    {
-      question: "Wie genau sind die Berechnungen?",
-      answer: "BillSplitter liefert tagesgenaue Berechnungen mit korrekter Rundung auf die Dezimalstelle Ihrer Wahl. Geringfügige Rundungsdifferenzen werden automatisch angepasst, um sicherzustellen, dass die Summe immer Ihrem Eingabebetrag entspricht."
-    }
-  ];
-  
-  const faqSectionTitle = t('Landing.faqTitle', { defaultValue: 'Häufig gestellte Fragen' });
-  
+  const faqSectionTitle = t("Landing.faqTitle", {
+    defaultValue: "Häufig gestellte Fragen",
+  });
+
   // Prepare ldJsonMainEntity using server-side t
   const ldJsonMainEntity = faqData.map((item, index) => ({
     "@type": "Question" as const,
@@ -86,82 +97,133 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
       text: t(`Landing.faqAnswer${index + 1}`, { defaultValue: item.answer }),
     },
   }));
-  
-  const demoEndDate = "2025-04-29";
-  const demoStartDate = "2024-11-01";
-  const demoAmount = "5000";
-  const demoIncludeEndDate = "true";
-  const demoSplitPeriod = "yearly" as 'yearly' | 'quarterly' | 'monthly';
-  
+
   return (
     <>
       {/* Hero Section */}
-      <header className="py-20 text-center px-6 bg-background mb-16 cursor-default">
-        <div className="max-w-3xl mx-auto cursor-default">
-          <Image 
-            src="/images/icon.svg"
-            alt={t('Landing.logoAlt', { defaultValue: 'BillSplitter Logo' })} 
-            width={64}
-            height={64}
-            className="mx-auto mb-6 w-16 h-16" 
-            priority
-          />
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground cursor-default">
-            {t('Landing.heroTitle', { defaultValue: heroTitle })}
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground cursor-default">
-            {t('Landing.heroSubtitle', { defaultValue: heroSubtitle })}
-          </p>
-        </div>
-      </header>
+      <PageSection
+        as="header"
+        py="20"
+        bg="bg-background"
+        mb="16"
+        textAlignment="text-center"
+        maxWidth="3xl"
+      >
+        <Image
+          src="/images/icon.svg"
+          alt={t("Landing.logoAlt", { defaultValue: "BillSplitter Logo" })}
+          width={64}
+          height={64}
+          className="mx-auto mb-6 w-16 h-16"
+          priority
+        />
+        <TypographyH1 className="mb-6 cursor-default">
+          {t("Landing.heroTitle", { defaultValue: heroTitle })}
+        </TypographyH1>
+        <TypographyLead className="cursor-default">
+          {t("Landing.heroSubtitle", { defaultValue: heroSubtitle })}
+        </TypographyLead>
+      </PageSection>
 
       {/* Features Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto grid gap-10 md:grid-cols-3 bg-background mb-16 cursor-default">
+      <PageSection
+        maxWidth="6xl"
+        bg="bg-background"
+        className="grid gap-10 md:grid-cols-3"
+        py="16"
+        mb="16"
+      >
         <FeatureCard
           iconSrc="/feature-icon-1.svg"
-          iconAlt={t('Landing.feature1Alt', { defaultValue: 'Genaue Zuordnungs-Ikone' })}
-          title={t('Landing.feature1Title', { defaultValue: feature1Title })}
+          iconAlt={t("Landing.feature1Alt", {
+            defaultValue: "Genaue Zuordnungs-Ikone",
+          })}
+          title={t("Landing.feature1Title", { defaultValue: feature1Title })}
           description={
             <>
-              {t('Landing.feature1Desc', { defaultValue: feature1Desc })} Erfahren Sie mehr über die <Link href="https://de.wikipedia.org/wiki/Periodenabgrenzung" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">Periodenabgrenzung</Link>.
+              {t("Landing.feature1Desc", { defaultValue: feature1Desc })}{" "}
+              Erfahren Sie mehr über die{" "}
+              <Link
+                href="https://de.wikipedia.org/wiki/Periodenabgrenzung"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none"
+              >
+                Periodenabgrenzung
+              </Link>
+              .
             </>
           }
         />
         <FeatureCard
           iconSrc="/feature-icon-2.svg"
-          iconAlt={t('Landing.feature2Alt', { defaultValue: 'Abgegrenzte Einnahmen Ikone' })}
-          title={t('Landing.feature2Title', { defaultValue: feature2Title })}
+          iconAlt={t("Landing.feature2Alt", {
+            defaultValue: "Abgegrenzte Einnahmen Ikone",
+          })}
+          title={t("Landing.feature2Title", { defaultValue: feature2Title })}
           description={
             <>
-              {t('Landing.feature2Desc', { defaultValue: feature2Desc })} Im Einklang mit <Link href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">IFRS 15</Link> Standards.
+              {t("Landing.feature2Desc", { defaultValue: feature2Desc })} Im
+              Einklang mit{" "}
+              <Link
+                href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-15-revenue-from-contracts-with-customers/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none"
+              >
+                IFRS 15
+              </Link>{" "}
+              Standards.
             </>
           }
         />
         <FeatureCard
           iconSrc="/feature-icon-3.svg"
-          iconAlt={t('Landing.feature3Alt', { defaultValue: 'Kein Login Notwendig Ikone' })}
-          title={t('Landing.feature3Title', { defaultValue: feature3Title })}
+          iconAlt={t("Landing.feature3Alt", {
+            defaultValue: "Kein Login Notwendig Ikone",
+          })}
+          title={t("Landing.feature3Title", { defaultValue: feature3Title })}
           description={
             <>
-              {t('Landing.feature3Desc', { defaultValue: feature3Desc })} Lesen Sie mehr über unsere <Link href={`/${lang}/legal/privacy-policy`} className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none">Datenschutzrichtlinie</Link>.
+              {t("Landing.feature3Desc", { defaultValue: feature3Desc })} Lesen
+              Sie mehr über unsere{" "}
+              <Link
+                href={`/${lang}/legal/privacy-policy`}
+                className="text-primary underline hover:opacity-80 whitespace-nowrap cursor-pointer select-none"
+              >
+                Datenschutzrichtlinie
+              </Link>
+              .
             </>
           }
         />
-      </section>
+      </PageSection>
 
       {/* Call to Action */}
-      <section className="py-20 px-6 mb-16 cursor-default">
+      <PageSection py="20" mb="16" maxWidth="full">
         <div className="max-w-4xl mx-auto bg-card border border-border/40 shadow-lg rounded-xl overflow-hidden cursor-default">
           <div className="flex flex-col md:flex-row items-center p-8 md:p-10 gap-8 cursor-default">
             <div className="text-left flex-1 cursor-default">
-              <h2 className="text-3xl font-bold mb-4 text-primary cursor-default">
-                {t('Landing.ctaTitle', { defaultValue: ctaTitle })}
-              </h2>
-              <p className="text-lg mb-6 text-muted-foreground cursor-default">
-                {t('Landing.ctaSubtitle', { defaultValue: ctaSubtitle })} Erfahren Sie, wie <a href="https://www.investopedia.com/terms/a/accrualaccounting.asp" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline cursor-pointer select-none">Periodenabgrenzung</a> Ihre Finanzberichterstattung verbessern kann.
-              </p>
-              <LandingPageClientInteractions 
-                buttonText={t('Landing.ctaButton', { defaultValue: 'Test with Demo Data' })}
+              <TypographyH2 className="mb-4 text-primary cursor-default">
+                {t("Landing.ctaTitle", { defaultValue: ctaTitle })}
+              </TypographyH2>
+              <TypographyLarge className="mb-6 text-muted-foreground cursor-default">
+                {t("Landing.ctaSubtitle", { defaultValue: ctaSubtitle })}{" "}
+                Erfahren Sie, wie{" "}
+                <a
+                  href="https://www.investopedia.com/terms/a/accrualaccounting.asp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline cursor-pointer select-none"
+                >
+                  Periodenabgrenzung
+                </a>{" "}
+                Ihre Finanzberichterstattung verbessern kann.
+              </TypographyLarge>
+              <LandingPageClientInteractions
+                buttonText={t("Landing.ctaButton", {
+                  defaultValue: "Test with Demo Data",
+                })}
                 demoStartDate={demoStartDate}
                 demoEndDate={demoEndDate}
                 demoAmount={demoAmount}
@@ -171,23 +233,25 @@ export default async function GermanLandingPage({ params }: { params: { lang: st
               />
             </div>
             <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center">
-              <Image 
-                src="/images/calculator-illustration.svg" 
-                alt={t('Landing.ctaIconAlt', { defaultValue: 'Invoice Allocation Illustration' })}
-                width={240} 
-                height={180} 
+              <Image
+                src="/images/calculator-illustration.svg"
+                alt={t("Landing.ctaIconAlt", {
+                  defaultValue: "Invoice Allocation Illustration",
+                })}
+                width={240}
+                height={180}
                 className="object-contain"
               />
             </div>
           </div>
         </div>
-      </section>
-      
-      <FaqSection 
-        faqData={faqData} 
+      </PageSection>
+
+      <FaqSection
+        faqData={faqData}
         title={faqSectionTitle}
         ldJsonMainEntity={ldJsonMainEntity}
       />
     </>
   );
-} 
+}

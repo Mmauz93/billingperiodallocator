@@ -1,41 +1,30 @@
 "use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CalculationError, CalculationInput, CalculationResult } from "@/lib/calculations";
+import { CalculationInput, CalculationResult } from "@/lib/calculations";
 import { Card, CardContent } from "@/components/ui/card";
-import { ERROR_CODES, InputValidationError } from "@/lib/errors";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import { CalculationCallbackData } from "@/components/invoice-form";
-import Cookies from 'js-cookie';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { CalculationErrorType } from "./invoice-form/types";
+import Cookies from "js-cookie";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Loader2 } from "lucide-react";
 import { ResultsDisplay } from "@/components/results-display";
 import { SettingsModal } from "@/components/settings-modal";
 import { Terminal } from "lucide-react";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
+import { handleCalculationError } from "./invoice-form/error-handler";
 import { safeText } from "@/lib/utils";
-import { useTranslation } from '@/translations';
+import { useDemoDataHandler } from "./invoice-form/demo-data-handler";
+import { useTranslation } from "@/translations";
 
-// Import the CalculationCallbackData type from InvoiceForm
-
-// Update the error type definition
-type CalculationErrorType = string | Error | CalculationError | { message?: string; [key: string]: unknown } | null | undefined;
-
-// Define a type for the demo data that matches the one in InvoiceForm
-type DemoDataType = {
-  startDateString?: string;
-  endDateString?: string;
-  amount?: string;
-  includeEndDate?: boolean;
-  splitPeriod?: 'yearly' | 'quarterly' | 'monthly';
-  isDemo?: boolean;
-} | null;
-
-// Dynamic import of the InvoiceForm component with SSR disabled for faster loading
 const InvoiceForm = dynamic(
-  () => import('@/components/invoice-form').then(mod => ({ default: mod.InvoiceForm })),
-  { 
+  () =>
+    import("@/components/invoice-form").then((mod) => ({
+      default: mod.InvoiceForm,
+    })),
+  {
     ssr: false,
     loading: () => (
       <div className="space-y-6 animate-pulse">
@@ -47,305 +36,182 @@ const InvoiceForm = dynamic(
         <div className="h-48 bg-muted/60 rounded-lg"></div>
         <div className="h-10 bg-muted/60 rounded-lg"></div>
       </div>
-    )
-  }
+    ),
+  },
 );
 
-// Define a type alias that matches ResultsDisplay's expected inputData type
 type InputDataForDisplay = Pick<
   CalculationInput,
   "startDate" | "endDate" | "includeEndDate" | "amounts" | "splitPeriod"
 >;
 
 interface InvoiceCalculatorClientProps {
-  pageTitle: string; // Add pageTitle prop
+  pageTitle: string;
 }
 
-export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculatorClientProps) {
+export default function InvoiceCalculatorClient({
+  pageTitle,
+}: InvoiceCalculatorClientProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const [calculationError, setCalculationError] = useState<string | null>(null);
-  const [storedInputData, setStoredInputData] = useState<CalculationCallbackData>(null);
+  const [storedInputData, setStoredInputData] =
+    useState<CalculationCallbackData>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
-  // State for holding demo data to pass as prop
-  const [initialDemoData, setInitialDemoData] = useState<DemoDataType>(null);
-  // Ref to track if we've already processed demo data to avoid duplicate processing
-  const demoDataProcessedRef = useRef(false);
 
-  // --- Consent Management State and Logic --- 
-  const gaMeasurementId = "G-9H2KTHX5YK"; 
+  const { initialDemoData, handleDemoDataApplied } = useDemoDataHandler();
+
+  const gaMeasurementId = "G-9H2KTHX5YK";
   const consentCookieName = "siempiBillSplitterConsent";
   const [hasConsent, setHasConsent] = useState(false);
 
-  // Add cleanup effect that runs on component unmount
   useEffect(() => {
-    // This cleanup will run when the component unmounts
     return () => {
-      if (typeof window !== 'undefined') {
-        // Safely capture current values for logging (useful for debugging)
-        const hasDemoData = sessionStorage.getItem('billSplitterDemoData') !== null;
-        const hasFormCache = sessionStorage.getItem('invoiceFormDataCache') !== null;
-        
-        // Safely remove only the form cache on unmount.
-        // Let InvoiceForm handle clearing billSplitterDemoData after processing.
+      if (typeof window !== "undefined") {
+        const hasDemoData =
+          sessionStorage.getItem("billSplitterDemoData") !== null;
+        const hasFormCache =
+          sessionStorage.getItem("invoiceFormDataCache") !== null;
+
         try {
-          // sessionStorage.removeItem('billSplitterDemoData'); // REMOVED
-          sessionStorage.removeItem('invoiceFormDataCache');
-          console.log('[InvoiceCalculatorClient] Cleaned up sessionStorage on unmount', { 
-            hadDemoData: hasDemoData, 
-            hadFormCache: hasFormCache, 
-            // Note: billSplitterDemoData is no longer removed here.
-          });
+          sessionStorage.removeItem("invoiceFormDataCache");
+          console.log(
+            "[InvoiceCalculatorClient] Cleaned up sessionStorage on unmount",
+            {
+              hadDemoData: hasDemoData,
+              hadFormCache: hasFormCache,
+            },
+          );
         } catch (error) {
-          console.error('[InvoiceCalculatorClient] Error clearing sessionStorage on unmount:', error);
+          console.error(
+            "[InvoiceCalculatorClient] Error clearing sessionStorage on unmount:",
+            error,
+          );
         }
       }
     };
-  }, []); // Empty dependency array means this runs only on mount/unmount
+  }, []);
 
-  // Effect just for setting mounted state and title
   useEffect(() => {
     setMounted(true);
-
-    // Check consent cookie
     const consentGiven = Cookies.get(consentCookieName) === "true";
     setHasConsent(consentGiven);
   }, []);
 
-  // Separate effect ONLY for reading demo data
-  useEffect(() => {
-    // Only process sessionStorage once per component lifecycle
-    if (demoDataProcessedRef.current) {
-      return;
-    }
-
-    // Read demo data from sessionStorage
-    if (typeof window !== 'undefined') {
-      const demoDataString = sessionStorage.getItem('billSplitterDemoData');
-      console.log("[InvoiceCalculatorClient] Reading sessionStorage billSplitterDemoData:", demoDataString);
-      
-      if (demoDataString) {
-        try {
-          const parsedDemoData = JSON.parse(demoDataString);
-          if (parsedDemoData && parsedDemoData.isDemo) {
-            // Clear localStorage cache first to ensure it doesn't override demo data
-            localStorage.removeItem('invoiceFormDataCache');
-            console.log("[InvoiceCalculatorClient] Cleared localStorage cache to ensure demo data is used");
-            
-            console.log("[InvoiceCalculatorClient] Setting initialDemoData state:", parsedDemoData);
-            setInitialDemoData(parsedDemoData);
-            
-            // Clear sessionStorage immediately
-            sessionStorage.removeItem('billSplitterDemoData');
-            console.log("[InvoiceCalculatorClient] Removed billSplitterDemoData from sessionStorage");
-            
-            // Mark as processed to prevent re-reading
-            demoDataProcessedRef.current = true;
-          } else {
-            sessionStorage.removeItem('billSplitterDemoData');
-          }
-        } catch (error) {
-          console.error("[InvoiceCalculatorClient] Error parsing demo data:", error);
-          sessionStorage.removeItem('billSplitterDemoData');
-        }
-      }
-    }
-  }, []); // No dependencies - runs once on mount
-
-  // Callback for InvoiceForm to signal demo data has been processed
-  const handleDemoDataApplied = useCallback(() => {
-    console.log("[InvoiceCalculatorClient] Demo data processed by InvoiceForm, clearing state");
-    setInitialDemoData(null);
-  }, []);
-
-  // Updated function to handle the new error structure
   const handleCalculation = (
     formData: CalculationCallbackData,
     results: CalculationResult | null,
-    error?: CalculationErrorType
+    error?: CalculationErrorType,
   ) => {
     setCalculationResult(results);
-    let displayError: string | null = null;
-    
-    if (error) {
-      const baseErrorTitle = t('Errors.calculationErrorTitle');
-      
-      // Handle the new CalculationError types specifically
-      if (error instanceof InputValidationError) {
-        // Map specific error codes to translated messages
-        switch (error.code) {
-          case ERROR_CODES.NO_AMOUNTS:
-            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
-            break;
-          case ERROR_CODES.INVALID_AMOUNT:
-            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountPositive');
-            break;
-          case ERROR_CODES.END_BEFORE_START:
-            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
-            break;
-          case ERROR_CODES.INVALID_DATES:
-            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorInvalidDates', { defaultValue: "Valid start and end dates are required" });
-            break;
-          case ERROR_CODES.ZERO_DURATION:
-            displayError = baseErrorTitle + ": " + t('InvoiceForm.errorZeroDuration', { defaultValue: "The date range must result in a positive duration" });
-            break;
-          default:
-            displayError = baseErrorTitle + ": " + error.message;
-        }
-        
-        // Log with additional details
-        console.warn(`[InvoiceCalculatorClient] Input validation error: ${error.code}`, error.details);
-      } 
-      else if (error instanceof CalculationError) {
-        // Generic handling for other calculation errors
-        displayError = baseErrorTitle + ": " + error.message;
-        
-        // Detailed logging of calculation errors
-        console.error(`[InvoiceCalculatorClient] Calculation error: ${error.code} (${error.category})`, error.details);
-      }
-      else if (typeof error === 'string') {
-        // Backward compatibility for string errors
-        if (error.includes("At least one amount is required")) {
-          displayError = baseErrorTitle + ": " + t('InvoiceForm.errorAmountRequired');
-        } else if (error.includes("Start date must be before")) {
-          displayError = baseErrorTitle + ": " + t('InvoiceForm.errorEndDateBeforeStart');
-        } else {
-          displayError = baseErrorTitle + ": " + error;
-        }
-      } 
-      else if (error instanceof Error) {
-        // Standard Error objects
-        displayError = baseErrorTitle + ": " + error.message;
-        console.error("[InvoiceCalculatorClient] Error object received:", error);
-      } 
-      else if (error && typeof error === 'object') {
-        // Object errors (fallback)
-        if ('message' in error && typeof error.message === 'string') {
-          displayError = baseErrorTitle + ": " + error.message;
-        } else {
-          try {
-            const stringifiedError = JSON.stringify(error);
-            displayError = baseErrorTitle + ": " + (stringifiedError !== "{}" ? stringifiedError : t('Errors.unexpectedError'));
-          } catch {
-            displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
-          }
-        }
-        console.error("[InvoiceCalculatorClient] Error object received:", error);
-      } 
-      else {
-        // Fallback for unknown error types
-        displayError = baseErrorTitle + ": " + t('Errors.unexpectedError');
-        console.error("[InvoiceCalculatorClient] An unexpected or non-standard error was received:", error);
-      }
-    }
-    
+    const displayError = error ? handleCalculationError({ error, t }) : null;
     setCalculationError(displayError);
 
-    // If there was any kind of error, we should ensure results are not processed as successful
     if (formData && results && !displayError) {
       setStoredInputData(formData);
-      // Use requestAnimationFrame + timeout to ensure the layout is stable before scrolling
       setTimeout(() => {
         requestAnimationFrame(() => {
           if (resultsSectionRef.current) {
-            resultsSectionRef.current.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'start' 
+            resultsSectionRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
             });
           }
         });
-      }, 200); // Slightly longer delay to ensure layout is fully settled
+      }, 200);
     } else {
       setStoredInputData(null);
-      // If there was an error, but results were somehow passed, clear them too
       if (displayError) {
         setCalculationResult(null);
       }
     }
   };
 
-  // Determine static description text based on pageTitle to avoid hydration mismatch
-  // IMPORTANT: This must exactly match the text in the translation files
-  const description1 = pageTitle === "Rechnungsperioden-Rechner" 
-    ? "Teilen Sie Rechnungen über Geschäftsjahre auf. Konform mit IFRS, HGB und OR — keine Anmeldung, keine Datenspeicherung. Einfach, schnell, präzise."
-    : "Split invoices across fiscal years. Stay compliant with IFRS, HGB, and OR — no login, no data storage. Simple, fast, precise.";
-    
-  const description2 = pageTitle === "Rechnungsperioden-Rechner"
-    ? "Ideal für Buchhalter bei der Erstellung von Gewinn- und Verlustrechnungen und Bilanzen, für Finanzfachleute bei der Budgetverwaltung oder für alle, die eine klare finanzielle Aufschlüsselung für das Reporting benötigen."
-    : "Ideal for accountants preparing income statements and balance sheets, financial professionals managing budgets, or anyone needing a clear financial breakdown for reporting.";
+  const description1 =
+    pageTitle === "Rechnungsperioden-Rechner"
+      ? "Teilen Sie Rechnungen über Geschäftsjahre auf. Konform mit IFRS, HGB und OR — keine Anmeldung, keine Datenspeicherung. Einfach, schnell, präzise."
+      : "Split invoices across fiscal years. Stay compliant with IFRS, HGB, and OR — no login, no data storage. Simple, fast, precise.";
+
+  const description2 =
+    pageTitle === "Rechnungsperioden-Rechner"
+      ? "Ideal für Buchhalter bei der Erstellung von Gewinn- und Verlustrechnungen und Bilanzen, für Finanzfachleute bei der Budgetverwaltung oder für alle, die eine klare finanzielle Aufschlüsselung für das Reporting benötigen."
+      : "Ideal for accountants preparing income statements and balance sheets, financial professionals managing budgets, or anyone needing a clear financial breakdown for reporting.";
 
   return (
     <>
-      {/* Conditionally render Google Analytics only if consent is given */}
-      {hasConsent && gaMeasurementId && <GoogleAnalytics gaId={gaMeasurementId} />}
+      {hasConsent && gaMeasurementId && (
+        <GoogleAnalytics gaId={gaMeasurementId} />
+      )}
 
       <div className="container mx-auto px-4 py-8 max-w-4xl grow overflow-hidden w-full">
-        {/* Title and description moved outside the card - Render directly */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-center mb-4">
-            {pageTitle}
-          </h1>
+          <h1 className="text-3xl font-bold text-center mb-4">{pageTitle}</h1>
           <div className="max-w-2xl mx-auto space-y-2 px-4">
-            {/* Use static text for initial render, then t() after mounting */}
-            <p>{mounted ? t('InvoiceForm.description_p1') : description1}</p>
-            <p>{mounted ? t('InvoiceForm.description_p2') : description2}</p>
+            <p>{mounted ? t("InvoiceForm.description_p1") : description1}</p>
+            <p>{mounted ? t("InvoiceForm.description_p2") : description2}</p>
           </div>
         </div>
-        
-        {/* Only show loading indicator for the form when component is not mounted (InvoiceForm itself has a more detailed skeleton via dynamic import) */}
+
         {!mounted && (
           <div className="flex items-center gap-2 justify-center text-muted-foreground text-sm mb-6">
             <Loader2 className="animate-spin h-4 w-4 text-primary" />
             <span>Loading calculator...</span>
           </div>
         )}
-        
-        {/* Fixed-width container for consistent card sizes */}
+
         <div className="mx-auto" style={{ maxWidth: "768px" }}>
-          {/* Form Card */}
-          <Card className="mb-12 shadow-md w-full transition-opacity duration-300 ease-in-out" 
-                data-loaded={mounted ? "true" : "false"}
-                style={{ opacity: mounted ? 1 : 0.85 }}>
+          <Card
+            className="mb-12 shadow-md w-full transition-opacity duration-300 ease-in-out"
+            data-loaded={mounted ? "true" : "false"}
+            style={{ opacity: mounted ? 1 : 0.85 }}
+          >
             <CardContent className="pt-6">
               <div className="w-full">
-                <Suspense fallback={
-                  <div className="space-y-6 animate-pulse">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="h-24 bg-muted/60 rounded-lg"></div>
-                      <div className="h-24 bg-muted/60 rounded-lg"></div>
+                <Suspense
+                  fallback={
+                    <div className="space-y-6 animate-pulse">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="h-24 bg-muted/60 rounded-lg"></div>
+                        <div className="h-24 bg-muted/60 rounded-lg"></div>
+                      </div>
+                      <div className="h-20 bg-muted/60 rounded-lg"></div>
+                      <div className="h-48 bg-muted/60 rounded-lg"></div>
+                      <div className="h-10 bg-muted/60 rounded-lg"></div>
                     </div>
-                    <div className="h-20 bg-muted/60 rounded-lg"></div>
-                    <div className="h-48 bg-muted/60 rounded-lg"></div>
-                    <div className="h-10 bg-muted/60 rounded-lg"></div>
-                  </div>
-                }>
-                  <InvoiceForm 
-                    onCalculateAction={handleCalculation} 
-                    initialDemoData={initialDemoData} // Pass state as prop
-                    onDemoDataApplied={handleDemoDataApplied} // Pass callback prop
+                  }
+                >
+                  <InvoiceForm
+                    onCalculateAction={handleCalculation}
+                    initialDemoData={initialDemoData}
+                    onDemoDataApplied={handleDemoDataApplied}
                   />
                 </Suspense>
               </div>
             </CardContent>
           </Card>
 
-          {/* Results Section */}
           <div ref={resultsSectionRef} className="mt-12 w-full">
             {mounted && calculationError && (
               <Alert variant="destructive" className="w-full">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>{t('Errors.calculationErrorTitle')}</AlertTitle>
-                <AlertDescription>{safeText(calculationError)}</AlertDescription>
+                <AlertTitle>{t("Errors.calculationErrorTitle")}</AlertTitle>
+                <AlertDescription>
+                  {safeText(calculationError)}
+                </AlertDescription>
               </Alert>
             )}
-            {mounted && calculationResult && storedInputData && !calculationError && (
-              <ResultsDisplay 
-                results={calculationResult} 
-                inputData={storedInputData as InputDataForDisplay}
-              />
-            )}
+            {mounted &&
+              calculationResult &&
+              storedInputData &&
+              !calculationError && (
+                <ResultsDisplay
+                  results={calculationResult}
+                  inputData={storedInputData as InputDataForDisplay}
+                />
+              )}
             {!mounted && calculationResult === null && (
               <Card className="shadow-md w-full h-64 flex items-center justify-center">
                 <div className="space-y-4 p-6 w-full">
@@ -364,7 +230,12 @@ export default function InvoiceCalculatorClient({ pageTitle }: InvoiceCalculator
         </div>
       </div>
 
-      {mounted && <SettingsModal isOpen={isSettingsOpen} onOpenChange={setIsSettingsOpen} />}
+      {mounted && (
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
+        />
+      )}
     </>
   );
 }

@@ -1,5 +1,3 @@
-// Root Layout (Server Component)
-
 import "@/app/globals.css";
 
 import ClientLayout from "@/components/client-layout";
@@ -7,21 +5,7 @@ import Script from "next/script";
 import { cn } from "@/lib/utils";
 import { metadata } from "./layout.metadata";
 
-// import { Inter } from "next/font/google"; // REMOVED Inter
-
-
-
-
-// Re-export the metadata
 export { metadata };
-
-/* // REMOVED Inter font loading
-const inter = Inter({
-  subsets: ["latin"],
-  display: "optional", 
-  variable: "--font-inter",
-});
-*/
 
 export default function RootLayout({
   children,

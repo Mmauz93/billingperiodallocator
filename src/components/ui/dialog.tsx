@@ -61,19 +61,16 @@ function DialogContent({
       if (isMountedRef.current) {
         setIsMounted(true);
       }
-    }, 10); // Small delay to ensure DOM is ready for animations
+    }, 10);
 
     return () => {
       isMountedRef.current = false;
       clearTimeout(mountTimer);
-      // No need to call setIsMounted(false) here.
-      // React will unmount the component and its contents naturally.
-      // The isMounted state is primarily for the initial mount animation.
     };
   }, []);
 
   if (!isMounted) {
-    return null; // Render nothing until mounted (for entry animation)
+    return null;
   }
 
   return (
@@ -85,7 +82,7 @@ function DialogContent({
           "bg-card data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-xl duration-200 sm:max-w-lg mx-auto",
           className,
         )}
-        style={{ backgroundColor: 'hsl(var(--card))', opacity: 1 }}
+        style={{ backgroundColor: "hsl(var(--card))", opacity: 1 }}
         {...props}
       >
         {children}

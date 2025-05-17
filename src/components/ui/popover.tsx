@@ -32,35 +32,33 @@ function PopoverContent({
       if (isMountedRef.current) {
         setIsMounted(true);
       }
-    }, 10); // Small delay for mount animation
+    }, 10);
 
     return () => {
       isMountedRef.current = false;
       clearTimeout(mountTimer);
-      // Immediately set isMounted to false to trigger clean removal
       setIsMounted(false);
-      
-      // Make sure we clean up any portals that might still be in the DOM
-      if (typeof document !== 'undefined') {
-        // Give React a chance to unmount naturally before we force cleanup
+
+      if (typeof document !== "undefined") {
         setTimeout(() => {
-          // Find any orphaned popover elements and remove them
-          document.querySelectorAll('[data-radix-popover-content]').forEach(element => {
-            try {
-              if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
+          document
+            .querySelectorAll("[data-radix-popover-content]")
+            .forEach((element) => {
+              try {
+                if (element && element.parentNode) {
+                  element.parentNode.removeChild(element);
+                }
+              } catch {
+                // Silently handle any errors during forced cleanup
               }
-            } catch /* (error) */ {
-              // Silently handle any errors during forced cleanup
-            }
-          });
+            });
         }, 0);
       }
     };
   }, []);
 
   if (!isMounted) {
-    return null; // Render nothing until mounted or after unmount
+    return null;
   }
 
   return (
@@ -73,7 +71,7 @@ function PopoverContent({
           "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
           className,
         )}
-        style={{ backgroundColor: 'hsl(var(--popover))', opacity: 1 }}
+        style={{ backgroundColor: "hsl(var(--popover))", opacity: 1 }}
         {...props}
       />
     </PopoverPrimitive.Portal>

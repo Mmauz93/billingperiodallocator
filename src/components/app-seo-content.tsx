@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 /**
  * Client-only SEO content component.
@@ -11,26 +11,26 @@ import { usePathname } from 'next/navigation';
 export default function AppSeoContent() {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const isAppPage = pathname?.includes('/app');
-  
+  const isAppPage = pathname?.includes("/app");
+
   // Determine language from URL path instead of i18n hooks to avoid hydration issues
-  const isGerman = pathname?.includes('/de/');
-  
+  const isGerman = pathname?.includes("/de/");
+
   // Always run this effect at top level
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   // Don't render during SSR
   if (!mounted || !isAppPage) {
     return null;
   }
-  
+
   // Hardcoded content by language for reliable rendering
   const description = isGerman
     ? "Teilen Sie Rechnungen präzise auf Geschäftsjahre, Quartale oder Monate auf."
     : "Split invoices across fiscal years, quarters, or months with precision.";
-  
+
   return (
     <div className="hidden">
       <script
@@ -39,18 +39,18 @@ export default function AppSeoContent() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "BillSplitter",
-            "applicationCategory": "FinanceApplication",
-            "operatingSystem": "Web",
-            "offers": {
+            name: "BillSplitter",
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "Web",
+            offers: {
               "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD"
+              price: "0",
+              priceCurrency: "USD",
             },
-            "description": description
-          })
+            description: description,
+          }),
         }}
       />
     </div>
   );
-} 
+}

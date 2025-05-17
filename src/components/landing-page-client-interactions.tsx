@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 interface LandingPageClientInteractionsProps {
   buttonText: string;
@@ -10,7 +10,7 @@ interface LandingPageClientInteractionsProps {
   demoEndDate: string;
   demoAmount: string;
   demoIncludeEndDate: string;
-  demoSplitPeriod: 'yearly' | 'quarterly' | 'monthly';
+  demoSplitPeriod: "yearly" | "quarterly" | "monthly";
   appPath: string; // e.g., '/en/app' or '/de/app'
 }
 
@@ -38,11 +38,14 @@ export default function LandingPageClientInteractions({
         startDateString: demoStartDate,
         endDateString: demoEndDate,
         amount: demoAmount,
-        includeEndDate: demoIncludeEndDate === 'true',
+        includeEndDate: demoIncludeEndDate === "true",
         splitPeriod: demoSplitPeriod,
-        isDemo: true
+        isDemo: true,
       };
-      sessionStorage.setItem('billSplitterDemoData', JSON.stringify(demoDataForForm));
+      sessionStorage.setItem(
+        "billSplitterDemoData",
+        JSON.stringify(demoDataForForm),
+      );
       router.push(appPath);
     }
   };
@@ -55,8 +58,9 @@ export default function LandingPageClientInteractions({
       aria-label={buttonText}
     >
       {buttonText}
-      <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+      <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+        →
+      </span>
     </Button>
   );
-} 
- 
+}
