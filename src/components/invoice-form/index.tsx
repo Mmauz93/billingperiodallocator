@@ -527,7 +527,7 @@ export function InvoiceForm({
         <Button
           type="submit"
           variant="default"
-          className={`w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? "animate-success-glow" : ""}`}
+          className={`w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? "animate-successGlow" : ""}`}
           disabled={form.formState.isSubmitting || isCalculating}
           aria-live="polite"
         >

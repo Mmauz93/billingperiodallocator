@@ -4,10 +4,6 @@
 /* Import modular CSS files */
 @import "./base.css";
 @import "./themes.css";
-@import "./components.css";
-@import "./forms.css";
-@import "./calendar.css";
-@import "./animations.css";
 
 /* Utility Classes */
 .form-error-message {
