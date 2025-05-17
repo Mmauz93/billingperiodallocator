@@ -44,7 +44,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] public/web.config
 - [x] public/.htaccess
 - [x] public/robots.txt
-[ ] public/terms-of-use.de.md
+- [x] public/terms-of-use.de.md
 [ ] public/terms-of-use.md
 [ ] public/og-image.svg
 [ ] public/feature-icon-1.svg
