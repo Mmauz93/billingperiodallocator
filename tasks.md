@@ -31,7 +31,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] package-lock.json
 - [x] package.json
 - [x] next.config.ts
-[ ] tsconfig.json
+- [x] tsconfig.json
 [ ] tailwind.config.js
 [ ] next-env.d.ts
 [ ] tailwind.config.js.bak
