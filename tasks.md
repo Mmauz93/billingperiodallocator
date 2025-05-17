@@ -38,7 +38,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] .browserslistrc
 - [x] eslint.config.mjs
 - [x] turbo.json
-[ ] postcss.config.mjs
+- [x] postcss.config.mjs
 [ ] components.json
 [ ] .gitlab-ci.yml
 [ ] public/web.config
