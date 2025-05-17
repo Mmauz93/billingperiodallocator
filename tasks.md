@@ -39,7 +39,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] eslint.config.mjs
 - [x] turbo.json
 - [x] postcss.config.mjs
-[ ] components.json
+- [x] components.json
 [ ] .gitlab-ci.yml
 [ ] public/web.config
 [ ] public/.htaccess
