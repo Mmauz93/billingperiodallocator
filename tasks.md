@@ -29,7 +29,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
    
 - [x] .gitignore
 - [x] package-lock.json
-[ ] package.json
+- [x] package.json
 [ ] next.config.ts
 [ ] tsconfig.json
 [ ] tailwind.config.js
