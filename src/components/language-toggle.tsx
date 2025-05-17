@@ -8,12 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SupportedLanguage, changeLanguage } from "@/lib/language-service";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
-import { SupportedLanguage } from "@/lib/language-service";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/translations";
 
@@ -33,7 +33,7 @@ export default function LanguageToggle() {
 
   const handleLanguageChange = (lang: SupportedLanguage) => {
     if (i18n.language !== lang) {
-      i18n.changeLanguage(lang);
+      changeLanguage(lang, { navigate: true });
     }
     setOpen(false);
     buttonRef.current?.blur();

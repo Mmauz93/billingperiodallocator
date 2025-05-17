@@ -112,13 +112,6 @@ function replaceValues(
 
 // Simple i18n interface for compatibility with existing code
 export const i18n = {
-  // Note: We're not actually changing language here, just getting the current one
-  changeLanguage: () => {
-    console.warn(
-      "This method is deprecated. Use the changeLanguage from language-service.ts instead",
-    );
-    return false;
-  },
   language: getCurrentLanguage(),
   t,
 };

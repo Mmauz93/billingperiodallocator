@@ -26,21 +26,6 @@ export function formatNumber(
 }
 
 /**
- * Rounds a number based on the specified rounding precision factor.
- * @param value The number to round.
- * @param precision The rounding factor (e.g., 0.01, 0.05, 1). Must be > 0.
- * @returns Rounded number.
- */
-export function roundValue(value: number, precision: number): number {
-  if (precision <= 0) {
-    console.warn(`Invalid rounding precision: ${precision}. Using 0.01.`);
-    precision = 0.01;
-  }
-  const multiplier = 1 / precision;
-  return Math.round(value * multiplier) / multiplier;
-}
-
-/**
  * Formats a date according to locale. Accepts either a Date object or a string in YYYY-MM-DD format.
  * @param dateInput Date as a string in 'yyyy-MM-dd' format or as a Date object.
  * @param locale Locale string (e.g., 'en', 'de').

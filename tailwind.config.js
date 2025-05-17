@@ -2,6 +2,7 @@ import animate from "tailwindcss-animate";
 import { colors } from "./src/design/tailwind-colors";
 import { typography as customTypography } from "./src/design/tailwind-typography";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import plugin from "tailwindcss/plugin";
 import radixVariants from "./src/design/plugins/radix-variants";
 import { spacing } from "./src/design/tailwind-spacing";
 import tailwindTypography from "@tailwindcss/typography";
@@ -73,17 +74,69 @@ const tailwindConfig = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        // Add other keyframes from globals.css if you want to manage them here
-        // e.g., fadeIn, pulseHighlight, etc.
-        // Keep them in globals.css if preferred.
+        // Migrated animations from src/styles/animations.css
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        staggeredFadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        pulseHighlight: {
+          '0%': { backgroundColor: 'transparent' },
+          '30%': { backgroundColor: 'var(--pulse-highlight-color)' },
+          '100%': { backgroundColor: 'transparent' },
+        },
+        resultReveal: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        successGlow: {
+          '0%, 100%': { boxShadow: '0 0 0 hsla(var(--success), 0)' },
+          '50%': { boxShadow: '0 0 12px hsla(var(--success), 0.8)' },
+        },
+        resultSuccessGlow: {
+          '0%, 100%': { boxShadow: '0 0 2px hsla(var(--primary), 0.1)' },
+          '40%': { boxShadow: '0 0 15px hsla(var(--primary), 0.3)' },
+        },
+        darkResultSuccessGlow: {
+          '0%, 100%': { boxShadow: '0 0 2px hsla(var(--ring), 0.1)' },
+          '40%': { boxShadow: '0 0 15px hsla(var(--ring), 0.3)' },
+        },
+        scaleIn: {
+          from: { transform: 'scale(1)' },
+          to: { transform: 'scale(1.03)' },
+        },
       },
       animation: {
         // Define animations used by tailwindcss-animate
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        // Add other animations from globals.css if needed
+        // Migrated animations from src/styles/animations.css
+        fadeIn: 'fadeIn 0.5s ease-out forwards',
+        staggeredFadeIn: 'staggeredFadeIn 0.4s ease-out forwards',
+        pulseHighlight: 'pulseHighlight 1.2s ease-out',
+        resultReveal: 'resultReveal 0.4s ease-in-out forwards',
+        successGlow: 'successGlow 1.5s ease-in-out',
+        resultGlow: 'resultSuccessGlow 3s ease-out forwards',
+        resultGlowDark: 'darkResultSuccessGlow 3s ease-out forwards',
+        scaleIn: 'scaleIn 0.2s ease-out',
       },
       typography: customTypography,
+      zIndex: {
+        // Explicit z-index variables to match CSS vars
+        'negative': 'var(--z-negative)',
+        'base': 'var(--z-base)',
+        'dropdown': 'var(--z-dropdown)',
+        'sticky': 'var(--z-sticky)',
+        'fixed': 'var(--z-fixed)',
+        'modal': 'var(--z-modal)',
+        'popover': 'var(--z-popover)',
+        'toast': 'var(--z-toast)',
+        'tooltip': 'var(--z-tooltip)',
+        'max': 'var(--z-max)',
+      }
     },
   },
   plugins: [
@@ -91,6 +144,23 @@ const tailwindConfig = {
     radixVariants, // Custom Radix UI variants plugin
     // themeVars, // Custom Theme Variables plugin // REMOVED
     tailwindTypography, // Typography plugin for rich text content
+    // Custom plugin to handle Radix popper content wrapper styling
+    plugin(function({ addBase }) {
+      addBase({
+        '[data-radix-popper-content-wrapper]': {
+          zIndex: 'var(--z-popover)',
+          backgroundColor: 'inherit',
+          opacity: '1 !important',
+        },
+        // Form validation styles from forms.css
+        '[aria-invalid="true"], [data-invalid="true"]': {
+          borderColor: 'hsl(var(--destructive))',
+        },
+        '[aria-invalid="true"] ~ svg, [aria-invalid="true"] + svg, [data-invalid="true"] ~ svg, [data-error="true"] svg, svg.text-destructive': {
+          color: 'hsl(var(--destructive))',
+        },
+      });
+    }),
   ],
 };
 

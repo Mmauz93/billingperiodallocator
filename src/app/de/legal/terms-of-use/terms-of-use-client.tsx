@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/lib/language-service";
+import { SUPPORTED_LANGUAGES, SupportedLanguage, changeLanguage } from "@/lib/language-service";
 
 import { ForceDarkTheme } from "@/components/force-dark-theme";
 import ReactMarkdown from "react-markdown";
@@ -103,7 +103,7 @@ export default function TermsOfUseClientDE({
         : ("de" as SupportedLanguage);
 
     if (i18n.language !== validLang) {
-      i18n.changeLanguage(validLang);
+      changeLanguage(validLang);
     }
   }, [initialLang, i18n]);
 

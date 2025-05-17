@@ -18,6 +18,8 @@ import {
   startOfDay,
 } from "date-fns";
 
+import { roundToDecimals } from "./utils";
+
 // Re-export error types so they can be imported from calculations.ts
 export {
   CalculationError,
@@ -27,9 +29,10 @@ export {
 } from "./errors";
 
 // Helper function for rounding to a specific number of decimal places
-function round(value: number, decimals: number): number {
-  return Number(Math.round(Number(value + "e" + decimals)) + "e-" + decimals);
-}
+// REMOVED: Replaced with centralized utility function roundToDecimals
+// function round(value: number, decimals: number): number {
+//   return Number(Math.round(Number(value + "e" + decimals)) + "e-" + decimals);
+// }
 
 // Updated Input: Accepts an array of amounts and split period type
 export interface CalculationInput {
@@ -228,7 +231,7 @@ export function calculateInvoiceSplit(
     };
   }
 
-  const originalTotalAmount = round(
+  const originalTotalAmount = roundToDecimals(
     input.amounts.reduce((sum, a) => sum + a, 0),
     2,
   );
@@ -397,7 +400,7 @@ export function calculateInvoiceSplit(
       // Round initial splits for this amount
       const roundedSplits = rawSplits.map((split) => ({
         ...split,
-        roundedSplit: round(split.rawSplit, 2),
+        roundedSplit: roundToDecimals(split.rawSplit, 2),
       }));
 
       // Update steps with rounded values
@@ -409,11 +412,11 @@ export function calculateInvoiceSplit(
       });
 
       // Calculate discrepancy for this amount
-      const currentTotal = round(
+      const currentTotal = roundToDecimals(
         roundedSplits.reduce((sum, s) => sum + s.roundedSplit, 0),
         2,
       );
-      const discrepancy = round(amount - currentTotal, 2);
+      const discrepancy = roundToDecimals(amount - currentTotal, 2);
       amountCalcStep.discrepancy = discrepancy;
 
       // Apply rounding adjustment to the period with the largest raw amount
@@ -429,7 +432,7 @@ export function calculateInvoiceSplit(
           (s) => s.periodIdentifier === periodIdentifierToAdjust,
         );
         if (splitToAdjust) {
-          splitToAdjust.roundedSplit = round(
+          splitToAdjust.roundedSplit = roundToDecimals(
             splitToAdjust.roundedSplit + discrepancy,
             2,
           );
@@ -460,7 +463,7 @@ export function calculateInvoiceSplit(
         finalAmountSplits[s.periodIdentifier] = { splitAmount: s.roundedSplit };
       });
 
-      const adjustedTotalForThisAmount = round(
+      const adjustedTotalForThisAmount = roundToDecimals(
         roundedSplits.reduce((sum, s) => sum + s.roundedSplit, 0),
         2,
       );
@@ -495,7 +498,7 @@ export function calculateInvoiceSplit(
           periodIdentifier: periodIdentifier,
           daysInPeriod: segment.days,
           proportion: segment.proportion,
-          totalSplitAmount: round(totalSplitForPeriod, 2),
+          totalSplitAmount: roundToDecimals(totalSplitForPeriod, 2),
           year: year, // For backward compatibility with tests
           daysInYear: segment.days, // For backward compatibility with tests
         };
@@ -504,13 +507,13 @@ export function calculateInvoiceSplit(
       .sort((a, b) => a.periodIdentifier.localeCompare(b.periodIdentifier));
     // --- End Aggregation ---
 
-    const finalAdjustedTotalAmount = round(
+    const finalAdjustedTotalAmount = roundToDecimals(
       aggregatedSplits.reduce((sum, s) => sum + s.totalSplitAmount, 0),
       2,
     );
 
     // Final sanity check: does adjusted total match original total?
-    const finalDiscrepancy = round(
+    const finalDiscrepancy = roundToDecimals(
       originalTotalAmount - finalAdjustedTotalAmount,
       2,
     );
