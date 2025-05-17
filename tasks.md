@@ -27,7 +27,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 
 
    
-[ ] .gitignore
+- [x] .gitignore
 [ ] package-lock.json
 [ ] package.json
 [ ] next.config.ts
