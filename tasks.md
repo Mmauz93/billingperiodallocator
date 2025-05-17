@@ -42,7 +42,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] components.json
 - [x] .gitlab-ci.yml
 - [x] public/web.config
-[ ] public/.htaccess
+- [x] public/.htaccess
 [ ] public/robots.txt
 [ ] public/terms-of-use.de.md
 [ ] public/terms-of-use.md
