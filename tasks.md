@@ -35,7 +35,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] tailwind.config.js
 - [x] next-env.d.ts
 - [x] tailwind.config.js.bak
-[ ] .browserslistrc
+- [x] .browserslistrc
 [ ] eslint.config.mjs
 [ ] turbo.json
 [ ] postcss.config.mjs
