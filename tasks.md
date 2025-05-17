@@ -40,7 +40,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] turbo.json
 - [x] postcss.config.mjs
 - [x] components.json
-[ ] .gitlab-ci.yml
+- [x] .gitlab-ci.yml
 [ ] public/web.config
 [ ] public/.htaccess
 [ ] public/robots.txt
