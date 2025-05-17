@@ -11,8 +11,9 @@ import { PageSection } from "@/components/page-section";
 import React from "react";
 import { getServerSideTranslator } from '@/lib/translation';
 
-// Define or ensure FaqItem is correctly typed if not exported from faq-section
-// export type FaqItem = { question: string; answer: string; };
+// REMOVED Dev comment about FaqItem as it's imported and used.
+// // Define or ensure FaqItem is correctly typed if not exported from faq-section
+// // export type FaqItem = { question: string; answer: string; };
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
   // Validate language parameter
@@ -133,7 +134,6 @@ export default async function EnglishLandingPage({ params }: { params: { lang: s
         maxWidth="6xl" 
         bg="bg-background" 
         className="grid gap-10 md:grid-cols-3" 
-        px="6" // Explicitly pass px if PageSection default is different or to be sure
         py="16"
         mb="16"
       >

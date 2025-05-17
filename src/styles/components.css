@@ -63,27 +63,14 @@
 /*
  * COMPONENT STYLING CONSOLIDATION NOTICE
  *
- * All subsequent CSS rules previously in this file have been removed as part of a major refactoring effort.
+ * All other CSS rules previously in this file have been removed as part of a major refactoring effort.
  * The goals of this refactoring were to:
  *   1. Establish Tailwind CSS utility classes as the primary Single Source of Truth (SSOT) for styling.
  *   2. Co-locate styles with their respective components (.tsx files).
  *   3. Reduce CSS specificity conflicts, reliance on !important, and global overrides.
  *   4. Improve maintainability and predictability of the application's styling.
  *
- * Removed sections included (but were not limited to):
- *   - FOOTER STYLING (structural and color-specific)
- *   - CARD AND LINK STYLING (general link overrides, custom tooltips)
- *   - COOKIE CONSENT STYLING (IDs #rcc-confirm-button, #rcc-decline-button)
- *   - HIGH CONTRAST DARK MODE FIXES (patches for dark mode)
- *   - CARD SYSTEM (custom .card-level-X, .card-interactive, etc.)
- *   - Header "Split Invoice" button overrides
- *   - Direct Calculator link overrides
- *   - FIX FOR TRANSPARENT DIALOGS AND DROPDOWNS (problematic !important usage)
- *   - DARK MODE IMPROVEMENTS FOR FORM CONTROLS (!important usage)
- *   - Switch component overrides (border-radius with !important)
- *   - Duplicate/late-file Header toggle button border-radius styles
- *
- * Styling for these elements and features should now be found within their respective
+ * Styling for previously targeted elements and features should now be found within their respective
  * .tsx components using Tailwind CSS utility classes, or managed through the application's
  * theme configuration (src/styles/themes.css and tailwind.config.js).
  * If specific issues arise that these removed rules were addressing, they should be

@@ -1,4 +1,4 @@
-'use client'; // Error components must be Client Components
+'use client';
 
 import { useEffect } from 'react';
 
@@ -10,12 +10,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error(error);
   }, [error]);
 
-  // Basic translations (can be expanded with i18n if needed)
-  // For simplicity, detect lang from URL if possible, or default
   let lang = 'en';
   if (typeof window !== 'undefined') {
     if (window.location.pathname.startsWith('/de')) {
