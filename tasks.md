@@ -43,7 +43,7 @@ You are my IDE agent and refactoring assistant. Your mission is to clean, modula
 - [x] .gitlab-ci.yml
 - [x] public/web.config
 - [x] public/.htaccess
-[ ] public/robots.txt
+- [x] public/robots.txt
 [ ] public/terms-of-use.de.md
 [ ] public/terms-of-use.md
 [ ] public/og-image.svg
