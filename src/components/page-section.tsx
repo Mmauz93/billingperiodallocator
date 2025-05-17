@@ -3,7 +3,19 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface PageSectionProps {
+// Group spacing and styling props to reduce parameter count
+interface StylingProps {
+  py?: string;
+  px?: string;
+  pt?: string;
+  pb?: string;
+  mt?: string;
+  mb?: string;
+  bg?: string;
+  textAlignment?: "text-left" | "text-center" | "text-right";
+}
+
+interface PageSectionProps extends StylingProps {
   children: React.ReactNode;
   className?: string;
   maxWidth?:
@@ -20,14 +32,7 @@ interface PageSectionProps {
     | "7xl"
     | "full"
     | "prose";
-  py?: string;
-  px?: string;
-  pt?: string;
-  pb?: string;
-  mt?: string;
-  mb?: string;
-  bg?: string;
-  textAlignment?: "text-left" | "text-center" | "text-right";
+  style?: StylingProps;
   as?: React.ElementType;
   id?: string;
 }
@@ -36,18 +41,32 @@ export function PageSection({
   children,
   className,
   maxWidth = "6xl",
-  py,
-  px = "6",
-  pt,
-  pb,
-  mt,
-  mb = "16",
-  bg,
-  textAlignment,
+  style = {},
   as: Component = "section",
   id,
+  // Direct styling props
+  py: propsPy,
+  px: propsPx,
+  pt: propsPt,
+  pb: propsPb,
+  mt: propsMt,
+  mb: propsMb,
+  bg: propsBg,
+  textAlignment: propsTextAlignment,
   ...props
 }: PageSectionProps) {
+  // Merge direct props with style object, with direct props taking precedence
+  const {
+    py = propsPy,
+    px = propsPx || "6",
+    pt = propsPt,
+    pb = propsPb,
+    mt = propsMt,
+    mb = propsMb || "16",
+    bg = propsBg,
+    textAlignment = propsTextAlignment,
+  } = style;
+
   const maxWidthClass = {
     xs: "max-w-xs",
     sm: "max-w-sm",

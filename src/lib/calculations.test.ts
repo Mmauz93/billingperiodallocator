@@ -2,10 +2,15 @@ import { CalculationInput, calculateInvoiceSplit } from "./calculations";
 
 import { createUTCDate } from "./date-utils";
 
-describe("calculateInvoiceSplit", () => {
-  // Helper to create dates easily, using our new helper for timezone consistency
-  const d = (dateStr: string): Date => createUTCDate(dateStr);
+// Split the helper function into multiple smaller functions to reduce complexity
+function parseTestDate(dateStr: string): Date {
+  return createUTCDate(dateStr);
+}
 
+// Use the simpler name for tests
+const d = parseTestDate;
+
+describe("calculateInvoiceSplit", () => {
   // Basic Test: Single year, no leap, exclusive end date
   test("should split correctly within a single year (exclusive)", () => {
     const input: CalculationInput = {

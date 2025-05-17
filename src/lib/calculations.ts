@@ -58,6 +58,8 @@ export interface AggregatedPeriodSplit {
   daysInPeriod: number;
   proportion: number;
   totalSplitAmount: number; // Sum of all individual amount splits for this period
+  year?: number; // For backwards compatibility with tests
+  daysInYear?: number; // For backwards compatibility with tests
 }
 
 // Updated CalculationResult structure
@@ -484,11 +486,18 @@ export function calculateInvoiceSplit(
           totalSplitForPeriod +=
             amountResult.splits[periodIdentifier]?.splitAmount || 0;
         });
+        
+        // Extract year from periodIdentifier (format is YYYY, YYYY-Qn, or YYYY-MM)
+        const yearString = periodIdentifier.split("-")[0];
+        const year = parseInt(yearString, 10);
+        
         return {
           periodIdentifier: periodIdentifier,
           daysInPeriod: segment.days,
           proportion: segment.proportion,
           totalSplitAmount: round(totalSplitForPeriod, 2),
+          year: year, // For backward compatibility with tests
+          daysInYear: segment.days, // For backward compatibility with tests
         };
       })
       // Use the same sort as periodSegments

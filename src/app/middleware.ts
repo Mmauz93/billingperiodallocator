@@ -9,85 +9,77 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 /**
- * Middleware that handles language routing according to SEO best practices:
- * 1. Check for language cookie
- * 2. Check Accept-Language header
- * 3. Root URL permanently redirects to language-specific URL
- * 4. Non-language paths get redirected to language-specific paths
- * 5. Sets language cookie on redirect
+ * Helper function to check if the path should be skipped by middleware
  */
-export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  // 1. Skip if language prefix exists
-  const pathnameHasLanguage = SUPPORTED_LANGUAGES.some(
-    (language) =>
-      pathname.startsWith(`/${language}/`) || pathname === `/${language}`,
-  );
-  if (pathnameHasLanguage) return;
-
-  // 2. Skip if static file, API route, etc.
+function shouldSkipPath(pathname: string): boolean {
+  // Skip if static file, API route, etc.
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/images") ||
     pathname.includes(".")
   ) {
-    return;
+    return true;
   }
 
-  // 3. Determine preferred language
-  let language = DEFAULT_LANGUAGE;
+  // Skip if language prefix exists
+  const pathnameHasLanguage = SUPPORTED_LANGUAGES.some(
+    (language) =>
+      pathname.startsWith(`/${language}/`) || pathname === `/${language}`,
+  );
+  
+  return pathnameHasLanguage;
+}
 
-  // 3a. Check cookie first
-  const cookieValue = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value;
-  if (
-    cookieValue &&
-    SUPPORTED_LANGUAGES.includes(cookieValue as SupportedLanguage)
-  ) {
-    language = cookieValue as SupportedLanguage;
-  } else {
-    // 3b. Check Accept-Language header if no valid cookie
-    const acceptLanguage = request.headers.get("accept-language");
-    if (acceptLanguage) {
-      const preferredLanguage = acceptLanguage
-        .split(",")
-        .map((lang) => lang.split(";")[0].trim().substring(0, 2).toLowerCase())
-        .find((lang) =>
-          SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage),
-        ) as SupportedLanguage | undefined;
+/**
+ * Get the language from cookies, browser preference, or default
+ */
+function getLanguage(request: NextRequest): SupportedLanguage {
+  // Check for language cookie
+  const languageCookie = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value;
+  if (languageCookie && SUPPORTED_LANGUAGES.includes(languageCookie as SupportedLanguage)) {
+    return languageCookie as SupportedLanguage;
+  }
 
-      if (preferredLanguage) {
-        language = preferredLanguage;
+  // Check for Accept-Language header
+  const acceptLanguage = request.headers.get("Accept-Language");
+  if (acceptLanguage) {
+    // Try to match preferred languages with our supported languages
+    for (const language of acceptLanguage.split(",")) {
+      const languageCode = language.split(";")[0].trim().substring(0, 2);
+      if (SUPPORTED_LANGUAGES.includes(languageCode as SupportedLanguage)) {
+        return languageCode as SupportedLanguage;
       }
     }
   }
 
-  // 4. Redirect logic
-  let redirectUrl: URL;
-  let statusCode: 301 | 302;
+  return DEFAULT_LANGUAGE;
+}
 
-  if (pathname === "/") {
-    redirectUrl = new URL(`/${language}/`, request.url);
-    statusCode = 301; // Permanent for root
-  } else {
-    redirectUrl = new URL(`/${language}${pathname}`, request.url);
-    statusCode = 302; // Temporary for other paths
+/**
+ * Middleware to handle internationalization
+ */
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Skip middleware for certain paths
+  if (shouldSkipPath(pathname)) {
+    return NextResponse.next();
   }
 
-  const response = NextResponse.redirect(redirectUrl, statusCode);
+  // Get language from cookies, Accept-Language header, or default
+  const language = getLanguage(request);
 
-  // 5. Set the language cookie on the response
-  response.cookies.set(LANGUAGE_COOKIE_NAME, language, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365, // 1 year
-    sameSite: "lax",
-  });
+  // Clone the URL and change it to include the language prefix
+  const newUrl = request.nextUrl.clone();
+  newUrl.pathname = `/${language}${pathname === "/" ? "" : pathname}`;
 
-  return response;
+  // Redirect to the URL with language prefix
+  return NextResponse.redirect(newUrl);
 }
 
 // Configure middleware to run only on specific paths
 export const config = {
   matcher: ["/((?!_next|images|api|.*\\.).*)", "/"],
 };
+
