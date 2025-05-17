@@ -1,10 +1,6 @@
 import { InputDataForDisplay, JsPDFWithInternal } from "./types";
 import { de, enUS } from "date-fns/locale";
-import {
-  formatDateLocale,
-  formatNumber,
-  formatPercent,
-} from "@/lib/formattingUtils";
+import { formatNumber, formatPercent } from "@/lib/math-utils";
 import {
   formatPeriodIdForDisplay,
   getPeriodHeader,
@@ -14,6 +10,7 @@ import { AppSettings } from "@/context/settings-context";
 import { CalculationResult } from "@/lib/calculations";
 import type { CellHookData } from "jspdf-autotable";
 import { format } from "date-fns";
+import { formatDateForDisplay as formatDateLocale } from "@/lib/date-formatter";
 
 export async function exportToPdf(
   results: CalculationResult,

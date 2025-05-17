@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { ControllerRenderProps } from "react-hook-form";
 import { FormSchemaType } from "./form-schema";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/translations";
+import { validateAmount } from "./form-validators";
 
 interface AmountFieldProps {
   index: number;
@@ -30,10 +32,11 @@ export function AmountField({
   hasError,
   errorMessage,
 }: AmountFieldProps) {
-  const isValid =
-    field.value &&
-    !isNaN(parseFloat(field.value)) &&
-    parseFloat(field.value) > 0;
+  const { t } = useTranslation();
+  
+  // Use the validation function from form-validators
+  const validation = validateAmount(field.value, t, index);
+  const isValid = validation.valid;
 
   return (
     <FormItem className="mb-3">

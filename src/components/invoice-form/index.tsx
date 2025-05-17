@@ -5,14 +5,12 @@ import {
   FormProvider,
   useFieldArray,
   useForm,
-  useWatch,
 } from "react-hook-form";
-import { DATE_FORMAT_DE, DATE_FORMAT_ISO } from "./date-formats";
+import { DATE_FORMATS, tryParseDate } from "@/lib/date-formatter";
 import {
   DEFAULT_FORM_VALUES,
   FormSchemaType,
   formSchema,
-  tryParseDate,
 } from "./form-schema";
 import {
   FormDescription,
@@ -21,10 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  INVOICE_FORM_STORAGE_KEY,
-  initializeFormData,
-} from "./form-initialization";
 import { Loader2, PlusCircle } from "lucide-react";
 import {
   Select,
@@ -34,17 +28,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { de, enUS } from "date-fns/locale";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { validateEndDate, validateStartDate } from "./form-validators";
 
 import { AmountField } from "./amount-field";
 import { Button } from "@/components/ui/button";
 import { DateField } from "./date-field";
+import { INVOICE_FORM_STORAGE_KEY } from "./form-initialization";
 import { InvoiceFormProps } from "./types";
 import { InvoiceFormSkeleton } from "./form-loading-skeleton";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { debounce } from "lodash";
 import { processCalculation } from "./calculate-logic";
+import { usePersistentForm } from "@/lib/hooks/use-persistent-form";
 import { useTranslation } from "@/translations";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -54,16 +50,12 @@ export function InvoiceForm({
   onDemoDataApplied,
 }: InvoiceFormProps) {
   const { t, i18n } = useTranslation();
-  const [mounted, setMounted] = useState(false);
-  const [isCalculating, setIsCalculating] = useState(false);
   const [buttonText, setButtonText] = useState("");
-  const [showSuccessGlow, setShowSuccessGlow] = useState(false);
-  const initRef = useRef(false);
 
   const currentLocale = i18n.language.startsWith("de") ? de : enUS;
   const displayDateFormat = i18n.language.startsWith("de")
-    ? DATE_FORMAT_DE
-    : DATE_FORMAT_ISO;
+    ? DATE_FORMATS.DE
+    : DATE_FORMATS.ISO;
   const dateExamplePlaceholder = i18n.language.startsWith("de")
     ? "z.B. 31.12.2023"
     : "e.g. 2023-12-31";
@@ -80,94 +72,71 @@ export function InvoiceForm({
     name: "amounts",
   });
 
-  // Debounced function to save data to localStorage
-  const debouncedSaveFunction = useMemo(
-    () =>
-      debounce((dataToSave: FormSchemaType) => {
-        if (mounted && initRef.current) {
-          try {
-            // Ensure amounts is properly formatted
-            const amountsToSave =
-              dataToSave.amounts?.length > 0
-                ? dataToSave.amounts
-                : [{ value: "" }];
+  // Validate form data before saving to localStorage
+  const validateFormData = useCallback((data: FormSchemaType): FormSchemaType => {
+    // Ensure amounts is properly formatted
+    const amountsToSave =
+      data.amounts?.length > 0
+        ? data.amounts
+        : [{ value: "" }];
 
-            // Format and prepare the data for saving
-            const saveData = {
-              ...dataToSave,
-              amounts: amountsToSave,
-              // Ensure valid splitPeriod
-              splitPeriod: dataToSave.splitPeriod || "yearly",
-            };
-
-            // Save data to localStorage
-            console.log("[InvoiceForm] Saving form data to localStorage");
-            localStorage.setItem(
-              INVOICE_FORM_STORAGE_KEY,
-              JSON.stringify(saveData),
-            );
-          } catch (error) {
-            console.error(
-              "[InvoiceForm] Failed to save form data to localStorage:",
-              error,
-            );
-          }
-        }
-      }, 800), // Increased debounce to reduce storage operations
-    [mounted], // Add mounted flag as dependency
-  );
-
-  // Watch for form value changes to trigger saves when needed
-  const formValues = useWatch({ control: form.control });
-
-  // Effect to trigger debounced save when form values change
-  useEffect(() => {
-    // Skip saving during initial render or when component is not mounted
-    if (!mounted || !initRef.current) {
-      return;
-    }
-
-    // Only save if we have real form values
-    if (formValues) {
-      debouncedSaveFunction(form.getValues());
-    }
-  }, [formValues, debouncedSaveFunction, form, mounted]);
-
-  // Cleanup function in a separate effect
-  useEffect(() => {
-    return () => {
-      // Cancel any pending save operations
-      debouncedSaveFunction.cancel();
-      console.log(
-        "[InvoiceForm] Component unmounting, cancelled pending save operations.",
-      );
+    // Format and prepare the data for saving
+    return {
+      ...data,
+      amounts: amountsToSave,
+      // Ensure valid splitPeriod
+      splitPeriod: data.splitPeriod || "yearly",
     };
-  }, [debouncedSaveFunction]);
+  }, []);
 
-  const onSubmit = useCallback(
-    (values: FormSchemaType) => {
-      setIsCalculating(true);
-      setButtonText(t("InvoiceForm.calculatingButton"));
+  // Submit handler that processes the calculation
+  const handleFormSubmit = useCallback((values: FormSchemaType) => {
+    setButtonText(t("InvoiceForm.calculatingButton"));
 
-      processCalculation(
-        values,
-        (formData, results, error) => {
-          if (results) {
-            setShowSuccessGlow(true); // Trigger success animation
-            setTimeout(() => setShowSuccessGlow(false), 1500);
-          }
-          onCalculateAction(formData, results, error);
-        },
-        t,
-      );
+    processCalculation(
+      values,
+      (formData, results, error) => {
+        onCalculateAction(formData, results, error);
+      },
+      t,
+    );
 
-      setIsCalculating(false);
-      setButtonText(
-        t("InvoiceForm.calculateButton", { defaultValue: "Calculate Split" }),
-      );
-    },
-    [onCalculateAction, t],
-  );
+    setButtonText(
+      t("InvoiceForm.calculateButton", { defaultValue: "Calculate Split" })
+    );
+  }, [onCalculateAction, t]);
+
+  // Transform demo data to match FormSchemaType format if needed
+  const transformedDemoData = useMemo(() => {
+    if (!initialDemoData) return initialDemoData;
+    
+    return {
+      ...initialDemoData,
+      // Convert single amount to amounts array if needed
+      amounts: initialDemoData.amount 
+        ? [{ value: initialDemoData.amount }]
+        : [{ value: "" }], // Default empty amount if not provided
+      // Ensure other required properties
+      splitPeriod: initialDemoData.splitPeriod || "yearly",
+      includeEndDate: initialDemoData.includeEndDate ?? true,
+    } as FormSchemaType;
+  }, [initialDemoData]);
+
+  // Use the persistent form hook
+  const {
+    mounted,
+    isProcessing,
+    showSuccessAnimation,
+    handleSubmit,
+  } = usePersistentForm({
+    form,
+    storageKey: INVOICE_FORM_STORAGE_KEY,
+    initialDemoData: transformedDemoData,
+    onDemoDataApplied,
+    validateBeforeSave: validateFormData,
+    onSubmit: handleFormSubmit,
+    autoSubmitWithDemoData: true,
+  });
 
   // Effect to ensure all form fields have valid values
   useEffect(() => {
@@ -175,6 +144,11 @@ export function InvoiceForm({
     if (!mounted) {
       return;
     }
+
+    // Set the button text when component is mounted
+    setButtonText(
+      t("InvoiceForm.calculateButton", { defaultValue: "Calculate Split" })
+    );
 
     // Get current values
     const currentValues = form.getValues();
@@ -204,111 +178,66 @@ export function InvoiceForm({
     // Log if we had to make any corrections
     if (updatedValues) {
       console.log(
-        "[InvoiceForm] Applied default values for missing form fields",
+        "[InvoiceForm] Applied default values for missing form fields"
       );
     }
-  }, [mounted, form]);
+  }, [mounted, form, t]);
 
-  // Initialization effect
-  useEffect(() => {
-    if (!mounted) {
-      console.log("[InvoiceForm] Component mounting");
-      setMounted(true);
-      setButtonText(
-        t("InvoiceForm.calculateButton", { defaultValue: "Calculate Split" }),
-      );
-      return;
-    }
-
-    // Only run initialization logic once
-    if (initRef.current) {
-      return;
-    }
-
-    initRef.current = true;
-    console.log("[InvoiceForm] Initializing form data...");
-
-    initializeFormData(form, initialDemoData, onDemoDataApplied, onSubmit);
-  }, [mounted, initialDemoData, onDemoDataApplied, t, form, onSubmit]);
-
-  const getDateHelpText = () => {
-    if (i18n.language.startsWith("de")) {
-      return t("InvoiceForm.supportedDateFormats", {
-        defaultValue: "Unterstützte Formate: TT.MM.JJJJ, JJJJ-MM-TT",
-      });
-    } else {
-      return t("InvoiceForm.supportedDateFormats", {
-        defaultValue: "Supported formats: YYYY-MM-DD, DD.MM.YYYY",
-      });
-    }
-  };
-
+  // Handle start date change with validation
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Clear any previous errors
+    
+    // Clear previous errors and set the new value
     form.clearErrors("startDateString");
-
-    // Set the new value
     form.setValue("startDateString", value, { shouldValidate: false });
-
-    // Validate the date format
-    const parsedDate = tryParseDate(value);
-    if (value && !parsedDate) {
+    
+    // Validate using the external validator
+    const endDateString = form.getValues("endDateString");
+    const result = validateStartDate(value, t, endDateString);
+    
+    // Apply validation result
+    if (!result.valid) {
       form.setError("startDateString", {
         type: "manual",
-        message: getDateHelpText(),
+        message: result.message,
       });
-    }
-    // If this is a valid date, check if end date is now invalid in comparison
-    else if (parsedDate) {
-      const endDateValue = form.getValues("endDateString");
-      const endDate = tryParseDate(endDateValue ?? "");
-
-      // If end date exists and is now before start date, set end date error
-      if (endDate && endDate < parsedDate) {
+    } else if (endDateString) {
+      // If start date is valid, make sure end date is still valid in comparison
+      const endDateResult = validateEndDate(endDateString, t, value);
+      if (!endDateResult.valid) {
         form.setError("endDateString", {
           type: "manual",
-          message: t("InvoiceForm.errorEndDateBeforeStart"),
+          message: endDateResult.message,
         });
+      } else {
+        form.clearErrors("endDateString");
       }
     }
-
+    
     // Always trigger validation to update form state
     form.trigger("startDateString");
   };
 
+  // Handle end date change with validation
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Clear any previous errors
+    
+    // Clear previous errors and set the new value
     form.clearErrors("endDateString");
-
-    // Set the new value
     form.setValue("endDateString", value, { shouldValidate: false });
-
-    // Validate the date format
-    const parsedDate = tryParseDate(value);
-    if (value && !parsedDate) {
+    
+    // Validate using the external validator
+    const startDateString = form.getValues("startDateString");
+    const result = validateEndDate(value, t, startDateString);
+    
+    // Apply validation result
+    if (!result.valid) {
       form.setError("endDateString", {
         type: "manual",
-        message: getDateHelpText(),
+        message: result.message,
       });
     }
-    // If this is a valid date, check if it's before the start date
-    else if (parsedDate) {
-      const startDateValue = form.getValues("startDateString");
-      const startDate = tryParseDate(startDateValue ?? "");
-
-      // If start date exists and end date is before it, set error
-      if (startDate && parsedDate < startDate) {
-        form.setError("endDateString", {
-          type: "manual",
-          message: t("InvoiceForm.errorEndDateBeforeStart"),
-        });
-      }
-    }
-
+    
     // Always trigger validation to update form state
     form.trigger("endDateString");
   };
@@ -320,7 +249,7 @@ export function InvoiceForm({
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit())}
         className={cn(
           "space-y-6",
           mounted && "opacity-100 transition-opacity duration-500 ease-in-out",
@@ -527,11 +456,11 @@ export function InvoiceForm({
         <Button
           type="submit"
           variant="default"
-          className={`w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessGlow ? "animate-successGlow" : ""}`}
-          disabled={form.formState.isSubmitting || isCalculating}
+          className={`w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] px-6 py-2 h-11 font-medium rounded-md shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 ${showSuccessAnimation ? "animate-successGlow" : ""}`}
+          disabled={form.formState.isSubmitting || isProcessing}
           aria-live="polite"
         >
-          {isCalculating ? (
+          {isProcessing ? (
             <span className="flex items-center justify-center">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {buttonText}

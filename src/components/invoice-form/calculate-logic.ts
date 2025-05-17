@@ -6,7 +6,13 @@ import {
   InputValidationError,
   calculateInvoiceSplit,
 } from "@/lib/calculations";
-import { FormSchemaType, tryParseDate } from "./form-schema";
+import {
+  cacheCalculation,
+  getCachedCalculation
+} from "@/lib/calculation-cache";
+
+import { FormSchemaType } from "./form-schema";
+import { tryParseDate } from "@/lib/date-formatter";
 
 export function processCalculation(
   values: FormSchemaType,
@@ -71,7 +77,15 @@ export function processCalculation(
     amounts: parsedAmounts, // Use the successfully parsed amounts
   };
 
-  // Call the refactored calculateInvoiceSplit
+  // Try to get the result from cache first
+  const cachedResult = getCachedCalculation(inputData);
+  if (cachedResult) {
+    // If we have a cached result, use it immediately
+    onCalculateAction(callbackFormData, cachedResult, undefined);
+    return;
+  }
+
+  // No cache hit, perform calculation
   const result = calculateInvoiceSplit(inputData);
 
   if (result.success) {
@@ -86,6 +100,11 @@ export function processCalculation(
       calculationSteps: result.calculationSteps, // This is Omit<CalculationStepDetails, 'error'> & { error?: undefined }
       splitPeriodUsed: result.splitPeriodUsed,
     };
+    
+    // Cache the successful result for future use
+    cacheCalculation(inputData, successResultForCallback);
+    
+    // Return the result
     onCalculateAction(callbackFormData, successResultForCallback, undefined);
   } else {
     // Error case: result is CalculateInvoiceSplitFailure

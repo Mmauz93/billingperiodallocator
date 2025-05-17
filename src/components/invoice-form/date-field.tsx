@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FormSchemaType, tryParseDate } from "./form-schema";
 import { Locale, format } from "date-fns";
 import {
   Popover,
@@ -19,7 +18,9 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { FormSchemaType } from "./form-schema";
 import { Input } from "@/components/ui/input";
+import { tryParseDate } from "@/lib/date-formatter";
 
 interface DateFieldProps {
   fieldName: "startDateString" | "endDateString";

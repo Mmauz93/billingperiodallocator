@@ -1,11 +1,5 @@
-import { parseDate } from "@/lib/date-utils";
-import { supportedDateFormats } from "./date-formats";
+import { tryParseDate } from "@/lib/date-formatter";
 import { z } from "zod";
-
-export const tryParseDate = (value: string): Date | null => {
-  if (!value) return null;
-  return parseDate(value, supportedDateFormats);
-};
 
 // Type for passed in demo data
 export type DemoDataType = {

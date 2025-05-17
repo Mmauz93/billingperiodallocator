@@ -1,17 +1,39 @@
-import * as React from "react";
-
 /**
- * VisuallyHidden component hides its children visually but keeps them accessible to screen readers.
+ * VisuallyHidden Component
+ * 
+ * Hides content visually but keeps it accessible to screen readers.
  */
-function VisuallyHidden({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0"
-      style={{ clip: "rect(0, 0, 0, 0)" }}
-    >
-      {children}
-    </span>
-  );
+
+import React from 'react';
+
+interface VisuallyHiddenProps {
+  children: React.ReactNode;
+  id?: string;
+  as?: React.ElementType;
 }
 
-export { VisuallyHidden };
+export function VisuallyHidden({ 
+  children, 
+  id,
+  as: Component = 'span'
+}: VisuallyHiddenProps) {
+  return (
+    <Component
+      id={id}
+      className="sr-only"
+      style={{
+        position: 'absolute',
+        width: '1px',
+        height: '1px',
+        padding: '0',
+        margin: '-1px',
+        overflow: 'hidden',
+        clip: 'rect(0, 0, 0, 0)',
+        whiteSpace: 'nowrap',
+        borderWidth: '0'
+      }}
+    >
+      {children}
+    </Component>
+  );
+}

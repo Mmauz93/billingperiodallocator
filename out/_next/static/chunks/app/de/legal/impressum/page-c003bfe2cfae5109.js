@@ -1,2 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[2570,3778],{22287:(e,u,s)=>{Promise.resolve().then(s.bind(s,65949))},35695:(e,u,s)=>{"use strict";var n=s(18999);s.o(n,"usePathname")&&s.d(u,{usePathname:function(){return n.usePathname}}),s.o(n,"useRouter")&&s.d(u,{useRouter:function(){return n.useRouter}})}},e=>{var u=u=>e(e.s=u);e.O(0,[4277,6689,8441,1684,7358],()=>u(22287)),_N_E=e.O()}]);
-//# sourceMappingURL=page-c003bfe2cfae5109.js.map

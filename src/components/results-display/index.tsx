@@ -1,5 +1,6 @@
 "use client";
 
+import { AccessibleTable, AccessibleTableRow } from "@/components/ui/accessible-table";
 import {
   Accordion,
   AccordionContent,
@@ -7,9 +8,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Table,
   TableBody,
   TableCell,
   TableFooter,
@@ -25,12 +25,16 @@ import {
   getPeriodHeader,
 } from "./utils";
 
+import { AccessibleIcon } from "@/components/ui/accessible-icon";
+import { Announcement } from "@/components/ui/announcer";
 import { Button } from "@/components/ui/button";
 import { CalculationStepsDisplay } from "./calculation-steps-display";
 import { ResultsDisplayProps } from "./types";
 import { SettingsModal } from "@/components/settings-modal";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { exportToExcel } from "./export-excel";
 import { exportToPdf } from "./export-pdf";
+import { useAnnouncer } from "@/components/ui/announcer";
 import { useSettings } from "@/context/settings-context";
 import { useTranslation } from "@/translations";
 
@@ -40,6 +44,8 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
   const { settings } = useSettings();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const currentLocale = i18n.language;
+  const { announce } = useAnnouncer();
+  const [showResults, setShowResults] = useState(false);
 
   // Ensure we use the splitPeriod from the inputData if available
   const splitPeriodUsed = inputData.splitPeriod || "yearly";
@@ -56,8 +62,27 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
       0,
     ) ?? 0;
 
+  // Announce results to screen readers when loaded
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      announce(
+        t("ResultsDisplay.loadedAnnouncement", {
+          defaultValue: "Results have been calculated and are now displayed",
+        }),
+        "polite"
+      );
+      setShowResults(true);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [announce, t]);
+
   // Handler functions for export
   function handleExportExcel() {
+    announce(t("ResultsDisplay.exportingExcel", {
+      defaultValue: "Exporting results to Excel. Please wait.",
+    }), "polite");
+    
     exportToExcel(
       results,
       inputData,
@@ -68,13 +93,24 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
       splitPeriodUsed,
       currentLocale,
       t,
-    ).catch((error) => {
+    ).then(() => {
+      announce(t("ResultsDisplay.exportCompleted", {
+        defaultValue: "Export to Excel completed successfully.",
+      }), "polite");
+    }).catch((error) => {
       console.error("Failed to export Excel:", error);
+      announce(t("ResultsDisplay.exportFailed", {
+        defaultValue: "Failed to export Excel. Please try again.",
+      }), "assertive");
       alert("Failed to export Excel. Please try again.");
     });
   }
 
   function handleExportPdf() {
+    announce(t("ResultsDisplay.exportingPdf", {
+      defaultValue: "Exporting results to PDF. Please wait.",
+    }), "polite");
+    
     exportToPdf(
       results,
       inputData,
@@ -85,21 +121,51 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
       splitPeriodUsed,
       currentLocale,
       t,
-    ).catch((error) => {
+    ).then(() => {
+      announce(t("ResultsDisplay.exportCompleted", {
+        defaultValue: "Export to PDF completed successfully.",
+      }), "polite");
+    }).catch((error) => {
       console.error("Failed to generate PDF:", error);
+      announce(t("ResultsDisplay.exportFailed", {
+        defaultValue: "Failed to export PDF. Please try again.",
+      }), "assertive");
       alert("Failed to generate PDF. Please try again.");
     });
   }
 
   return (
-    <div className="w-full animate-fadeIn">
+    <div 
+      className="w-full animate-fadeIn"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {!showResults && (
+        <VisuallyHidden>
+          {t("ResultsDisplay.calculatingAnnouncement", {
+            defaultValue: "Calculating results, please wait",
+          })}
+        </VisuallyHidden>
+      )}
+      
+      {/* Announcements for screen readers */}
+      <Announcement 
+        message={showResults ? t("ResultsDisplay.resultsSummary", {
+          defaultValue: `Results calculated for period ${formatDateForDisplay(inputData.startDate, currentLocale)} to ${formatDateForDisplay(inputData.endDate, currentLocale)}. Total amount: ${formatNumForDisplay(totalInputAmount, currentLocale, settings)}`,
+        }) : ""}
+        type="polite" 
+      />
+      
       {/* Wrap everything except the modal in a single card */}
       <Card className="shadow-lg border border-border/50">
         <CardContent className="p-6 space-y-8">
           <Card className="shadow-md border border-border/40 overflow-hidden">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-6 pb-4 border-b">
-                <h3 className="text-xl font-semibold text-primary">
+                <h3 
+                  className="text-xl font-semibold text-primary"
+                  id="summary-heading"
+                >
                   {t("ResultsDisplay.summaryTitle")}
                 </h3>
                 <button
@@ -107,23 +173,28 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                   className="p-1.5 rounded-md text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer"
                   aria-label={t("ResultsDisplay.settingsLabel")}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                  <AccessibleIcon label={t("ResultsDisplay.settingsLabel")}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </AccessibleIcon>
                 </button>
               </div>
-              <div className="space-y-2 text-sm text-muted-foreground">
+              <div 
+                className="space-y-2 text-sm text-muted-foreground"
+                aria-labelledby="summary-heading"
+              >
                 <div className="flex justify-between">
                   <span>{t("ResultsDisplay.periodLabel")}</span>
                   <span className="font-medium text-foreground">
@@ -188,29 +259,48 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
 
           <Card className="shadow-md border border-border/40 overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-6 pb-4 border-b text-primary">
+              <h3 
+                className="text-xl font-semibold mb-6 pb-4 border-b text-primary"
+                id="allocation-heading"
+              >
                 {t("ResultsDisplay.aggregatedTitle", {
                   defaultValue: "Allocation per Period",
                 })}
               </h3>
-              <Table>
+              
+              <AccessibleTable
+                className="w-full"
+                caption={t("ResultsDisplay.tableCaption", {
+                  defaultValue: "Allocation of amounts across periods",
+                })}
+                summary={t("ResultsDisplay.tableSummary", {
+                  defaultValue: `This table shows how the total amount of ${formatNumForDisplay(
+                    totalInputAmount,
+                    currentLocale,
+                    settings,
+                  )} is allocated across ${
+                    results.aggregatedSplits?.length || 0
+                  } periods based on the number of days in each period.`,
+                })}
+                selectable={true}
+              >
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{getPeriodHeader(splitPeriodUsed, t)}</TableHead>
-                    <TableHead className="text-right">
+                    <TableHead scope="col">{getPeriodHeader(splitPeriodUsed, t)}</TableHead>
+                    <TableHead scope="col" className="text-right">
                       {t("ResultsDisplay.daysHeader")}
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead scope="col" className="text-right">
                       {t("ResultsDisplay.proportionHeader")}
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead scope="col" className="text-right">
                       {t("ResultsDisplay.amountHeader")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {results.aggregatedSplits?.map((split, index) => (
-                    <TableRow key={index}>
+                    <AccessibleTableRow key={index}>
                       <TableCell className="font-medium text-foreground whitespace-nowrap">
                         {formatPeriodIdForDisplay(
                           split.periodIdentifier,
@@ -231,7 +321,7 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                           settings,
                         )}
                       </TableCell>
-                    </TableRow>
+                    </AccessibleTableRow>
                   ))}
                 </TableBody>
                 <TableFooter>
@@ -256,94 +346,160 @@ function ResultsDisplayComponent({ results, inputData }: ResultsDisplayProps) {
                     </TableCell>
                   </TableRow>
                 </TableFooter>
-              </Table>
+              </AccessibleTable>
             </CardContent>
           </Card>
 
-          {/* Calculation Details Accordion */}
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem
-              value="item-1"
-              className="border rounded-lg shadow-md bg-card"
-            >
-              <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-primary hover:bg-muted/40">
-                {t("ResultsDisplay.calculationStepsTitle", {
-                  defaultValue: "View Full Split Calculation",
-                })}
-              </AccordionTrigger>
-              <AccordionContent className="px-6 py-4 bg-background border-t">
-                {results.calculationSteps ? (
-                  <CalculationStepsDisplay
-                    steps={results.calculationSteps}
-                    settings={settings}
-                    splitPeriodUsed={splitPeriodUsed}
-                  />
-                ) : (
-                  <p>{t("ResultsDisplay.noStepsAvailable")}</p>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          {results.detailedSplits && results.detailedSplits.length > 0 && (
+            <Card className="shadow-md border border-border/40 overflow-hidden">
+              <CardContent className="p-6">
+                <h3 
+                  className="text-xl font-semibold mb-6 pb-4 border-b text-primary"
+                  id="details-heading"
+                >
+                  {t("ResultsDisplay.detailedTitle", {
+                    defaultValue: "Detailed Breakdown",
+                  })}
+                </h3>
+                <AccessibleTable
+                  className="w-full"
+                  caption={t("ResultsDisplay.detailedTableCaption", {
+                    defaultValue: "Detailed breakdown of allocation by invoice line",
+                  })}
+                  summary={t("ResultsDisplay.detailedTableSummary", {
+                    defaultValue: "This table shows the detailed breakdown of how each invoice line is allocated across periods.",
+                  })}
+                  selectable={true}
+                >
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead scope="col">{t("ResultsDisplay.lineItemHeader")}</TableHead>
+                      <TableHead scope="col">{getPeriodHeader(splitPeriodUsed, t)}</TableHead>
+                      <TableHead scope="col" className="text-right">
+                        {t("ResultsDisplay.daysHeader")}
+                      </TableHead>
+                      <TableHead scope="col" className="text-right">
+                        {t("ResultsDisplay.proportionHeader")}
+                      </TableHead>
+                      <TableHead scope="col" className="text-right">
+                        {t("ResultsDisplay.amountHeader")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {results.detailedSplits.map((detailedSplit: { splits: Array<{ periodIdentifier: string; daysInPeriod: number; proportion: number; splitAmount: number }> }, lineIndex: number) =>
+                      detailedSplit.splits.map((split: { periodIdentifier: string; daysInPeriod: number; proportion: number; splitAmount: number }, splitIndex: number) => (
+                        <AccessibleTableRow key={`${lineIndex}-${splitIndex}`}>
+                          {splitIndex === 0 ? (
+                            <TableCell
+                              rowSpan={detailedSplit.splits.length}
+                              className="font-medium text-foreground align-top"
+                            >
+                              {inputData.descriptions?.[lineIndex] ||
+                                `${t("ResultsDisplay.itemLabel")} ${lineIndex + 1}`}
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {formatNumForDisplay(
+                                  inputData.amounts[lineIndex],
+                                  currentLocale,
+                                  settings,
+                                )}
+                              </div>
+                            </TableCell>
+                          ) : null}
+                          <TableCell className="whitespace-nowrap">
+                            {formatPeriodIdForDisplay(
+                              split.periodIdentifier,
+                              splitPeriodUsed,
+                              currentLocale,
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {split.daysInPeriod}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {formatPctForDisplay(split.proportion, currentLocale)}
+                          </TableCell>
+                          <TableCell className="text-right font-medium text-foreground">
+                            {formatNumForDisplay(
+                              split.splitAmount,
+                              currentLocale,
+                              settings,
+                            )}
+                          </TableCell>
+                        </AccessibleTableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </AccessibleTable>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Export Buttons Section */}
-          <div className="mt-8 w-full flex flex-col items-center sm:flex-row sm:justify-center gap-4 px-4 sm:px-0">
+          {/* Calculation Steps */}
+          {results.calculationSteps && (
+            <Card className="shadow-md border border-border/40 overflow-hidden">
+              <CardContent className="p-6">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="steps">
+                    <AccordionTrigger className="text-xl font-semibold text-primary py-2">
+                      {t("ResultsDisplay.calculationStepsTitle", {
+                        defaultValue: "Calculation Steps",
+                      })}
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-4">
+                      <CalculationStepsDisplay
+                        steps={results.calculationSteps}
+                        settings={settings}
+                        splitPeriodUsed={splitPeriodUsed}
+                        locale={currentLocale}
+                        t={t}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex flex-wrap gap-4 justify-center pt-4">
             <Button
-              variant="outline"
               onClick={handleExportExcel}
-              className="w-full sm:w-auto"
+              variant="outline"
+              className="min-w-[120px]"
+              aria-label={t("ResultsDisplay.exportExcelLabel", {
+                defaultValue: "Export to Excel spreadsheet",
+              })}
             >
-              <svg
-                className="mr-2 h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
-              {t("ResultsDisplay.exportExcelButton")}
+              {t("ResultsDisplay.exportExcelButton", {
+                defaultValue: "Export to Excel",
+              })}
             </Button>
             <Button
-              variant="outline"
               onClick={handleExportPdf}
-              className="w-full sm:w-auto"
+              variant="outline"
+              className="min-w-[120px]"
+              aria-label={t("ResultsDisplay.exportPdfLabel", {
+                defaultValue: "Export to PDF document",
+              })}
             >
-              <svg
-                className="mr-2 h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
-              {t("ResultsDisplay.exportPdfButton")}
+              {t("ResultsDisplay.exportPdfButton", {
+                defaultValue: "Export to PDF",
+              })}
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Settings Modal remains outside the main card */}
-      <SettingsModal isOpen={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+      />
     </div>
   );
 }
 
-// Wrapper component to export
+// This is the exported component, it's doing some processing before rendering
 export function ResultsDisplay(props: ResultsDisplayProps) {
+  // Your component here...
   return <ResultsDisplayComponent {...props} />;
 }

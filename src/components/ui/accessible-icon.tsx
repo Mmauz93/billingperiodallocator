@@ -1,16 +1,18 @@
-import * as React from "react";
+/**
+ * AccessibleIcon Component
+ * 
+ * Wraps an icon and provides a visually hidden label for screen readers.
+ */
 
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import React from 'react';
+import { VisuallyHidden } from './visually-hidden';
 
 interface AccessibleIconProps {
-  label: string;
   children: React.ReactNode;
+  label: string;
 }
 
-/**
- * AccessibleIcon component wraps an icon and provides a visually hidden label for screen readers.
- */
-function AccessibleIcon({ label, children }: AccessibleIconProps) {
+export function AccessibleIcon({ label, children }: AccessibleIconProps) {
   return (
     <span className="inline-flex items-center justify-center">
       {children}
@@ -18,5 +20,3 @@ function AccessibleIcon({ label, children }: AccessibleIconProps) {
     </span>
   );
 }
-
-export { AccessibleIcon };

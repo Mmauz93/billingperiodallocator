@@ -1,6 +1,6 @@
 import {
+  CalculationResult as BaseCalculationResult,
   CalculationInput,
-  CalculationResult,
   CalculationStepDetails,
 } from "@/lib/calculations";
 
@@ -22,12 +22,26 @@ export type JsPDFWithInternal = jsPDF & {
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- Interface inherits members via Pick
+// Extended CalculationResult with detailedSplits
+export interface CalculationResult extends BaseCalculationResult {
+  detailedSplits?: Array<{
+    splits: Array<{
+      periodIdentifier: string;
+      daysInPeriod: number;
+      proportion: number;
+      splitAmount: number;
+    }>;
+  }>;
+}
+
+// Interface inherits members via Pick
 export interface InputDataForDisplay
   extends Pick<
     CalculationInput,
     "startDate" | "endDate" | "includeEndDate" | "amounts" | "splitPeriod"
-  > {}
+  > {
+  descriptions?: string[]; // Add descriptions property for invoice line items
+}
 
 export interface ResultsDisplayProps {
   results: CalculationResult;
@@ -36,6 +50,8 @@ export interface ResultsDisplayProps {
 
 export interface CalculationStepsDisplayProps {
   steps: CalculationStepDetails;
-  settings: Omit<AppSettings, "locale">;
-  splitPeriodUsed: "yearly" | "quarterly" | "monthly";
+  settings?: Omit<AppSettings, "locale">;
+  splitPeriodUsed?: "yearly" | "quarterly" | "monthly";
+  locale?: string; // Add locale property
+  t: (key: string, options?: Record<string, string | number | boolean> | string) => string; // Add translation function with specific type
 }

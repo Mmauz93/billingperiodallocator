@@ -1,13 +1,10 @@
-import {
-  formatDateLocale,
-  formatNumber,
-  formatPercent,
-} from "@/lib/formattingUtils";
+import { formatNumber, formatPercent } from "@/lib/math-utils";
 
 import { AppSettings } from "@/context/settings-context";
 import { de } from "date-fns/locale/de";
 import { enUS } from "date-fns/locale/en-US";
 import { format } from "date-fns";
+import { formatDateForDisplay as formatDateLocale } from "@/lib/date-formatter";
 
 // --- Period Formatting Helper ---
 export function formatPeriodIdentifier(
@@ -50,13 +47,20 @@ export function getPeriodHeader(
   }
 }
 
+// Default settings if none provided
+const DEFAULT_SETTINGS: Omit<AppSettings, "locale"> = {
+  decimalPlaces: 2,
+  roundingPrecision: 0.01,
+  thousandsSeparator: ",",
+};
+
 // Formatting utility wrapper functions
 export function formatNumForDisplay(
   value: number | undefined,
   locale: string,
-  settings: Omit<AppSettings, "locale">,
+  settings?: Omit<AppSettings, "locale">,
 ): string {
-  return value !== undefined ? formatNumber(value, locale, settings) : "";
+  return value !== undefined ? formatNumber(value, locale, settings || DEFAULT_SETTINGS) : "";
 }
 
 export function formatPctForDisplay(
@@ -75,8 +79,8 @@ export function formatDateForDisplay(
 
 export function formatPeriodIdForDisplay(
   id: string,
-  splitPeriodUsed: "yearly" | "quarterly" | "monthly",
+  splitPeriodUsed: "yearly" | "quarterly" | "monthly" | undefined,
   locale: string,
 ): string {
-  return formatPeriodIdentifier(id, splitPeriodUsed, locale);
+  return formatPeriodIdentifier(id, splitPeriodUsed || "yearly", locale);
 }

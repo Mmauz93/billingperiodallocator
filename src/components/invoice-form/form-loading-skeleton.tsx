@@ -1,56 +1,53 @@
 "use client";
 
+import {
+  ButtonSkeleton,
+  CardSkeleton,
+  GridSkeleton,
+  InputSkeleton,
+  SkeletonContainer,
+  TextSkeleton,
+  ToggleSkeleton,
+} from "@/components/ui/skeleton-kit";
+
 export function InvoiceFormSkeleton() {
   return (
-    <div className="space-y-6">
+    <SkeletonContainer spacing="1.5rem">
       {/* Date fields grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-2/5" />
-          <div className="h-10 bg-muted/60 rounded-md animate-pulse w-full" />
-        </div>
-        <div className="space-y-2">
-          <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-2/5" />
-          <div className="h-10 bg-muted/60 rounded-md animate-pulse w-full" />
-        </div>
-      </div>
+      <GridSkeleton columns={2} gap="1.5rem">
+        <InputSkeleton hasLabel={true} labelWidth="40%" />
+        <InputSkeleton hasLabel={true} labelWidth="40%" />
+      </GridSkeleton>
 
       {/* Include End Date toggle */}
-      <div className="h-20 bg-muted/40 rounded-lg animate-pulse border border-muted/30 p-4 flex justify-between items-center">
-        <div className="space-y-2">
-          <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-40" />
-          <div className="h-3 bg-muted/60 rounded-sm animate-pulse w-56" />
-        </div>
-        <div className="h-6 w-12 bg-muted/60 rounded-full animate-pulse" />
-      </div>
+      <ToggleSkeleton labelWidth="40%" />
 
       {/* Split Period dropdown */}
-      <div className="h-20 bg-muted/40 rounded-lg animate-pulse border border-muted/30 p-4 flex justify-between items-center">
-        <div className="space-y-2">
-          <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-32" />
-          <div className="h-3 bg-muted/60 rounded-sm animate-pulse w-64" />
+      <CardSkeleton height="5rem" hasBorder={true}>
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <TextSkeleton width="8rem" />
+            <TextSkeleton width="16rem" variant="text" />
+          </div>
+          <InputSkeleton width="7rem" height="2.5rem" hasLabel={false} />
         </div>
-        <div className="h-10 w-28 bg-muted/60 rounded-md animate-pulse" />
-      </div>
+      </CardSkeleton>
 
       {/* Amounts section */}
-      <div className="rounded-lg border border-muted/30 p-6 shadow-xs space-y-4 bg-muted/10">
-        <div className="h-5 bg-muted/60 rounded-sm animate-pulse w-1/4" />
-        <div className="h-4 bg-muted/60 rounded-sm animate-pulse w-3/5 mb-4" />
+      <CardSkeleton height="auto" hasBorder={true}>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <div className="h-3 bg-muted/60 rounded-sm animate-pulse w-8" />
-            <div className="flex gap-2">
-              <div className="h-10 bg-muted/60 rounded-md animate-pulse flex-grow" />
-              <div className="h-10 w-10 bg-muted/60 rounded-md animate-pulse opacity-0" />
-            </div>
+          <TextSkeleton variant="subheading" width="25%" />
+          <TextSkeleton width="60%" />
+          
+          <div className="mt-4 space-y-4">
+            <InputSkeleton hasLabel={true} labelWidth="2rem" />
+            <ButtonSkeleton variant="button" width="10rem" className="mt-4" />
           </div>
         </div>
-        <div className="h-8 bg-muted/60 rounded-md animate-pulse w-40 mt-6" />
-      </div>
+      </CardSkeleton>
 
       {/* Calculate button */}
-      <div className="h-11 bg-primary/40 rounded-md animate-pulse w-full" />
-    </div>
+      <ButtonSkeleton height="2.75rem" />
+    </SkeletonContainer>
   );
 }
